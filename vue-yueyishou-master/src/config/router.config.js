@@ -1,5 +1,4 @@
 import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
-
 /**
  * 走菜单，走权限控制
  * @type {[null,null]}
@@ -294,6 +293,15 @@ export const asyncRouterMap = [
  * @type { *[] }
  */
 export const constantRouterMap = [
+  {
+    path:'/customer/customerInfo',
+    component: () => import('@/views/customer/CustomerInfoList')
+  },
+  // {
+  //   path: '/customer/customerInfoList',
+  //   name: 'customerInfoList',
+  //   component: () => import('@/views/customer/customerInfoList')
+  // },
   {
     path: '/user',
     component: UserLayout,
