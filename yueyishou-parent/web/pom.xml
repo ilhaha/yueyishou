@@ -14,10 +14,16 @@
     <version>1.0</version>
 
     <modules>
-
+        <module>web-customer</module>
+        <module>web-recycler</module>
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!-- 服务调用feign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -39,6 +45,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
