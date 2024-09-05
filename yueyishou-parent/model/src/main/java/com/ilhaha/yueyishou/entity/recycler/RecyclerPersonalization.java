@@ -19,11 +19,9 @@ public class RecyclerPersonalization extends BaseEntity {
     private Long recyclerId;
 	/**回收类型，多个使用逗号隔开*/
     private String recyclingType;
-	/**服务状态 1：开始接单 0：未接单*/
+	/**服务状态  0：未接单 1：开始接单 2：有单中*/
     private Integer serviceStatus;
 	/**接单里程设置*/
     private BigDecimal acceptDistance;
-	/**是否自动接单*/
-    private Integer isAutoAccept;
 
 }

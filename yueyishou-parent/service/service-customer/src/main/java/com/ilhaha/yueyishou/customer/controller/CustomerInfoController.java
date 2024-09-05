@@ -22,6 +22,8 @@ import java.util.Arrays;
 public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
+
+
 	
 	/**
 	 * 分页列表查询

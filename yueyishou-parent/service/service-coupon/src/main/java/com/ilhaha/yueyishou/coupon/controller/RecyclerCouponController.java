@@ -1,10 +1,10 @@
-package com.ilhaha.yueyishou.customer.controller;
+package com.ilhaha.yueyishou.coupon.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.customer.CustomerLoginLog;
-import com.ilhaha.yueyishou.customer.service.ICustomerLoginLogService;
+import com.ilhaha.yueyishou.coupon.service.IRecyclerCouponService;
+import com.ilhaha.yueyishou.entity.coupon.RecyclerCoupon;
 import com.ilhaha.yueyishou.execption.YueYiShouException;
 import com.ilhaha.yueyishou.result.Result;
 import com.ilhaha.yueyishou.result.ResultCodeEnum;
@@ -16,53 +16,53 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 
 @RestController
-@RequestMapping("/customerLoginLog")
+@RequestMapping("/recyclerCoupon")
 @Slf4j
-public class CustomerLoginLogController {
+public class RecyclerCouponController  {
 	@Resource
-	private ICustomerLoginLogService customerLoginLogService;
+	private IRecyclerCouponService recyclerCouponService;
 	
 	/**
 	 * 分页列表查询
 	 *
-	 * @param customerLoginLog
+	 * @param recyclerCoupon
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<IPage<CustomerLoginLog>> queryPageList(CustomerLoginLog customerLoginLog,
-														 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-														 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-														 HttpServletRequest req) {
-		LambdaQueryWrapper<CustomerLoginLog> customerLoginLogLambdaQueryWrapper = new LambdaQueryWrapper<CustomerLoginLog>();
-		Page<CustomerLoginLog> page = new Page<CustomerLoginLog>(pageNo, pageSize);
-		IPage<CustomerLoginLog> pageList = customerLoginLogService.page(page, customerLoginLogLambdaQueryWrapper);
+	public Result<IPage<RecyclerCoupon>> queryPageList(RecyclerCoupon recyclerCoupon,
+													   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+													   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+													   HttpServletRequest req) {
+		LambdaQueryWrapper<RecyclerCoupon> recyclerCouponLambdaQueryWrapper = new LambdaQueryWrapper<>();
+		Page<RecyclerCoupon> page = new Page<RecyclerCoupon>(pageNo, pageSize);
+		IPage<RecyclerCoupon> pageList = recyclerCouponService.page(page, recyclerCouponLambdaQueryWrapper);
 		return Result.ok(pageList);
 	}
 	
 	/**
 	 *   添加
 	 *
-	 * @param customerLoginLog
+	 * @param recyclerCoupon
 	 * @return
 	 */
 	@PostMapping(value = "/add")
-	public Result<String> add(@RequestBody CustomerLoginLog customerLoginLog) {
-		customerLoginLogService.save(customerLoginLog);
+	public Result<String> add(@RequestBody RecyclerCoupon recyclerCoupon) {
+		recyclerCouponService.save(recyclerCoupon);
 		return Result.ok("添加成功！");
 	}
 	
 	/**
 	 *  编辑
 	 *
-	 * @param customerLoginLog
+	 * @param recyclerCoupon
 	 * @return
 	 */
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> edit(@RequestBody CustomerLoginLog customerLoginLog) {
-		customerLoginLogService.updateById(customerLoginLog);
+	public Result<String> edit(@RequestBody RecyclerCoupon recyclerCoupon) {
+		recyclerCouponService.updateById(recyclerCoupon);
 		return Result.ok("编辑成功!");
 	}
 	
@@ -74,7 +74,7 @@ public class CustomerLoginLogController {
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
-		customerLoginLogService.removeById(id);
+		recyclerCouponService.removeById(id);
 		return Result.ok("删除成功!");
 	}
 	
@@ -86,7 +86,7 @@ public class CustomerLoginLogController {
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.customerLoginLogService.removeByIds(Arrays.asList(ids.split(",")));
+		this.recyclerCouponService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功!");
 	}
 	
@@ -97,12 +97,12 @@ public class CustomerLoginLogController {
 	 * @return
 	 */
 	@GetMapping(value = "/queryById")
-	public Result<CustomerLoginLog> queryById(@RequestParam(name="id",required=true) String id) {
-		CustomerLoginLog customerLoginLog = customerLoginLogService.getById(id);
-		if(customerLoginLog==null) {
+	public Result<RecyclerCoupon> queryById(@RequestParam(name="id",required=true) String id) {
+		RecyclerCoupon recyclerCoupon = recyclerCouponService.getById(id);
+		if(recyclerCoupon==null) {
 			throw new YueYiShouException(ResultCodeEnum.DATA_ERROR);
 		}
-		return Result.ok(customerLoginLog);
+		return Result.ok(recyclerCoupon);
 	}
 
 }
