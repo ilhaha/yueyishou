@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Result error(YueYiShouException e){
         e.printStackTrace();
-        return Result.build(null,e.getCode(), e.getMessage());
+        return Result.build(null,e.getCode(),e.getMessage());
     }
 
     @ExceptionHandler(DecodeException.class)

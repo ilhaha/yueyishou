@@ -23,8 +23,17 @@ public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
 
+	/**
+	 * 小程序授权登录
+	 * @param code
+	 * @return
+	 */
+	@GetMapping("/login/{code}")
+	public Result<String> login(@PathVariable("code") String code){
+		return Result.ok(customerInfoService.login(code));
+	}
 
-	
+
 	/**
 	 * 分页列表查询
 	 *

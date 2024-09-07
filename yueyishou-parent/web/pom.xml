@@ -21,6 +21,16 @@
     <dependencies>
         <dependency>
             <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-util</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-customer-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
             <artifactId>service</artifactId>
             <version>1.0</version>
         </dependency>

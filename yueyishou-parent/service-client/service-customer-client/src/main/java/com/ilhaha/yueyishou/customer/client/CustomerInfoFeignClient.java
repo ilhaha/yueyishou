@@ -1,6 +1,9 @@
 package com.ilhaha.yueyishou.customer.client;
 
+import com.ilhaha.yueyishou.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * @Author ilhaha
@@ -9,4 +12,12 @@ import org.springframework.cloud.openfeign.FeignClient;
  */
 @FeignClient("service-customer")
 public interface CustomerInfoFeignClient {
+
+    /**
+     * 小程序授权登录
+     * @param code
+     * @return
+     */
+    @GetMapping("/customerInfo/login/{code}")
+    Result<String> login(@PathVariable("code") String code);
 }
