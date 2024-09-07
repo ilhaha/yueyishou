@@ -26,6 +26,11 @@
             <artifactId>service-util</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-coupon-client</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!-- 服务调用feign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -16,6 +16,26 @@
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-base-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>model</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>common-util</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-coupon-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-category-client</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>

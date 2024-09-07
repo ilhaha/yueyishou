@@ -8,35 +8,6 @@
               <a-input v-model="model.categoryName" placeholder="请输入分类名称"  ></a-input>
             </a-form-model-item>
           </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="上层分类ID，0表示顶级分类" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="parentId">
-              <a-input-number v-model="model.parentId" placeholder="请输入上层分类ID，0表示顶级分类" style="width: 100%" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="单价" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="unitPrice">
-              <a-input-number v-model="model.unitPrice" placeholder="请输入单价" style="width: 100%" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="单位" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="unit">
-              <a-input v-model="model.unit" placeholder="请输入单位"  ></a-input>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="分类描述" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="description">
-              <a-input v-model="model.description" placeholder="请输入分类描述"  ></a-input>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="状态，1:正常 0:禁用" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="status">
-              <a-input-number v-model="model.status" placeholder="请输入状态，1:正常 0:禁用" style="width: 100%" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="删除标志（0未删除，1已删除）" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="isDeleted">
-              <a-input-number v-model="model.isDeleted" placeholder="请输入删除标志（0未删除，1已删除）" style="width: 100%" />
-            </a-form-model-item>
           </a-col>
         </a-row>
       </a-form-model>
@@ -78,17 +49,11 @@
            categoryName: [
               { required: true, message: '请输入分类名称!'},
            ],
-           status: [
-              { required: true, message: '请输入状态，1:正常 0:禁用!'},
-           ],
-           isDeleted: [
-              { required: true, message: '请输入删除标志（0未删除，1已删除）!'},
-           ],
         },
         url: {
-          add: "/com.ilhaha.yueyishou.category/categoryInfo/add",
-          edit: "/com.ilhaha.yueyishou.category/categoryInfo/edit",
-          queryById: "/com.ilhaha.yueyishou.category/categoryInfo/queryById"
+          add: "/category/add",
+          edit: "/category/edit",
+          queryById: "/category/queryById"
         }
       }
     },

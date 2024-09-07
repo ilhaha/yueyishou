@@ -21,8 +21,6 @@ public class CouponInfo extends BaseEntity {
     private Integer couponType;
 	/**服务费抵扣券名字*/
     private String name;
-	/**金额*/
-    private BigDecimal amount;
 	/**折扣：取值[1 到 10]*/
     private BigDecimal discount;
 	/**使用门槛 0->没门槛*/
@@ -33,8 +31,8 @@ public class CouponInfo extends BaseEntity {
     private Integer useCount;
 	/**领取数量*/
     private Integer receiveCount;
-	/**过期时间*/
-    private Date expireTime;
+	/**领取后几天到期 0 无限制*/
+    private Integer expireTime;
 	/**服务费抵扣券描述*/
     private String description;
 	/**状态[0-未发布，1-已发布， -1-已过期]*/

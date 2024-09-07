@@ -18,5 +18,9 @@
         <module>jeecg-system-start</module>
     </modules>
 
+    <dependencies>
+
+    </dependencies>
+
 
 </project>

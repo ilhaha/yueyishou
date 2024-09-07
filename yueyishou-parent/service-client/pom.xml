@@ -17,6 +17,7 @@
         <module>service-customer-client</module>
         <module>service-order-client</module>
         <module>service-recycler-client</module>
+        <module>service-coupon-client</module>
     </modules>
 
     <dependencies>
@@ -35,6 +36,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
 
         <!-- 服务调用feign -->

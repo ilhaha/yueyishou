@@ -1,19 +1,18 @@
 package com.ilhaha.yueyishou.category.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.category.service.ICategoryInfoService;
-import com.ilhaha.yueyishou.execption.YueYiShouException;
+import com.ilhaha.yueyishou.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
 import com.ilhaha.yueyishou.result.Result;
-import com.ilhaha.yueyishou.result.ResultCodeEnum;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/categoryInfo")
@@ -21,25 +20,34 @@ import java.util.Arrays;
 public class CategoryInfoController {
 	@Resource
 	private ICategoryInfoService categoryInfoService;
+
+	/**
+	 * 切换废品品类状态
+	 * @return
+	 */
+	@PostMapping("/switch/status")
+	public Result<String> switchStatus(@RequestBody UpdateCategoryStatusForm updateCategoryStatusForm){
+		return Result.ok(categoryInfoService.switchStatus(updateCategoryStatusForm));
+	}
+
+	/**
+	 * 获取所有的父废品品类
+	 * @return
+	 */
+	@GetMapping("/parent/list")
+	public Result<List<CategoryInfo>> parentList(){
+		return Result.ok(categoryInfoService.parentList());
+	}
 	
 	/**
-	 * 分页列表查询
+	 * 列表查询
 	 *
-	 * @param categoryInfo
-	 * @param pageNo
-	 * @param pageSize
-	 * @param req
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<IPage<CategoryInfo>> queryPageList(CategoryInfo categoryInfo,
-													 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-													 HttpServletRequest req) {
-		LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-		Page<CategoryInfo> page = new Page<CategoryInfo>(pageNo, pageSize);
-		IPage<CategoryInfo> pageList = categoryInfoService.page(page, categoryInfoLambdaQueryWrapper);
-		return Result.ok(pageList);
+	public Result<List<CategoryInfo>> queryPageList() {
+		List<CategoryInfo> list = categoryInfoService.queryPageList();
+		return Result.ok(list);
 	}
 	
 	/**
@@ -48,22 +56,38 @@ public class CategoryInfoController {
 	 * @param categoryInfo
 	 * @return
 	 */
+	@CacheEvict(value = "category",
+			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
+			condition="#result.data")
 	@PostMapping(value = "/add")
-	public Result<String> add(@RequestBody CategoryInfo categoryInfo) {
+	public Result<Boolean> add(@RequestBody CategoryInfo categoryInfo) {
+		CategoryInfo categoryInfoDB = categoryInfoService.getCategoryByName(categoryInfo.getCategoryName());
+		if (!ObjectUtils.isEmpty(categoryInfoDB)) {
+			return Result.ok(false);
+		}
 		categoryInfoService.save(categoryInfo);
-		return Result.ok("添加成功！");
+		return Result.ok(true);
 	}
-	
+
 	/**
 	 *  编辑
 	 *
 	 * @param categoryInfo
 	 * @return
 	 */
+	@CacheEvict(value = "category",
+			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
+			condition="#result.data")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> edit(@RequestBody CategoryInfo categoryInfo) {
+	public Result<Boolean> edit(@RequestBody CategoryInfo categoryInfo) {
+		CategoryInfo categoryInfoDB = categoryInfoService.getCategoryByName(categoryInfo.getCategoryName());
+
+		if (!ObjectUtils.isEmpty(categoryInfoDB) &&
+				!categoryInfoDB.getId().equals(categoryInfo.getId())) {
+			return Result.ok(false);
+		}
 		categoryInfoService.updateById(categoryInfo);
-		return Result.ok("编辑成功!");
+		return Result.ok(true);
 	}
 	
 	/**
@@ -72,10 +96,20 @@ public class CategoryInfoController {
 	 * @param id
 	 * @return
 	 */
+	@CacheEvict(value = "category",
+			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
+			condition="#result.data")
 	@DeleteMapping(value = "/delete")
-	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
+	public Result<Boolean> delete(@RequestParam(name="id",required=true) String id) {
+		// 判断要删除的品类是否有子品类
+		LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+		categoryInfoLambdaQueryWrapper.in(CategoryInfo::getParentId,Arrays.asList(id));
+		List<CategoryInfo> categoryInfos = categoryInfoService.list(categoryInfoLambdaQueryWrapper);
+		if (!ObjectUtils.isEmpty(categoryInfos) && categoryInfos.size() > 0) {
+			return Result.ok(false);
+		}
 		categoryInfoService.removeById(id);
-		return Result.ok("删除成功!");
+		return Result.ok(true);
 	}
 	
 	/**
@@ -84,10 +118,20 @@ public class CategoryInfoController {
 	 * @param ids
 	 * @return
 	 */
+	@CacheEvict(value = "category",
+			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
+			condition="#result.data")
 	@DeleteMapping(value = "/deleteBatch")
-	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.categoryInfoService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+	public Result<Boolean> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+		List<String> idList = Arrays.asList(ids.split(","));
+		LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+		categoryInfoLambdaQueryWrapper.in(CategoryInfo::getParentId,idList);
+		List<CategoryInfo> categoryInfos = categoryInfoService.list(categoryInfoLambdaQueryWrapper);
+		if (!ObjectUtils.isEmpty(categoryInfos) && categoryInfos.size() > 0) {
+			return Result.ok(false);
+		}
+		this.categoryInfoService.removeByIds(idList);
+		return Result.ok(true);
 	}
 	
 	/**
@@ -99,9 +143,6 @@ public class CategoryInfoController {
 	@GetMapping(value = "/queryById")
 	public Result<CategoryInfo> queryById(@RequestParam(name="id",required=true) String id) {
 		CategoryInfo categoryInfo = categoryInfoService.getById(id);
-		if(categoryInfo==null) {
-			throw new YueYiShouException(ResultCodeEnum.DATA_ERROR);
-		}
 		return Result.ok(categoryInfo);
 	}
 

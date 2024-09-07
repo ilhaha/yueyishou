@@ -10,11 +10,13 @@ import com.ilhaha.yueyishou.execption.YueYiShouException;
 import com.ilhaha.yueyishou.result.Result;
 import com.ilhaha.yueyishou.result.ResultCodeEnum;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+
 
 @RestController
 @RequestMapping("/couponInfo")
@@ -24,22 +26,22 @@ public class CouponInfoController {
 	private ICouponInfoService couponInfoService;
 	
 	/**
-	 * 分页列表查询
+	 * 服务抵扣劵分页查询
 	 *
 	 * @param couponInfo
 	 * @param pageNo
 	 * @param pageSize
-	 * @param req
 	 * @return
 	 */
-	@GetMapping(value = "/list")
-	public Result<IPage<CouponInfo>> queryPageList(CouponInfo couponInfo,
+	@PostMapping(value = "/list")
+	public Result<Page<CouponInfo>> queryPageList(@RequestBody CouponInfo couponInfo,
 												   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-												   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-												   HttpServletRequest req) {
+												   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		LambdaQueryWrapper<CouponInfo> couponInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+		couponInfoLambdaQueryWrapper.like(StringUtils.hasText(couponInfo.getName()),CouponInfo::getName,couponInfo.getName());
 		Page<CouponInfo> page = new Page<CouponInfo>(pageNo, pageSize);
-		IPage<CouponInfo> pageList = couponInfoService.page(page, couponInfoLambdaQueryWrapper);
+		Page<CouponInfo> pageList = couponInfoService.page(page, couponInfoLambdaQueryWrapper);
+
 		return Result.ok(pageList);
 	}
 	
@@ -85,6 +87,7 @@ public class CouponInfoController {
 	 * @param ids
 	 * @return
 	 */
+	@DeleteMapping(value = "/deleteBatch")
 	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.couponInfoService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功!");
@@ -99,9 +102,6 @@ public class CouponInfoController {
 	@GetMapping(value = "/queryById")
 	public Result<CouponInfo> queryById(@RequestParam(name="id",required=true) String id) {
 		CouponInfo couponInfo = couponInfoService.getById(id);
-		if(couponInfo==null) {
-			throw new YueYiShouException(ResultCodeEnum.DATA_ERROR);
-		}
 		return Result.ok(couponInfo);
 	}
 

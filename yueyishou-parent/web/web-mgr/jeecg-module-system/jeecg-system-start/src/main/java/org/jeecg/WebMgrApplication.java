@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
 @Slf4j
 @SpringBootApplication
 //@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.ilhaha.yueyishou.*.client")
 @EnableDiscoveryClient
 public class WebMgrApplication extends SpringBootServletInitializer {
 
