@@ -151,10 +151,10 @@
           }
         ],
         url: {
-          list: "/customerAccount/list",
-          delete: "/customerAccount/delete",
-          deleteBatch: "/customerAccount/deleteBatch",
-          exportXlsUrl: "/customerAccount/exportXls",
+          list: "/com.ilhaha.yueyishou.customer/customerAccount/list",
+          delete: "/com.ilhaha.yueyishou.customer/customerAccount/delete",
+          deleteBatch: "/com.ilhaha.yueyishou.customer/customerAccount/deleteBatch",
+          exportXlsUrl: "/com.ilhaha.yueyishou.customer/customerAccount/exportXls",
           importExcelUrl: "com.ilhaha.yueyishou.customer/customerAccount/importExcel",
           
         },

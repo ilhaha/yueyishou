@@ -12,10 +12,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!-- <a-button type="primary" icon="download" @click="handleExportXls('customer_account_detail')">导出</a-button> -->
-      <!-- <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+      <a-button type="primary" icon="download" @click="handleExportXls('customer_account_detail')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
-      </a-upload> -->
+      </a-upload>
       <!-- 高级查询区域 -->
       <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -122,9 +122,9 @@
             }
           },
           {
-            title:'顾客id',
+            title:'顾客账户id',
             align:"center",
-            dataIndex: 'customerId'
+            dataIndex: 'customerAccountId'
           },
           {
             title:'交易内容',
@@ -161,10 +161,11 @@
           }
         ],
         url: {
-          list: "/customerAccountDetail/list",
-          delete: "/customerAccountDetail/delete",
-          deleteBatch: "/customerAccountDetail/deleteBatch",
-        
+          list: "/com.ilhaha.yueyishou.customer/customerAccountDetail/list",
+          delete: "/com.ilhaha.yueyishou.customer/customerAccountDetail/delete",
+          deleteBatch: "/com.ilhaha.yueyishou.customer/customerAccountDetail/deleteBatch",
+          exportXlsUrl: "/com.ilhaha.yueyishou.customer/customerAccountDetail/exportXls",
+          importExcelUrl: "com.ilhaha.yueyishou.customer/customerAccountDetail/importExcel",
           
         },
         dictOptions:{},
@@ -184,7 +185,7 @@
       },
       getSuperFieldList(){
         let fieldList=[];
-        fieldList.push({type:'int',value:'customerId',text:'顾客id'})
+        fieldList.push({type:'int',value:'customerAccountId',text:'顾客账户id'})
         fieldList.push({type:'string',value:'content',text:'交易内容'})
         fieldList.push({type:'string',value:'tradeType',text:'交易类型： 1-回收收入 2-提现'})
         fieldList.push({type:'number',value:'amount',text:'金额'})

@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.customer.service.ICustomerInfoService;
 import com.ilhaha.yueyishou.execption.YueYiShouException;
+import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.result.Result;
 import com.ilhaha.yueyishou.result.ResultCodeEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -22,6 +24,16 @@ import java.util.Arrays;
 public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
+
+	/**
+	 * 修改客户状态
+	 * @param updateCustomerStatusForm
+	 * @return
+	 */
+	@PostMapping("/switch/status")
+	public Result<String> switchStatus(@RequestBody UpdateCustomerStatusForm updateCustomerStatusForm){
+		return Result.ok(customerInfoService.switchStatus(updateCustomerStatusForm));
+	}
 
 	/**
 	 * 小程序授权登录
@@ -35,21 +47,22 @@ public class CustomerInfoController {
 
 
 	/**
-	 * 分页列表查询
+	 * 客户分页列表查询
 	 *
 	 * @param customerInfo
 	 * @param pageNo
 	 * @param pageSize
-	 * @param req
 	 * @return
 	 */
-	public Result<IPage<CustomerInfo>> queryPageList(CustomerInfo customerInfo,
+	@PostMapping("/list")
+	public Result<Page<CustomerInfo>> queryPageList(@RequestBody CustomerInfo customerInfo,
 													 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-													 HttpServletRequest req) {
+													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		LambdaQueryWrapper<CustomerInfo> customerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+		customerInfoLambdaQueryWrapper.like(StringUtils.hasText(customerInfo.getNickname()),
+				CustomerInfo::getNickname,customerInfo.getNickname());
 		Page<CustomerInfo> page = new Page<CustomerInfo>(pageNo, pageSize);
-		IPage<CustomerInfo> pageList = customerInfoService.page(page, customerInfoLambdaQueryWrapper);
+		Page<CustomerInfo> pageList = customerInfoService.page(page, customerInfoLambdaQueryWrapper);
 		return Result.ok(pageList);
 	}
 	

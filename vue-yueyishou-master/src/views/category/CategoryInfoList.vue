@@ -274,7 +274,7 @@ export default {
     handleStatusChange(checked, record) {
       const newStatus = checked ? 1 : 2 // checked 为 true 时设置为 1, 否则为 2
 
-      postAction('category/switch/status', { categoryId: record.id, status: newStatus }).then((res) => {
+      postAction('/category/switch/status', { categoryId: record.id, status: newStatus }).then((res) => {
         this.$message.success(res.message)
         this.loadData()
       })

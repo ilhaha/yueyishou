@@ -4,8 +4,8 @@
       <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-model-item label="顾客id" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="customerId">
-              <a-input-number v-model="model.customerId" placeholder="请输入顾客id" style="width: 100%" />
+            <a-form-model-item label="顾客账户id" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="customerAccountId">
+              <a-input-number v-model="model.customerAccountId" placeholder="请输入顾客账户id" style="width: 100%" />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -70,8 +70,8 @@
         },
         confirmLoading: false,
         validatorRules: {
-           customerId: [
-              { required: true, message: '请输入顾客id!'},
+           customerAccountId: [
+              { required: true, message: '请输入顾客账户id!'},
            ],
            content: [
               { required: true, message: '请输入交易内容!'},
@@ -87,9 +87,9 @@
            ],
         },
         url: {
-          add: "/customerAccountDetail/add",
-          edit: "/customerAccountDetail/edit",
-          queryById: "/customerAccountDetail/queryById"
+          add: "/com.ilhaha.yueyishou.customer/customerAccountDetail/add",
+          edit: "/com.ilhaha.yueyishou.customer/customerAccountDetail/edit",
+          queryById: "/com.ilhaha.yueyishou.customer/customerAccountDetail/queryById"
         }
       }
     },

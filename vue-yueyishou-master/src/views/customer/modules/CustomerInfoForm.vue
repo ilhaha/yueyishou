@@ -4,11 +4,6 @@
       <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-model-item label="微信openId" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="wxOpenId">
-              <a-input v-model="model.wxOpenId" placeholder="请输入微信openId"  ></a-input>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
             <a-form-model-item label="客户昵称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="nickname">
               <a-input v-model="model.nickname" placeholder="请输入客户昵称"  ></a-input>
             </a-form-model-item>
@@ -20,7 +15,7 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="avatarUrl">
-              <a-input v-model="model.avatarUrl" placeholder="请输入头像"  ></a-input>
+              <j-image-upload isMultiple  v-model="model.avatarUrl" ></j-image-upload>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -34,8 +29,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="isDeleted" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="isDeleted">
-              <a-input-number v-model="model.isDeleted" placeholder="请输入isDeleted" style="width: 100%" />
+            <a-form-model-item label="创建时间" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="createTime">
+              <j-date placeholder="请选择创建时间" v-model="model.createTime"  style="width: 100%" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -75,20 +70,17 @@
         },
         confirmLoading: false,
         validatorRules: {
-           wxOpenId: [
-              { required: true, message: '请输入微信openId!'},
-           ],
            gender: [
               { required: true, message: '请输入性别!'},
            ],
-           isDeleted: [
-              { required: true, message: '请输入isDeleted!'},
+           createTime: [
+              { required: true, message: '请输入创建时间!'},
            ],
         },
         url: {
-          add: "/customerInfo/add",
-          edit: "/customerInfo/edit",
-          queryById: "/customerInfo/queryById"
+          add: "/com.ilhaha.yueyishou.customer/customerInfo/add",
+          edit: "/com.ilhaha.yueyishou.customer/customerInfo/edit",
+          queryById: "/com.ilhaha.yueyishou.customer/customerInfo/queryById"
         }
       }
     },

@@ -4,6 +4,7 @@ package com.ilhaha.yueyishou.customer.service.impl;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ilhaha.yueyishou.constant.RedisConstant;
 import com.ilhaha.yueyishou.constant.StartDisabledConstant;
@@ -13,6 +14,7 @@ import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.customer.mapper.CustomerInfoMapper;
 import com.ilhaha.yueyishou.customer.service.ICustomerInfoService;
 import com.ilhaha.yueyishou.execption.YueYiShouException;
+import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.result.ResultCodeEnum;
 import jakarta.annotation.Resource;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -83,5 +85,19 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                 RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
 
         return token;
+    }
+
+    /**
+     * 修改客户状态
+     * @param updateCustomerStatusForm
+     * @return
+     */
+    @Override
+    public String switchStatus(UpdateCustomerStatusForm updateCustomerStatusForm) {
+        LambdaUpdateWrapper<CustomerInfo> customerInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        customerInfoLambdaUpdateWrapper.set(CustomerInfo::getStatus,updateCustomerStatusForm.getStatus())
+                .in(CustomerInfo::getId,updateCustomerStatusForm.getCustomerIds());
+        this.update(customerInfoLambdaUpdateWrapper);
+        return "修改成功";
     }
 }

@@ -293,10 +293,6 @@ export const asyncRouterMap = [
  * @type { *[] }
  */
 export const constantRouterMap = [
-  {
-    path:'/customer/customerInfo',
-    component: () => import('@/views/customer/CustomerInfoList')
-  },
   // {
   //   path: '/customer/customerInfoList',
   //   name: 'customerInfoList',

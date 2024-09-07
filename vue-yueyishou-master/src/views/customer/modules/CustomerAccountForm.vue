@@ -74,9 +74,9 @@
            ],
         },
         url: {
-          add: "/customerAccount/add",
-          edit: "/customerAccount/edit",
-          queryById: "/customerAccount/queryById"
+          add: "/com.ilhaha.yueyishou.customer/customerAccount/add",
+          edit: "/com.ilhaha.yueyishou.customer/customerAccount/edit",
+          queryById: "/com.ilhaha.yueyishou.customer/customerAccount/queryById"
         }
       }
     },
