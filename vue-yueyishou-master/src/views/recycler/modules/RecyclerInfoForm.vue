@@ -4,18 +4,13 @@
       <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-model-item label="微信openId" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="wxOpenId">
-              <a-input v-model="model.wxOpenId" placeholder="请输入微信openId"  ></a-input>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
             <a-form-model-item label="昵称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="nickname">
               <a-input v-model="model.nickname" placeholder="请输入昵称"  ></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="avatarUrl">
-              <a-input v-model="model.avatarUrl" placeholder="请输入头像"  ></a-input>
+              <j-image-upload isMultiple  v-model="model.avatarUrl" ></j-image-upload>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -55,17 +50,17 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="身份证正面" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="idcardFrontUrl">
-              <a-input v-model="model.idcardFrontUrl" placeholder="请输入身份证正面"  ></a-input>
+              <j-image-upload isMultiple  v-model="model.idcardFrontUrl" ></j-image-upload>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="身份证背面" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="idcardBackUrl">
-              <a-input v-model="model.idcardBackUrl" placeholder="请输入身份证背面"  ></a-input>
+              <j-image-upload isMultiple  v-model="model.idcardBackUrl" ></j-image-upload>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="手持身份证" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="idcardHandUrl">
-              <a-input v-model="model.idcardHandUrl" placeholder="请输入手持身份证"  ></a-input>
+              <j-image-upload isMultiple  v-model="model.idcardHandUrl" ></j-image-upload>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -99,8 +94,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="是否已删除，1已删除 0未删除" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="isDeleted">
-              <a-input-number v-model="model.isDeleted" placeholder="请输入是否已删除，1已删除 0未删除" style="width: 100%" />
+            <a-form-model-item label="创建时间" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="createTime">
+              <j-date placeholder="请选择创建时间" v-model="model.createTime"  style="width: 100%" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -140,9 +135,6 @@
         },
         confirmLoading: false,
         validatorRules: {
-           wxOpenId: [
-              { required: true, message: '请输入微信openId!'},
-           ],
            nickname: [
               { required: true, message: '请输入昵称!'},
            ],
@@ -161,8 +153,8 @@
            status: [
               { required: true, message: '请输入状态，1正常，2禁用!'},
            ],
-           isDeleted: [
-              { required: true, message: '请输入是否已删除，1已删除 0未删除!'},
+           createTime: [
+              { required: true, message: '请输入创建时间!'},
            ],
         },
         url: {

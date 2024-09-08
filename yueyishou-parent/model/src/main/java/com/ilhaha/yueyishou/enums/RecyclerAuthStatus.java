@@ -13,9 +13,8 @@ import lombok.Getter;
 @Getter
 public enum RecyclerAuthStatus {
 
-    /**认证状态 0:未认证  1：审核中 2：认证通过 -1：认证未通过*/
+    /**认证状态  1：审核中 2：认证通过 -1：认证未通过*/
 
-    NOT_CERTIFIED(0, "未认证"),
     UNDER_REVIEW(1, "审核中"),
     CERTIFICATION_PASSED(2, "认证通过"),
     AUTHENTICATION_FAILED(-1, "顾客确定订单"),

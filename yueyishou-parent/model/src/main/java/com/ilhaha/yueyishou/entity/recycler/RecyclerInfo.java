@@ -56,7 +56,7 @@ public class RecyclerInfo extends BaseEntity {
     private BigDecimal score;
 	/**订单量统计*/
     private Integer orderCount;
-	/**认证状态 0:未认证  1：审核中 2：认证通过 -1：认证未通过*/
+	/**认证状态 1：审核中 2：认证通过 -1：认证未通过*/
     private Integer authStatus;
 	/**状态，1正常，2禁用*/
     private Integer status;

@@ -118,6 +118,9 @@ export default {
           title: '性别',
           align: 'center',
           dataIndex: 'gender',
+          customRender: (text, record) => {
+            return text == '1'? '男' : '女';
+          }
         },
         {
           title: '头像',

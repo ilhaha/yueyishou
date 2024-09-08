@@ -5,12 +5,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.execption.YueYiShouException;
+import com.ilhaha.yueyishou.form.recycler.RecyclerAuthForm;
+import com.ilhaha.yueyishou.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import com.ilhaha.yueyishou.result.Result;
 import com.ilhaha.yueyishou.result.ResultCodeEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -21,24 +25,44 @@ import java.util.Arrays;
 public class RecyclerInfoController {
 	@Resource
 	private IRecyclerInfoService recyclerInfoService;
+
+	/**
+	 * 回收员审核
+	 * @param recyclerAuthForm
+	 * @return
+	 */
+	@PostMapping("/auth")
+	public Result<String> auth(@RequestBody RecyclerAuthForm recyclerAuthForm){
+		return Result.ok(recyclerInfoService.auth(recyclerAuthForm));
+	}
+
+	/**
+	 * 回收员状态切换
+	 * @param updateRecyclerStatusForm
+	 * @return
+	 */
+	@PostMapping("/switch/status")
+	public Result<String> switchStatus(@RequestBody UpdateRecyclerStatusForm updateRecyclerStatusForm){
+		return Result.ok(recyclerInfoService.switchStatus(updateRecyclerStatusForm));
+	}
 	
 	/**
-	 * 分页列表查询
+	 * 回收员分页列表查询
 	 *
 	 * @param recyclerInfo
 	 * @param pageNo
 	 * @param pageSize
-	 * @param req
 	 * @return
 	 */
-	@GetMapping(value = "/list")
-	public Result<IPage<RecyclerInfo>> queryPageList(RecyclerInfo recyclerInfo,
+	@PostMapping(value = "/list")
+	public Result<Page<RecyclerInfo>> queryPageList(@RequestBody RecyclerInfo recyclerInfo,
 													 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-													 HttpServletRequest req) {
+													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		LambdaQueryWrapper<RecyclerInfo> recyclerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+		recyclerInfoLambdaQueryWrapper.like(StringUtils.hasText(recyclerInfo.getName()),RecyclerInfo::getName,recyclerInfo.getName())
+				.eq(!ObjectUtils.isEmpty(recyclerInfo.getAuthStatus()),RecyclerInfo::getAuthStatus,recyclerInfo.getAuthStatus());
 		Page<RecyclerInfo> page = new Page<RecyclerInfo>(pageNo, pageSize);
-		IPage<RecyclerInfo> pageList = recyclerInfoService.page(page, recyclerInfoLambdaQueryWrapper);
+		Page<RecyclerInfo> pageList = recyclerInfoService.page(page, recyclerInfoLambdaQueryWrapper);
 		return Result.ok(pageList);
 	}
 	
@@ -67,7 +91,7 @@ public class RecyclerInfoController {
 	}
 	
 	/**
-	 *   通过id删除
+	 *   通过id删除回收员
 	 *
 	 * @param id
 	 * @return
@@ -79,7 +103,7 @@ public class RecyclerInfoController {
 	}
 	
 	/**
-	 *  批量删除
+	 *  批量删除回收员
 	 *
 	 * @param ids
 	 * @return
