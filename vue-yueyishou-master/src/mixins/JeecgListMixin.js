@@ -224,6 +224,8 @@ export const JeecgListMixin = {
       console.log('currentIndex',currentIndex)
     },
     handleEdit: function (record) {
+      console.log(record);
+      
       this.$refs.modalForm.edit(record);
       this.$refs.modalForm.title = "编辑";
       this.$refs.modalForm.disableSubmit = false;

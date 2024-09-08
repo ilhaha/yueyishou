@@ -41,7 +41,6 @@ public class CiServiceImpl implements CiService {
         request.setObjectKey(path);
         //3.调用接口,获取任务响应对象
         ImageAuditingResponse response = cosClient.imageAuditing(request);
-        cosClient.shutdown();
         //用于返回该审核场景的审核结果，返回值：0：正常。1：确认为当前场景的违规内容。2：疑似为当前场景的违规内容。
         if (!response.getPornInfo().getHitFlag().equals("0")
                 || !response.getAdsInfo().getHitFlag().equals("0")

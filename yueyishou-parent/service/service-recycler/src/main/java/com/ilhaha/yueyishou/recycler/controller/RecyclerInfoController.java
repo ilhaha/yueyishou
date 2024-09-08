@@ -24,16 +24,6 @@ public class RecyclerInfoController {
 	private IRecyclerInfoService recyclerInfoService;
 
 	/**
-	 * 回收员上传图片
-	 * @param file
-	 * @return
-	 */
-	@PostMapping("/upload")
-	public Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file, @RequestParam(name = "path") String path){
-		return recyclerInfoService.upload(file,path);
-	}
-
-	/**
 	 * 回收员审核
 	 * @param recyclerAuthForm
 	 * @return

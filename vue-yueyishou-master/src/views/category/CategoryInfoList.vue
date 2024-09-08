@@ -13,6 +13,8 @@
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
+          <a-menu-item key="1" @click="switchStatus(1, selectedRowKeys)"><a-icon type="check" />启用</a-menu-item>
+          <a-menu-item key="2" @click="switchStatus(2, selectedRowKeys)"><a-icon type="close" />停用</a-menu-item>
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
@@ -46,7 +48,7 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text, record">
-          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无icon</span>
           <img
             v-else
             :src="getImgView(text)"
@@ -95,6 +97,32 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
+              <a-form-model-item label="icon" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="icon">
+                <a-upload
+                  v-model:file-list="fileList"
+                  name="file"
+                  list-type="picture-card"
+                  class="avatar-uploader"
+                  :show-upload-list="false"
+                  :action="uploadUrl"
+                  :before-upload="beforeUpload"
+                  @change="handleChange"
+                  :headers="uploadHeaders"
+                  :data="uploadData"
+                >
+                  <img
+                    v-if="model.icon"
+                    :src="imageUrl ? imageUrl : model.icon"
+                    alt="icon"
+                    style="width: 100%; height: 100%; object-fit: cover"
+                  />
+                  <div v-else>
+                    <div class="ant-upload-text">上传icon</div>
+                  </div>
+                </a-upload>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="24">
               <a-form-model-item label="单价" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="unitPrice">
                 <a-input-number v-model="model.unitPrice" placeholder="请输入单价" style="width: 100%" />
               </a-form-model-item>
@@ -131,6 +159,32 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
+              <a-form-model-item label="icon" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="icon">
+                <a-upload
+                  v-model:file-list="fileList"
+                  name="file"
+                  list-type="picture-card"
+                  class="avatar-uploader"
+                  :show-upload-list="false"
+                  :action="uploadUrl"
+                  :before-upload="beforeUpload"
+                  @change="handleChange"
+                  :headers="uploadHeaders"
+                  :data="uploadData"
+                >
+                  <img
+                    v-if="model.icon"
+                    :src="imageUrl ? imageUrl : model.icon"
+                    alt="icon"
+                    style="width: 100%; height: 100%; object-fit: cover"
+                  />
+                  <div v-else>
+                    <div class="ant-upload-text">上传icon</div>
+                  </div>
+                </a-upload>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="24">
               <a-form-model-item label="单价" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="unitPrice">
                 <a-input-number v-model="model.unitPrice" placeholder="请输入单价" style="width: 100%" />
               </a-form-model-item>
@@ -159,7 +213,8 @@ import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import CategoryInfoModal from './modules/CategoryInfoModal'
 import { getAction, postAction, putAction } from '../../api/manage'
-
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 export default {
   name: 'CategoryInfoList',
   mixins: [JeecgListMixin, mixinDevice],
@@ -173,6 +228,7 @@ export default {
         parentId: 0,
         unitPrice: '',
         unit: '',
+        icon: '',
         categoryDescribe: '',
       },
       updateSonOpen: false,
@@ -181,6 +237,7 @@ export default {
         parentId: 0,
         unitPrice: '',
         unit: '',
+        icon: '',
         categoryDescribe: '',
       },
       labelCol: {
@@ -197,6 +254,7 @@ export default {
         parentId: [{ required: true, message: '请输入上层分类ID，0表示顶级分类!' }],
         unitPrice: [{ required: true, message: '请输入单价!' }],
         unit: [{ required: true, message: '请输入单位!' }],
+        icon: [{ required: true, message: '请上传icon!' }],
       },
       addSonOpen: false,
       description: 'category_info管理页面',
@@ -206,6 +264,13 @@ export default {
           title: '品类名称',
           align: 'center',
           dataIndex: 'categoryName',
+        },
+        {
+          title: 'icon',
+          align: 'center',
+          width: 150,
+          dataIndex: 'icon',
+          scopedSlots: { customRender: 'imgSlot' },
         },
         {
           title: '单价',
@@ -259,6 +324,14 @@ export default {
       },
       dictOptions: {},
       superFieldList: [],
+      uploadUrl: `${process.env.VUE_APP_API_BASE_URL}/cos/upload`, // 替换为实际上传图片的API地址
+      imageUrl: '', // 用于存储上传后的图片URL
+      fileList: [], // 文件列表
+      loading: false, // 用于控制loading效果
+      uploadHeaders: {
+        'x-access-token': Vue.ls.get(ACCESS_TOKEN), // 替换为实际的认证令牌
+      },
+      uploadData: { path: 'category' }, // 额外的上传参数
     }
   },
 
@@ -271,13 +344,44 @@ export default {
     },
   },
   methods: {
-    handleStatusChange(checked, record) {
-      const newStatus = checked ? 1 : 2 // checked 为 true 时设置为 1, 否则为 2
-
-      postAction('/category/switch/status', { categoryId: record.id, status: newStatus }).then((res) => {
+    beforeUpload(file) {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+      if (!isJpgOrPng) {
+        this.$message.error('只能上传 JPG/PNG 格式的icon!')
+        return false
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        this.$message.error('icon大小必须小于 2MB!')
+        return false
+      }
+      this.loading = true
+      return true
+    },
+    handleChange(info) {
+      const { file } = info
+      if (file.status === 'done') {
+        // 成功上传后，获取图片URL
+        this.imageUrl = info.file.response.result.showUrl
+        this.model.icon = info.file.response.result.url
+        this.loading = false
+        this.$message.success('icon上传成功')
+      } else if (file.status === 'error') {
+        this.$message.error('icon上传失败')
+        this.loading = false
+      }
+    },
+    switchStatus(status, categoryIds) {
+      postAction('/category/switch/status', { categoryIds, status }).then((res) => {
         this.$message.success(res.message)
         this.loadData()
       })
+    },
+    handleStatusChange(checked, record) {
+      const newStatus = checked ? 1 : 2
+      let categoryIds = []
+      categoryIds.push(record.id)
+      this.switchStatus(newStatus, categoryIds)
     },
     openUpdate(item) {
       this.updateSonOpen = true
@@ -328,12 +432,13 @@ export default {
       this.model.parentId = 0
       this.model.unitPrice = ''
       this.model.unit = ''
-      this.model.categoryDescribe = '';
+      this.model.categoryDescribe = ''
+      this.model.icon = ''
     },
     updateClearData() {
       this.clearData()
       this.loadData()
-      this.model.id = '';
+      this.model.id = ''
     },
     initDictConfig() {},
     getSuperFieldList() {

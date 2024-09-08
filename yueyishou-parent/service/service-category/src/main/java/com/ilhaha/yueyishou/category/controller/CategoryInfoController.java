@@ -142,8 +142,7 @@ public class CategoryInfoController {
 	 */
 	@GetMapping(value = "/queryById")
 	public Result<CategoryInfo> queryById(@RequestParam(name="id",required=true) String id) {
-		CategoryInfo categoryInfo = categoryInfoService.getById(id);
-		return Result.ok(categoryInfo);
+		return Result.ok(categoryInfoService.queryById(id));
 	}
 
 }

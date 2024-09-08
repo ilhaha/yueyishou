@@ -33,4 +33,11 @@ public interface ICategoryInfoService extends IService<CategoryInfo> {
      */
     String switchStatus(UpdateCategoryStatusForm updateCategoryStatusForm);
 
+    /**
+     * 通过id查询
+     *
+     * @param id
+     * @return
+     */
+    CategoryInfo queryById(String id);
 }

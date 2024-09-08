@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.recycler.service.impl;
 import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.service.RecyclerService;
 import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class RecyclerServiceImpl implements RecyclerService {
 
     @Resource
-    private RecyclerInfoFeignClient recyclerInfoFeignClient;
+    private CosFeignClient cosFeignClient;
 
     @Override
     public Result<CosUploadVo> upload(MultipartFile file, String path) {
-        return recyclerInfoFeignClient.upload(file,path);
+        return cosFeignClient.upload(file,path);
     }
 }

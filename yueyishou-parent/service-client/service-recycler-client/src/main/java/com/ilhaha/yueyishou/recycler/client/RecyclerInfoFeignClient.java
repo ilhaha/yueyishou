@@ -19,14 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface RecyclerInfoFeignClient {
 
     /**
-     * 回收员上传图片
-     * @param file
-     * @return
-     */
-    @PostMapping("/recycler/upload")
-    Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file, @RequestParam(name = "path") String path);
-
-    /**
      * 回收员审核
      * @param recyclerAuthForm
      * @return

@@ -21,6 +21,8 @@ public class CategoryInfo extends BaseEntity {
 
 	/**分类名称*/
     private String categoryName;
+    /**icon*/
+    private String icon;
 	/**上层分类ID，0表示顶级分类*/
     private Long parentId;
 	/**单价*/

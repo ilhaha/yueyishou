@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.tencentcloud.client;
 import com.ilhaha.yueyishou.result.Result;
 import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +24,7 @@ public interface CosFeignClient {
      * @param path
      * @return
      */
-    @PostMapping("/cos/upload")
+    @PostMapping(value = "/cos/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file,
                                @RequestParam("path") String path);
 

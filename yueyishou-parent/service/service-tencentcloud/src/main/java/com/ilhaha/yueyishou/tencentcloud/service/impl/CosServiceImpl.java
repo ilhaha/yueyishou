@@ -57,7 +57,7 @@ public class CosServiceImpl implements CosService {
 
         //向存储桶中保存文件
         String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")); //文件后缀名
-        String uploadPath = "/recycler/" + path + "/" + UUID.randomUUID().toString().replaceAll("-", "") + fileType;
+        String uploadPath = path + "/" + UUID.randomUUID().toString().replaceAll("-", "") + fileType;
         PutObjectRequest putObjectRequest = null;
         try {
             putObjectRequest = new PutObjectRequest(tencentCloudProperties.getBucketPrivate(), uploadPath, file.getInputStream(), meta);
