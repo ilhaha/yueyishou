@@ -22,6 +22,8 @@ public enum ResultCodeEnum {
 
     INCORRECT_LOGIN_INFORMATION(211,"登录信息有误"),
     ACCOUNT_STOP( 213, "账号已停用"),
+    IMAGE_AUDITION_FAIL( 218, "图片存在违规"),
+    IMAGE_UPLOAD_FAIL( 219, "图片上传失败"),
     SERVICE_ERROR(2012, "服务异常"),
 
 

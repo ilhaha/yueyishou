@@ -18,6 +18,7 @@
         <module>service-order-client</module>
         <module>service-recycler-client</module>
         <module>service-coupon-client</module>
+        <module>service-tencentcloud-client</module>
     </modules>
 
     <dependencies>

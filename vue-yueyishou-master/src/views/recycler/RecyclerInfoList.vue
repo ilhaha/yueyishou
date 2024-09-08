@@ -180,18 +180,21 @@ export default {
         {
           title: '身份证正面',
           align: 'center',
+          width: 150,
           dataIndex: 'idcardFrontUrl',
           scopedSlots: { customRender: 'imgSlot' },
         },
         {
           title: '身份证背面',
           align: 'center',
+          width: 150,
           dataIndex: 'idcardBackUrl',
           scopedSlots: { customRender: 'imgSlot' },
         },
         {
           title: '手持身份证',
           align: 'center',
+          width: 150,
           dataIndex: 'idcardHandUrl',
           scopedSlots: { customRender: 'imgSlot' },
         },

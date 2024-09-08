@@ -5,13 +5,10 @@ import com.ilhaha.yueyishou.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Arrays;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Author ilhaha
@@ -20,6 +17,14 @@ import java.util.Arrays;
  */
 @FeignClient("service-recycler")
 public interface RecyclerInfoFeignClient {
+
+    /**
+     * 回收员上传图片
+     * @param file
+     * @return
+     */
+    @PostMapping("/recycler/upload")
+    Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file, @RequestParam(name = "path") String path);
 
     /**
      * 回收员审核

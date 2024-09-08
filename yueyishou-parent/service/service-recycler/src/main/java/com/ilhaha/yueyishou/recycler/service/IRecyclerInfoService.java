@@ -1,9 +1,13 @@
 package com.ilhaha.yueyishou.recycler.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ilhaha.yueyishou.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.form.recycler.UpdateRecyclerStatusForm;
+import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IRecyclerInfoService extends IService<RecyclerInfo> {
 
@@ -20,4 +24,20 @@ public interface IRecyclerInfoService extends IService<RecyclerInfo> {
      * @return
      */
     String auth(RecyclerAuthForm recyclerAuthForm);
+
+    /**
+     * 回收员分页查询
+     * @param recyclerInfo
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    Page<RecyclerInfo> queryPageList(RecyclerInfo recyclerInfo, Integer pageNo, Integer pageSize);
+
+    /**
+     * 回收员上传图片
+     * @param file
+     * @return
+     */
+     Result<CosUploadVo> upload(MultipartFile file, String path);
 }

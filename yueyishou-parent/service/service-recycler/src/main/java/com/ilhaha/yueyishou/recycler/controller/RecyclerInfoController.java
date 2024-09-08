@@ -1,7 +1,5 @@
 package com.ilhaha.yueyishou.recycler.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.execption.YueYiShouException;
@@ -10,12 +8,11 @@ import com.ilhaha.yueyishou.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import com.ilhaha.yueyishou.result.Result;
 import com.ilhaha.yueyishou.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 
@@ -25,6 +22,16 @@ import java.util.Arrays;
 public class RecyclerInfoController {
 	@Resource
 	private IRecyclerInfoService recyclerInfoService;
+
+	/**
+	 * 回收员上传图片
+	 * @param file
+	 * @return
+	 */
+	@PostMapping("/upload")
+	public Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file, @RequestParam(name = "path") String path){
+		return recyclerInfoService.upload(file,path);
+	}
 
 	/**
 	 * 回收员审核
@@ -58,12 +65,7 @@ public class RecyclerInfoController {
 	public Result<Page<RecyclerInfo>> queryPageList(@RequestBody RecyclerInfo recyclerInfo,
 													 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-		LambdaQueryWrapper<RecyclerInfo> recyclerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-		recyclerInfoLambdaQueryWrapper.like(StringUtils.hasText(recyclerInfo.getName()),RecyclerInfo::getName,recyclerInfo.getName())
-				.eq(!ObjectUtils.isEmpty(recyclerInfo.getAuthStatus()),RecyclerInfo::getAuthStatus,recyclerInfo.getAuthStatus());
-		Page<RecyclerInfo> page = new Page<RecyclerInfo>(pageNo, pageSize);
-		Page<RecyclerInfo> pageList = recyclerInfoService.page(page, recyclerInfoLambdaQueryWrapper);
-		return Result.ok(pageList);
+		return Result.ok(recyclerInfoService.queryPageList(recyclerInfo,pageNo,pageSize));
 	}
 	
 	/**
