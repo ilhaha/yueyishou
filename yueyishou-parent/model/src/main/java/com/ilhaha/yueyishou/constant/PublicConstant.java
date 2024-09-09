@@ -12,5 +12,5 @@ public class PublicConstant {
     /**
      * 腾讯云访问图片30分钟过期
      */
-    public static final Integer COS_IMAGE_VALID_TIME = 30;
+    public static final Integer COS_IMAGE_VALID_TIME = 60;
 }

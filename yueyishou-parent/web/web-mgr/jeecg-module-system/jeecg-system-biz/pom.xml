@@ -12,6 +12,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.ilhaha.yueyishou</groupId>
+			<artifactId>service-util</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ilhaha.yueyishou</groupId>
+			<artifactId>service-tencentcloud-client</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-system-local-api</artifactId>
 		</dependency>

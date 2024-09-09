@@ -34,7 +34,7 @@
     <header-notice class="action"/>
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
-        <a-avatar class="avatar" size="small" :src="getAvatar()"/>
+        <a-avatar class="avatar" size="small" :src="userAvatar"/>
         <span v-if="isDesktop()">欢迎您，{{ nickname() }}</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
@@ -107,6 +107,7 @@
     mixins: [mixinDevice],
     data(){
       return{
+        userAvatar:'',
         // update-begin author:sunjianlei date:20200219 for: 头部菜单搜索规范命名 --------------
         searchMenuOptions:[],
         searchMenuComp: 'span',
@@ -129,6 +130,7 @@
     },
     /* update_begin author:zhaoxin date:20191129 for: 做头部菜单栏导航*/
     created() {
+      this.getAvatar();
       let lists = []
       this.searchMenus(lists,this.permissionMenuList)
       this.searchMenuOptions=[...lists]
@@ -173,7 +175,9 @@
       ...mapActions(["Logout"]),
       ...mapGetters(["nickname", "avatar","userInfo"]),
       getAvatar(){
-        return getFileAccessHttpUrl(this.avatar())
+         getAction("/cos/image/url",{path:this.avatar()}).then (res => {
+          this.userAvatar = res.result
+        })
       },
       handleLogout() {
         const that = this

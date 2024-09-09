@@ -28,7 +28,15 @@ public class CosController {
      */
     @PostMapping("/upload")
     public Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file, @RequestParam("path") String path){
-        System.out.println(file.getOriginalFilename());
         return Result.OK(cosService.upload(file,path));
+    }
+
+    /**
+     * 获取腾讯云图片临时访问路径
+     * @return
+     */
+    @GetMapping("/image/url")
+    public Result<String> getImageUrl(@RequestParam("path") String path){
+        return Result.OK(cosService.getImageUrl(path));
     }
 }

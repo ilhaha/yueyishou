@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -38,11 +39,13 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -82,6 +85,9 @@ public class SysUserController {
 
     @Autowired
     private ISysDepartRoleService departRoleService;
+
+    @Resource
+    private CosFeignClient cosFeignClient;
 
 	@Autowired
 	private RedisUtil redisUtil;
@@ -142,7 +148,12 @@ public class SysUserController {
         queryWrapper.ne("username","_reserve_user_external");
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
 		IPage<SysUser> pageList = sysUserService.page(page, queryWrapper);
-
+        for (SysUser item : pageList.getRecords()) {
+            if (!ObjectUtils.isEmpty(item)) {
+                com.ilhaha.yueyishou.result.Result<String> cosResult = cosFeignClient.getImageUrl(item.getAvatar());
+                item.setAvatar(cosResult.getData());
+            }
+        }
         //批量查询用户的所属部门
         //step.1 先拿到全部的 useids
         //step.2 通过 useids，一次性查询用户的所属部门名字

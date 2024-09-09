@@ -91,7 +91,7 @@ public class CosServiceImpl implements CosService {
         if(!StringUtils.hasText(path)) return "";
         GeneratePresignedUrlRequest request =
                 new GeneratePresignedUrlRequest(tencentCloudProperties.getBucketPrivate(), path, HttpMethodName.GET);
-        //设置临时URL有效期为30分钟
+        //设置临时URL有效期为一个小时
         Date expiration = new DateTime().plusMinutes(PublicConstant.COS_IMAGE_VALID_TIME).toDate();
         request.setExpiration(expiration);
         URL url = cosClient.generatePresignedUrl(request);

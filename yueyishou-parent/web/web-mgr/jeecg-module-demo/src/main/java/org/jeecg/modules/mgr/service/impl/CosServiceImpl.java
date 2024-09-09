@@ -29,4 +29,13 @@ public class CosServiceImpl implements CosService {
     public CosUploadVo upload(MultipartFile file, String path) {
         return cosFeignClient.upload(file,path).getData();
     }
+
+    /**
+     * 获取腾讯云图片临时访问路径
+     * @return
+     */
+    @Override
+    public String getImageUrl(String path) {
+        return cosFeignClient.getImageUrl(path).getData();
+    }
 }
