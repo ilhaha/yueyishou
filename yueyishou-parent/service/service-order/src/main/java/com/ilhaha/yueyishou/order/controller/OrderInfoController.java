@@ -1,15 +1,13 @@
 package com.ilhaha.yueyishou.order.controller;
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.execption.YueYiShouException;
-import com.ilhaha.yueyishou.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
-import com.ilhaha.yueyishou.result.Result;
-import com.ilhaha.yueyishou.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,23 +21,19 @@ public class OrderInfoController {
 	private IOrderInfoService orderInfoService;
 	
 	/**
-	 * 分页列表查询
+	 * 订单分页列表查询
 	 *
-	 * @param orderInfo
+	 * @param orderMgrQueryForm
 	 * @param pageNo
 	 * @param pageSize
-	 * @param req
 	 * @return
 	 */
-	@GetMapping(value = "/list")
-	public Result<IPage<OrderInfo>> queryPageList(OrderInfo orderInfo,
-												  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-												  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-												  HttpServletRequest req) {
-		LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-		Page<OrderInfo> page = new Page<OrderInfo>(pageNo, pageSize);
-		IPage<OrderInfo> pageList = orderInfoService.page(page, orderInfoLambdaQueryWrapper);
-		return Result.ok(pageList);
+	@PostMapping(value = "/list")
+	public Result<Page<OrderMgrQueryVo>> queryPageList(@RequestBody OrderMgrQueryForm orderMgrQueryForm,
+													   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+													   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+		Page<OrderMgrQueryVo> page = new Page<>(pageNo, pageSize);
+		return Result.ok(orderInfoService.queryPageList(orderMgrQueryForm,page));
 	}
 	
 	/**
@@ -91,7 +85,7 @@ public class OrderInfoController {
 	}
 	
 	/**
-	 * 通过id查询
+	 * 通过id查询订单信息
 	 *
 	 * @param id
 	 * @return

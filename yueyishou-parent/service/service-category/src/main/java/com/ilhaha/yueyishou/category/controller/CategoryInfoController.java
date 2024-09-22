@@ -2,12 +2,13 @@ package com.ilhaha.yueyishou.category.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ilhaha.yueyishou.category.service.ICategoryInfoService;
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
-import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
-import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.common.result.Result;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,16 @@ public class CategoryInfoController {
 	@Resource
 	private ICategoryInfoService categoryInfoService;
 
+
+	/**
+	 * 获取已启用的废品品类树
+	 * @return
+	 */
+	@GetMapping("/tree")
+	public Result<List<CategoryInfo>> getCategoryTree(){
+		return Result.ok(categoryInfoService.getCategoryTree());
+	}
+
 	/**
 	 * 切换废品品类状态
 	 * @return
@@ -31,7 +42,7 @@ public class CategoryInfoController {
 	}
 
 	/**
-	 * 获取所有的父废品品类
+	 * 获取所有已启用的父废品品类
 	 * @return
 	 */
 	@GetMapping("/parent/list")
@@ -56,9 +67,14 @@ public class CategoryInfoController {
 	 * @param categoryInfo
 	 * @return
 	 */
-	@CacheEvict(value = "category",
-			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
-			condition="#result.data")
+	@Caching(evict = {
+			@CacheEvict(value = "category",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data"),
+			@CacheEvict(value = "userCategory",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data")
+	})
 	@PostMapping(value = "/add")
 	public Result<Boolean> add(@RequestBody CategoryInfo categoryInfo) {
 		CategoryInfo categoryInfoDB = categoryInfoService.getCategoryByName(categoryInfo.getCategoryName());
@@ -75,9 +91,14 @@ public class CategoryInfoController {
 	 * @param categoryInfo
 	 * @return
 	 */
-	@CacheEvict(value = "category",
-			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
-			condition="#result.data")
+	@Caching(evict = {
+			@CacheEvict(value = "category",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data"),
+			@CacheEvict(value = "userCategory",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data")
+	})
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<Boolean> edit(@RequestBody CategoryInfo categoryInfo) {
 		CategoryInfo categoryInfoDB = categoryInfoService.getCategoryByName(categoryInfo.getCategoryName());
@@ -96,9 +117,14 @@ public class CategoryInfoController {
 	 * @param id
 	 * @return
 	 */
-	@CacheEvict(value = "category",
-			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
-			condition="#result.data")
+	@Caching(evict = {
+			@CacheEvict(value = "category",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data"),
+			@CacheEvict(value = "userCategory",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data")
+	})
 	@DeleteMapping(value = "/delete")
 	public Result<Boolean> delete(@RequestParam(name="id",required=true) String id) {
 		// 判断要删除的品类是否有子品类
@@ -118,9 +144,14 @@ public class CategoryInfoController {
 	 * @param ids
 	 * @return
 	 */
-	@CacheEvict(value = "category",
-			key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE",
-			condition="#result.data")
+	@Caching(evict = {
+			@CacheEvict(value = "category",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data"),
+			@CacheEvict(value = "userCategory",
+					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					condition="#result.data")
+	})
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<Boolean> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		List<String> idList = Arrays.asList(ids.split(","));

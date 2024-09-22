@@ -1,10 +1,9 @@
 package com.ilhaha.yueyishou.recycler.service.impl;
 
-import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.service.RecyclerService;
-import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
-import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

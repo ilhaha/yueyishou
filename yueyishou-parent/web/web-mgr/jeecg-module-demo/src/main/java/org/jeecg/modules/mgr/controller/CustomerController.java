@@ -1,8 +1,8 @@
 package org.jeecg.modules.mgr.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
-import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.CustomerService;
 import org.springframework.web.bind.annotation.*;

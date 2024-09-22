@@ -19,16 +19,6 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="客户地点经度" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="customerPointLongitude">
-              <a-input-number v-model="model.customerPointLongitude" placeholder="请输入客户地点经度" style="width: 100%" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="客户地点伟度" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="customerPointLatitude">
-              <a-input-number v-model="model.customerPointLatitude" placeholder="请输入客户地点伟度" style="width: 100%" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
             <a-form-model-item label="订单回收分类ID" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="categoryId">
               <a-input-number v-model="model.categoryId" placeholder="请输入订单回收分类ID" style="width: 100%" />
             </a-form-model-item>
@@ -49,8 +39,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="订单状态：1等待接单，2回收员已接单，3回收员已到达，4顾客确定订单，5回收员未付款，6回收员已付款，8订单已完成，9已取消" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="status">
-              <a-input-number v-model="model.status" placeholder="请输入订单状态：1等待接单，2回收员已接单，3回收员已到达，4顾客确定订单，5回收员未付款，6回收员已付款，8订单已完成，9已取消" style="width: 100%" />
+            <a-form-model-item label="订单状态：1等待接单，2回收员已接单，3回收员前往回收点，4回收员已到达，5顾客确定订单，6回收员未付款，7回收员已付款订单完成，8待评价，9订单已取消" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="status">
+              <a-input-number v-model="model.status" placeholder="请输入订单状态：1等待接单，2回收员已接单，3回收员前往回收点，4回收员已到达，5顾客确定订单，6回收员未付款，7回收员已付款订单完成，8待评价，9订单已取消" style="width: 100%" />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -64,8 +54,23 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="isDeleted" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="isDeleted">
-              <a-input-number v-model="model.isDeleted" placeholder="请输入isDeleted" style="width: 100%" />
+            <a-form-model-item label="回收员预支付订单金额" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="expectRecyclerAmount">
+              <a-input-number v-model="model.expectRecyclerAmount" placeholder="请输入回收员预支付订单金额" style="width: 100%" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="回收员预支付平台订单金额" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="expectRecyclerPlatformAmount">
+              <a-input-number v-model="model.expectRecyclerPlatformAmount" placeholder="请输入回收员预支付平台订单金额" style="width: 100%" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="顾客预支付平台订单金额" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="expectCustomerPlatformAmount">
+              <a-input-number v-model="model.expectCustomerPlatformAmount" placeholder="请输入顾客预支付平台订单金额" style="width: 100%" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="创建时间" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="createTime">
+              <j-date placeholder="请选择创建时间" v-model="model.createTime"  style="width: 100%" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -114,20 +119,14 @@
            customerLocation: [
               { required: true, message: '请输入客户地点!'},
            ],
-           customerPointLongitude: [
-              { required: true, message: '请输入客户地点经度!'},
-           ],
-           customerPointLatitude: [
-              { required: true, message: '请输入客户地点伟度!'},
-           ],
            categoryId: [
               { required: true, message: '请输入订单回收分类ID!'},
            ],
            status: [
-              { required: true, message: '请输入订单状态：1等待接单，2回收员已接单，3回收员已到达，4顾客确定订单，5回收员未付款，6回收员已付款，8订单已完成，9已取消!'},
+              { required: true, message: '请输入订单状态：1等待接单，2回收员已接单，3回收员前往回收点，4回收员已到达，5顾客确定订单，6回收员未付款，7回收员已付款订单完成，8待评价，9订单已取消!'},
            ],
-           isDeleted: [
-              { required: true, message: '请输入isDeleted!'},
+           createTime: [
+              { required: true, message: '请输入创建时间!'},
            ],
         },
         url: {

@@ -1,9 +1,8 @@
 package com.ilhaha.yueyishou.coupon.client;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.coupon.CouponInfo;
-import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
+import com.ilhaha.yueyishou.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

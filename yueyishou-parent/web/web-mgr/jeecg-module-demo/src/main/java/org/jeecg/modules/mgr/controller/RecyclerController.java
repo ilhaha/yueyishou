@@ -1,15 +1,14 @@
 package org.jeecg.modules.mgr.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.recycler.RecyclerInfo;
-import com.ilhaha.yueyishou.form.recycler.RecyclerAuthForm;
-import com.ilhaha.yueyishou.form.recycler.UpdateRecyclerStatusForm;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
+import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.RecyclerService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 
 /**
  * @Author ilhaha

@@ -1,7 +1,7 @@
 package org.jeecg.modules.mgr.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.coupon.CouponInfo;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
 
 /**
  * @Author ilhaha

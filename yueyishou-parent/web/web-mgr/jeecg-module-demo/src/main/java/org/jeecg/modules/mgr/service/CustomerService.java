@@ -1,8 +1,8 @@
 package org.jeecg.modules.mgr.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
-import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 
 /**
  * @Author ilhaha

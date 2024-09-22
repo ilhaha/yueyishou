@@ -1,7 +1,7 @@
 package org.jeecg.modules.mgr.service;
 
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
-import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
 
 
 import java.util.List;

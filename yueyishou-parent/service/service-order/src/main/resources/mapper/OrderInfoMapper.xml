@@ -2,4 +2,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ilhaha.yueyishou.order.mapper.OrderInfoMapper">
 
+    <!-- 订单分页查询 -->
+    <select id="queryPageList" resultType="com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo">
+        SELECT `order`.customer_id,
+        `order`.order_no,
+        `order`.customer_location,
+        `order`.category_id,
+        `order`.recycler_id,
+        `order`.accept_time,
+        `order`.arrive_time,
+        `order`.status,
+        `order`.cancel_message,
+        `order`.remark,
+        `order`.expect_recycler_amount,
+        `order`.expect_customer_platform_amount,
+        `order`.expect_recycler_platform_amount,
+        `order`.order_contact_person,
+        `order`.order_contact_phone,
+        `order`.appointment_start_time,
+        `order`.appointment_end_time,
+        `order`.actual_photos,
+        category.category_name AS categoryName,
+        recycler.name AS recyclerName
+        FROM yueyishou_order.order_info AS `order`
+        LEFT JOIN yueyishou_category.category_info AS category
+        ON `order`.category_id = category.id
+        LEFT JOIN yueyishou_customer.customer_info AS customer
+        ON `order`.customer_id = customer.id
+        LEFT JOIN yueyishou_recycler.recycler_info AS recycler
+        ON `order`.recycler_id = recycler.id
+        <if test="orderMgrQueryForm.status != null and orderMgrQueryForm.status != '' and orderMgrQueryForm.status >= 5 and orderMgrQueryForm.status != 9">
+            LEFT JOIN yueyishou_order.order_bill AS bill
+            ON `order`.id = bill.order_id
+        </if>
+        <where>
+            <if test="orderMgrQueryForm.status != null and orderMgrQueryForm.status != ''">
+                AND `order`.status = #{orderMgrQueryForm.status}
+            </if>
+            <if test="orderMgrQueryForm.appointmentEndTime != null and orderMgrQueryForm.appointmentEndTime != ''">
+                AND `order`.appointment_end_time LIKE #{orderMgrQueryForm.appointmentEndTime}"%"
+            </if>
+            <if test="orderMgrQueryForm.orderContactPerson != null and orderMgrQueryForm.orderContactPerson != ''">
+                AND `order`.order_contact_person LIKE "%"#{orderMgrQueryForm.orderContactPerson}"%"
+            </if>
+            <if test="orderMgrQueryForm.orderNo != null and orderMgrQueryForm.orderNo != ''">
+                AND `order`.order_no LIKE "%"#{orderMgrQueryForm.orderNo}"%"
+            </if>
+            <if test="orderMgrQueryForm.recyclerName != null and orderMgrQueryForm.recyclerName != ''">
+                AND recycler.name LIKE "%"#{orderMgrQueryForm.recyclerName}"%"
+            </if>
+        </where>
+    </select>
+
 </mapper>

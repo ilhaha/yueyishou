@@ -1,9 +1,10 @@
 package com.ilhaha.yueyishou.customer.client;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
-import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
-import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-customer")
 public interface CustomerInfoFeignClient {
+
+    /**
+     * 获取顾客登录之后的顾客信息
+     * @param customerId
+     * @return
+     */
+    @GetMapping("/customerInfo/login/info/{customerId}")
+    Result<CustomerLoginInfoVo> getLoginInfo(@PathVariable("customerId") Long customerId);
 
     /**
      * 修改客户状态

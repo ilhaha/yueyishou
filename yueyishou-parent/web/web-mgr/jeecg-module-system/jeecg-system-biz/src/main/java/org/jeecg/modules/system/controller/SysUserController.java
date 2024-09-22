@@ -14,13 +14,10 @@ import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
@@ -150,7 +147,7 @@ public class SysUserController {
 		IPage<SysUser> pageList = sysUserService.page(page, queryWrapper);
         for (SysUser item : pageList.getRecords()) {
             if (!ObjectUtils.isEmpty(item)) {
-                com.ilhaha.yueyishou.result.Result<String> cosResult = cosFeignClient.getImageUrl(item.getAvatar());
+                com.ilhaha.yueyishou.common.result.Result<String> cosResult = cosFeignClient.getImageUrl(item.getAvatar());
                 item.setAvatar(cosResult.getData());
             }
         }

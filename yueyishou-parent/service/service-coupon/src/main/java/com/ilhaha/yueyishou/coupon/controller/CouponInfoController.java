@@ -2,16 +2,12 @@ package com.ilhaha.yueyishou.coupon.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.coupon.service.ICouponInfoService;
-import com.ilhaha.yueyishou.entity.coupon.CouponInfo;
-import com.ilhaha.yueyishou.execption.YueYiShouException;
-import com.ilhaha.yueyishou.result.Result;
-import com.ilhaha.yueyishou.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
+import com.ilhaha.yueyishou.common.result.Result;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 

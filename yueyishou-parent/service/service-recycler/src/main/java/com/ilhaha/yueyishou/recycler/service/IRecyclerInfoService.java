@@ -2,11 +2,11 @@ package com.ilhaha.yueyishou.recycler.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ilhaha.yueyishou.entity.recycler.RecyclerInfo;
-import com.ilhaha.yueyishou.form.recycler.RecyclerAuthForm;
-import com.ilhaha.yueyishou.form.recycler.UpdateRecyclerStatusForm;
-import com.ilhaha.yueyishou.result.Result;
-import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
+import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
+import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface IRecyclerInfoService extends IService<RecyclerInfo> {

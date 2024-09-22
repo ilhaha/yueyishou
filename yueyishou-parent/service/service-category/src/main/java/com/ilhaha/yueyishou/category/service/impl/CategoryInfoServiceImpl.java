@@ -3,17 +3,16 @@ package com.ilhaha.yueyishou.category.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ilhaha.yueyishou.constant.CategoryConstant;
-import com.ilhaha.yueyishou.constant.RedisConstant;
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.constant.CategoryConstant;
+import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.category.mapper.CategoryInfoMapper;
 import com.ilhaha.yueyishou.category.service.ICategoryInfoService;
-import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import jakarta.annotation.Resource;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -31,7 +30,7 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
      *
      * @return
      */
-    @Cacheable(value = "category", key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE")
+    @Cacheable(value = "category", key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE")
     @Override
     public List<CategoryInfo> queryPageList() {
         // 查处所有的废品品类父级
@@ -56,7 +55,7 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
     }
 
     /**
-     * 获取所有的父废品品类
+     * 获取所有已启用的父废品品类
      *
      * @return
      */
@@ -65,7 +64,11 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
         LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         categoryInfoLambdaQueryWrapper.eq(CategoryInfo::getParentId, CategoryConstant.FIRST_LEVEL_CATEGORY_ID)
                 .eq(CategoryInfo::getStatus, CategoryConstant.ENABLE_STATUS);
-        return this.list(categoryInfoLambdaQueryWrapper);
+        List<CategoryInfo> list = this.list(categoryInfoLambdaQueryWrapper);
+        return list.stream().map(item -> {
+            item.setIcon(ObjectUtils.isEmpty(item.getIcon()) ? item.getIcon() : cosFeignClient.getImageUrl(item.getIcon()).getData());
+            return item;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -87,8 +90,12 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
      * @param updateCategoryStatusForm
      * @return
      */
-    @CacheEvict(value = "category",
-            key = "T(com.ilhaha.yueyishou.constant.RedisConstant).CATEGORY_TREE")
+    @Caching(evict = {
+            @CacheEvict(value = "category",
+                    key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE"),
+            @CacheEvict(value = "userCategory",
+                    key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE")
+    })
     @Override
     public String switchStatus(UpdateCategoryStatusForm updateCategoryStatusForm) {
         LambdaUpdateWrapper<CategoryInfo> categoryInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
@@ -111,5 +118,35 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
             categoryInfo.setIcon(ObjectUtils.isEmpty(categoryInfo.getIcon()) ? categoryInfo.getIcon() : cosFeignClient.getImageUrl(categoryInfo.getIcon()).getData());
         }
         return categoryInfo;
+    }
+
+    /**
+     * 获取已启用的废品品类树
+     * @return
+     */
+    @Cacheable(value = "userCategory", key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE")
+    @Override
+    public List<CategoryInfo> getCategoryTree() {
+        // 查处所有的废品品类父级
+        LambdaQueryWrapper<CategoryInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CategoryInfo::getParentId, CategoryConstant.FIRST_LEVEL_CATEGORY_ID)
+                .eq(CategoryInfo::getStatus,CategoryConstant.ENABLE_STATUS);
+        List<CategoryInfo> categoryInfos = this.list(wrapper);
+        // 根据父级查询所有的子品类
+        List<CategoryInfo> result = categoryInfos.stream().map(item -> {
+            item.setIcon(ObjectUtils.isEmpty(item.getIcon()) ? item.getIcon() : cosFeignClient.getImageUrl(item.getIcon()).getData());
+            LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            categoryInfoLambdaQueryWrapper.eq(CategoryInfo::getParentId, item.getId())
+                    .eq(CategoryInfo::getStatus,CategoryConstant.ENABLE_STATUS);
+            List<CategoryInfo> child = this.list(categoryInfoLambdaQueryWrapper);
+            for (CategoryInfo categoryInfo : child) {
+                categoryInfo.setIcon(ObjectUtils.isEmpty(categoryInfo.getIcon()) ? categoryInfo.getIcon() : cosFeignClient.getImageUrl(categoryInfo.getIcon()).getData());
+            }
+            item.setChildren(child);
+            return item;
+        }).collect(Collectors.toList());
+
+
+        return result;
     }
 }

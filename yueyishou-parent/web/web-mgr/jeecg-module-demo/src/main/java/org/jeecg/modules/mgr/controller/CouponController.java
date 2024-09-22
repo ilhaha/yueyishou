@@ -1,7 +1,7 @@
 package org.jeecg.modules.mgr.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.coupon.CouponInfo;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
 
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.CouponService;

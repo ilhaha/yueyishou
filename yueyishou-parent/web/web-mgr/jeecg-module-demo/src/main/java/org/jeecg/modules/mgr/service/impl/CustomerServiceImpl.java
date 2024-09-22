@@ -2,8 +2,8 @@ package org.jeecg.modules.mgr.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.customer.client.CustomerInfoFeignClient;
-import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
-import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import org.jeecg.modules.mgr.service.CustomerService;
 import org.springframework.stereotype.Service;
 

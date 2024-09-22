@@ -1,12 +1,11 @@
 package com.ilhaha.yueyishou.tencentcloud.service.impl;
 
-import com.ilhaha.yueyishou.constant.PublicConstant;
-import com.ilhaha.yueyishou.execption.YueYiShouException;
-import com.ilhaha.yueyishou.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.tencentcloud.config.TencentCloudProperties;
 import com.ilhaha.yueyishou.tencentcloud.service.CiService;
 import com.ilhaha.yueyishou.tencentcloud.service.CosService;
-import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.http.HttpMethodName;
 import com.qcloud.cos.model.GeneratePresignedUrlRequest;
@@ -14,14 +13,12 @@ import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.StorageClass;
 import jakarta.annotation.Resource;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -92,8 +89,8 @@ public class CosServiceImpl implements CosService {
         GeneratePresignedUrlRequest request =
                 new GeneratePresignedUrlRequest(tencentCloudProperties.getBucketPrivate(), path, HttpMethodName.GET);
         //设置临时URL有效期为一个小时
-        Date expiration = new DateTime().plusMinutes(PublicConstant.COS_IMAGE_VALID_TIME).toDate();
-        request.setExpiration(expiration);
+//        Date expiration = new DateTime().plusMinutes(PublicConstant.COS_IMAGE_VALID_TIME).toDate();
+//        request.setExpiration(expiration);
         URL url = cosClient.generatePresignedUrl(request);
         return url.toString();
     }

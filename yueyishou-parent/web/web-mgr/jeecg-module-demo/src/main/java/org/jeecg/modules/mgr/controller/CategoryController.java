@@ -1,7 +1,7 @@
 package org.jeecg.modules.mgr.controller;
 
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
-import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class CategoryController {
     }
 
     /**
-     * 获取所有的父废品品类
+     * 获取所有已启用的父废品品类
      * @return
      */
     @GetMapping("/parent/list")

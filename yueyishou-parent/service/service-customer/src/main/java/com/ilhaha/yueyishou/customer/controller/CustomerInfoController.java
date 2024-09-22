@@ -1,19 +1,16 @@
 package com.ilhaha.yueyishou.customer.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.customer.service.ICustomerInfoService;
-import com.ilhaha.yueyishou.execption.YueYiShouException;
-import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
-import com.ilhaha.yueyishou.result.Result;
-import com.ilhaha.yueyishou.result.ResultCodeEnum;
-import jakarta.servlet.http.HttpServletRequest;
+import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -24,6 +21,16 @@ import java.util.Arrays;
 public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
+
+	/**
+	 * 获取顾客登录之后的顾客信息
+	 * @param customerId
+	 * @return
+	 */
+	@GetMapping("/login/info/{customerId}")
+	public Result<CustomerLoginInfoVo> getLoginInfo(@PathVariable("customerId") Long customerId){
+		return Result.ok(customerInfoService.getLoginInfo(customerId));
+	}
 
 	/**
 	 * 修改客户状态
@@ -58,11 +65,10 @@ public class CustomerInfoController {
 	public Result<Page<CustomerInfo>> queryPageList(@RequestBody CustomerInfo customerInfo,
 													 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-		LambdaQueryWrapper<CustomerInfo> customerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-		customerInfoLambdaQueryWrapper.like(StringUtils.hasText(customerInfo.getNickname()),
-				CustomerInfo::getNickname,customerInfo.getNickname());
+
+
 		Page<CustomerInfo> page = new Page<CustomerInfo>(pageNo, pageSize);
-		Page<CustomerInfo> pageList = customerInfoService.page(page, customerInfoLambdaQueryWrapper);
+		Page<CustomerInfo> pageList = customerInfoService.queryPageList(page,customerInfo);
 		return Result.ok(pageList);
 	}
 	

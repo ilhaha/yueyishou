@@ -1,6 +1,6 @@
 package org.jeecg.modules.mgr.controller;
 
-import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.CosService;
 import org.springframework.web.bind.annotation.*;

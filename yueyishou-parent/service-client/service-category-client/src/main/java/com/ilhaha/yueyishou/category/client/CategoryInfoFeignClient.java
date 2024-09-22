@@ -1,8 +1,8 @@
 package com.ilhaha.yueyishou.category.client;
 
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
-import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
-import com.ilhaha.yueyishou.result.Result;
+import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +17,13 @@ import java.util.List;
 public interface CategoryInfoFeignClient {
 
     /**
+     * 获取已启用的废品品类树
+     * @return
+     */
+    @GetMapping("/categoryInfo/tree")
+    Result<List<CategoryInfo>> getCategoryTree();
+
+    /**
      * 切换废品品类状态
      * @return
      */
@@ -24,7 +31,7 @@ public interface CategoryInfoFeignClient {
     Result<String> switchStatus(@RequestBody UpdateCategoryStatusForm updateCategoryStatusForm);
 
     /**
-     * 获取所有的父废品品类
+     * 获取所有已启动的父废品品类
      * @return
      */
     @GetMapping("/categoryInfo/parent/list")

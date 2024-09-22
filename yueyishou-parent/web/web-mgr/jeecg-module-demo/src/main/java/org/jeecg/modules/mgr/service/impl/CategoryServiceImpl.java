@@ -1,8 +1,8 @@
 package org.jeecg.modules.mgr.service.impl;
 
 import com.ilhaha.yueyishou.category.client.CategoryInfoFeignClient;
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
-import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.mgr.service.CategoryService;
 import org.springframework.stereotype.Service;

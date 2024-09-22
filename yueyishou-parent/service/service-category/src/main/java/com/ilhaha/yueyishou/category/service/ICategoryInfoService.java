@@ -1,8 +1,8 @@
 package com.ilhaha.yueyishou.category.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ilhaha.yueyishou.entity.category.CategoryInfo;
-import com.ilhaha.yueyishou.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface ICategoryInfoService extends IService<CategoryInfo> {
     List<CategoryInfo> queryPageList();
 
     /**
-     * 获取所有的父废品品类
+     * 获取所有已启用的父废品品类
      * @return
      */
     List<CategoryInfo> parentList();
@@ -40,4 +40,12 @@ public interface ICategoryInfoService extends IService<CategoryInfo> {
      * @return
      */
     CategoryInfo queryById(String id);
+
+    /**
+     * 获取已启用的废品品类树
+     * @return
+     */
+    List<CategoryInfo> getCategoryTree();
+
+
 }

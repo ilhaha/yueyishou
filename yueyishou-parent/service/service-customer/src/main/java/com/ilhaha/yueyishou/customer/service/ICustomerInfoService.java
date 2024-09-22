@@ -1,9 +1,10 @@
 package com.ilhaha.yueyishou.customer.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ilhaha.yueyishou.entity.customer.CustomerInfo;
-import com.ilhaha.yueyishou.form.customer.UpdateCustomerStatusForm;
-import com.mysql.cj.log.Log;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 
 public interface ICustomerInfoService extends IService<CustomerInfo> {
 
@@ -21,4 +22,18 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     String switchStatus(UpdateCustomerStatusForm updateCustomerStatusForm);
 
+    /**
+     * 分页查询
+     * @param page
+     * @param customerInfo
+     * @return
+     */
+    Page<CustomerInfo> queryPageList(Page<CustomerInfo> page, CustomerInfo customerInfo);
+
+    /**
+     * 获取顾客登录之后的顾客信息
+     * @param customerId
+     * @return
+     */
+    CustomerLoginInfoVo getLoginInfo(Long customerId);
 }

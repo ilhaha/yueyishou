@@ -1,7 +1,7 @@
 package com.ilhaha.yueyishou.tencentcloud.client;
 
-import com.ilhaha.yueyishou.result.Result;
-import com.ilhaha.yueyishou.vo.recycler.CosUploadVo;
+import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

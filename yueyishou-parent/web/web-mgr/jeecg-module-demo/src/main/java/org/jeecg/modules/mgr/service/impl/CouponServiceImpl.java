@@ -1,11 +1,8 @@
 package org.jeecg.modules.mgr.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.coupon.client.CouponInfoFeignClient;
-import com.ilhaha.yueyishou.entity.coupon.CouponInfo;
-import com.ilhaha.yueyishou.result.ResultCodeEnum;
-import org.jeecg.common.exception.JeecgBootException;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
 import org.jeecg.modules.mgr.service.CouponService;
 import org.springframework.stereotype.Service;
 
