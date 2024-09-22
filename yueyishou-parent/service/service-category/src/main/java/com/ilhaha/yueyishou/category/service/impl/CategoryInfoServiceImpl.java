@@ -8,8 +8,10 @@ import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.category.mapper.CategoryInfoMapper;
 import com.ilhaha.yueyishou.category.service.ICategoryInfoService;
 import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.model.vo.category.SubCategoryVo;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import jakarta.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -148,5 +150,26 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
 
 
         return result;
+    }
+
+
+
+    /**
+     * 获取父品类的所有子品类
+     * @param parentId
+     * @return
+     */
+    @Override
+    public List<SubCategoryVo> getSubCategories(Long parentId) {
+        LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        categoryInfoLambdaQueryWrapper.eq(CategoryInfo::getParentId,parentId)
+                .eq(CategoryInfo::getStatus,CategoryConstant.ENABLE_STATUS);
+        List<CategoryInfo> list = this.list(categoryInfoLambdaQueryWrapper);
+        return list.stream().map(item -> {
+            SubCategoryVo subCategoryVo = new SubCategoryVo();
+            BeanUtils.copyProperties(item,subCategoryVo);
+            subCategoryVo.setIcon(ObjectUtils.isEmpty(subCategoryVo.getIcon()) ? subCategoryVo.getIcon() : cosFeignClient.getImageUrl(subCategoryVo.getIcon()).getData());
+            return subCategoryVo;
+        }).collect(Collectors.toList());
     }
 }

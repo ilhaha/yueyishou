@@ -1,0 +1,86 @@
+/* 设置整个页面背景为白色 */
+page {
+  background-color: #ffffff;
+  /* 设置页面全局背景颜色 */
+}
+
+/* 主容器样式 */
+.container {
+  padding: 0rpx;
+  /* 移除内边距 */
+  background-color: #ffffff;
+  /* 背景颜色为白色 */
+  min-height: 100vh;
+  /* 保证容器高度至少为视口高度 */
+  margin-top: 40rpx;
+}
+
+
+/* 分类网格布局 */
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  /* 从左到右排列 */
+}
+
+/* 分类项样式 */
+.category-item {
+  width: 33.3%;
+  /* 每个分类项占 30% 的宽度 */
+  margin-bottom: 50rpx;
+  /* 设置底部间距 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // margin-right: 3.333%;
+  /* 设置右侧间距，保证每行有3个元素 */
+}
+
+.category-item:nth-child(3n) {
+  margin-right: 0;
+  /* 每行第三个分类项的右边距清零，避免换行时多余间距 */
+}
+
+/* 内部容器 */
+.item-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border-radius: 10rpx;
+  /* 圆角 */
+  padding: 20rpx 40rpx;
+  /* 内部间距 */
+  border: 1rpx solid #00c853;
+  /* 边框颜色 */
+  box-sizing: border-box;
+  /* 包含内边距和边框 */
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  /* 添加阴影 */
+  transition: all 0.3s;
+  /* 动画过渡效果 */
+}
+
+/* 图片样式 */
+.category-icon {
+  width: 120rpx;
+  /* 图片宽度 */
+  height: 120rpx;
+  /* 图片高度 */
+  // margin-bottom: 10rpx;
+  /* 图片和文字之间的间距 */
+}
+
+/* 分类文本样式 */
+.category-text {
+  font-size: 28rpx;
+  /* 字体大小 */
+  color: #333333;
+  /* 文字颜色 */
+  text-align: center;
+  /* 文字居中 */
+  font-weight: 500;
+  /* 半粗体 */
+}

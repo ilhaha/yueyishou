@@ -1,0 +1,97 @@
+/* 整体容器样式 */
+.container {
+  position: relative;
+  top: 15rpx;
+}
+
+/* 回收标题栏样式 */
+.section-header {
+  background-color: #00C853;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  height: 150rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 30rpx;
+  color: #ffffff;
+  margin-top: 20rpx;
+}
+
+/* 详情按钮样式 */
+.details-button {
+  background-color: #ffffff;
+  border-radius: 30rpx;
+  padding: 6rpx 20rpx;
+  margin-top: 20rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details-text {
+  font-size: 26rpx;
+  color: #00C853;
+  font-weight: bold;
+}
+
+/* 悬浮卡片样式 */
+.card-container {
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 120rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  z-index: 1;
+}
+
+/* 卡片项目样式 */
+.card-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  // padding: 20rpx;
+  box-sizing: border-box;
+}
+
+/* 图片样式 */
+.card-image {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  margin-left: 30rpx;
+  object-fit: cover;
+}
+
+/* 文字容器样式 */
+.card-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.card-title {
+  font-size: 30rpx;
+  color: #333333;
+  margin-bottom: 4rpx;
+}
+
+.card-subtitle {
+  font-size: 24rpx;
+  color: #888888;
+  text-align: left;
+}

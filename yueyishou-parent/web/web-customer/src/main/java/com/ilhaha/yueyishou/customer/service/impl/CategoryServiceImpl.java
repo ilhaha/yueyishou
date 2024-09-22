@@ -4,6 +4,7 @@ import com.ilhaha.yueyishou.category.client.CategoryInfoFeignClient;
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CategoryService;
+import com.ilhaha.yueyishou.model.vo.category.SubCategoryVo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Result<List<CategoryInfo>> getCategoryTree() {
         return categoryInfoFeignClient.getCategoryTree();
+    }
+
+    /**
+     * 获取父品类的所有子品类
+     * @param parentId
+     * @return
+     */
+    @Override
+    public Result<List<SubCategoryVo>> getSubCategories(Long parentId) {
+        return categoryInfoFeignClient.getSubCategories(parentId);
     }
 }

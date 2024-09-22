@@ -1,0 +1,32 @@
+<view>
+  <view class="category-container">
+    <!-- 左侧的滚动视图区域 -->
+    <scroll-view class="category-left-view" scroll-y>
+      <!-- 一级分类 -->
+      <view class="left-view-item {{ activeIndex == index ? 'active' : '' }}" wx:for="{{ categoryList }}" wx:key="id" bind:tap="updateActive" data-index="{{index}}">
+        {{ item.categoryName }}
+      </view>
+    </scroll-view>
+
+    <!-- 右侧的滚动视图区域 -->
+    <scroll-view class="category-right-view" scroll-y>
+      <!-- 二级分类 -->
+      <view class="test">
+        <view wx:for="{{ categoryList[activeIndex].children }}" wx:key="index" class="right-view-item">
+          <navigator class="navigator" hover-class="none">
+            <image class="item-image" src="{{ item.icon }}"></image>
+            <view class="info">
+              <!-- 分类名称 -->
+              <text class="goods_item_name">{{ item.categoryName }}</text>
+              <!-- 单独一行的价格信息 -->
+              <view class="goods_item_price">
+                <text>{{ item.unitPrice }}元</text>
+                <text class="goods_item_unit"> / {{ item.unit }}</text>
+              </view>
+            </view>
+          </navigator>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

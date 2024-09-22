@@ -1,0 +1,29 @@
+<view class="container">
+  <!-- 绿色背景卡片 -->
+  <view class="section-header">
+    <text class="section-title">预约上门回收服务</text>
+    <view class="details-button">
+      <text class="details-text" bind:tap="checkLoginAndNavigate" data-url="/pages/category/category">更多</text>
+      <van-icon name="arrow" size="0.5em" color="#00C853" />
+    </view>
+  </view>
+
+  <!-- 悬浮的白色卡片 -->
+  <view class="card-container">
+    <!-- 指南 -->
+    <view class="card-item" bind:tap="navigateToPage" data-url="/pages/quote/quote">
+      <view class="card-text">
+        <text class="card-title">报价指南</text>
+        <text class="card-subtitle">今日报价详情</text>
+      </view>
+      <image class="card-image" src="../../../assets/images/index/bjzn.png" mode="aspectFit"></image>
+    </view>
+    <view class="card-item" bind:tap="navigateToPage" data-url="/pages/category-knowledge/category-knowledge">
+      <view class="card-text">
+        <text class="card-title">分类指南</text>
+        <text class="card-subtitle">废品分类知识</text>
+      </view>
+      <image class="card-image" src="../../../assets/images/index/flzn.png" mode="aspectFit"></image>
+    </view>
+  </view>
+</view>

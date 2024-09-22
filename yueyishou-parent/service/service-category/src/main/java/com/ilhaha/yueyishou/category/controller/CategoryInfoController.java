@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.category.service.ICategoryInfoService;
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.category.SubCategoryVo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -21,6 +22,16 @@ import java.util.List;
 public class CategoryInfoController {
 	@Resource
 	private ICategoryInfoService categoryInfoService;
+
+	/**
+	 * 获取父品类的所有子品类
+	 * @param parentId
+	 * @return
+	 */
+	@GetMapping("/sub/{parentId}")
+	public Result<List<SubCategoryVo>> getSubCategories(@PathVariable("parentId") Long parentId){
+		return Result.ok(categoryInfoService.getSubCategories(parentId));
+	}
 
 
 	/**

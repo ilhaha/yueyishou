@@ -428,12 +428,14 @@ export default {
       })
     },
     clearData() {
-      this.model.categoryName = ''
-      this.model.parentId = 0
-      this.model.unitPrice = ''
-      this.model.unit = ''
-      this.model.categoryDescribe = ''
-      this.model.icon = ''
+      // this.model.categoryName = ''
+      // this.model.parentId = 0
+      // this.model.unitPrice = ''
+      // this.model.unit = ''
+      // this.model.categoryDescribe = ''
+      // this.model.icon = ''
+      this.imageUrl = ''
+      this.model = {}
     },
     updateClearData() {
       this.clearData()

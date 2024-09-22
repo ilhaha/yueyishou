@@ -1,0 +1,47 @@
+<view class="container">
+  <scroll-view class="category-scroll" scroll-y>
+    <!-- 分类卡片内容 -->
+    <view class="category-card" wx:for="{{categoryList}}" wx:key="index">
+      <image class="category-icon" src="{{item.icon}}" mode="aspectFit"></image>
+      <view class="category-info">
+        <text class="category-title">{{item.name}}</text>
+        <text class="category-desc">{{item.desc}}</text>
+
+        <!-- 展示详细内容的按钮 -->
+        <view class="show-details" bindtap="toggleDetails" data-index="{{index}}">
+          <text>{{item.showDetails ? '收起' : '查看更多'}}</text>
+        </view>
+
+        <!-- 展开详细内容 -->
+        <view wx:if="{{item.showDetails}}">
+          <!-- 示例列表 -->
+          <view class="examples">
+            <text class="examples-title">示例：</text>
+            <view wx:for="{{item.examples}}" wx:for-item="example" wx:key="name" class="example-item">
+              <image class="example-icon" src="{{example.icon}}" mode="aspectFit"></image>
+              <text class="example-name">{{example.name}}</text>
+            </view>
+          </view>
+          <!-- 处理方法 -->
+          <view class="handling-method">
+            <text class="handling-title">处理方法：</text>
+            <text class="handling-text">{{item.handling}}</text>
+          </view>
+          <!-- 注意事项 -->
+          <view class="precautions">
+            <text class="precautions-title">注意事项：</text>
+            <text class="precautions-text">{{item.precautions}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 废品回收总结区域 -->
+    <view class="summary">
+      <text class="summary-title">废品回收的重要性</text>
+      <text class="summary-content">
+        废品回收不仅有助于减少环境污染，还可以节约资源和能源。通过将可回收物、厨余垃圾、有害垃圾和其他垃圾进行分类投放，我们可以有效减少垃圾填埋场的负担，并推动资源的再生利用。让我们共同努力，积极参与垃圾分类，共建美好家园！
+      </text>
+    </view>
+  </scroll-view>
+</view>

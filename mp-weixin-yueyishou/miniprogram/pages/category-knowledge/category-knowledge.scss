@@ -1,0 +1,148 @@
+/* 主容器样式 */
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 滚动视图样式 */
+.category-scroll {
+  height: 100%;
+}
+
+/* 卡片样式 */
+.category-card {
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+  align-items: flex-start;
+}
+
+/* 图标样式 */
+.category-icon {
+  width: 100rpx;
+  height: 100rpx;
+  margin-right: 20rpx;
+}
+
+/* 分类信息样式 */
+.category-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+/* 分类名称样式 */
+.category-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10rpx;
+}
+
+/* 分类描述样式 */
+.category-desc {
+  font-size: 26rpx;
+  color: #666666;
+  margin-bottom: 10rpx;
+}
+
+/* 查看详情按钮样式 */
+.show-details {
+  font-size: 24rpx;
+  color: #00aaff;
+  margin-bottom: 20rpx;
+  cursor: pointer;
+}
+
+/* 示例部分样式 */
+.examples {
+  margin-bottom: 20rpx;
+}
+
+.examples-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.example-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.example-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-right: 10rpx;
+}
+
+.example-name {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 处理方法样式 */
+.handling-method {
+  margin-bottom: 20rpx;
+}
+
+.handling-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.handling-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 注意事项样式 */
+.precautions {
+  margin-bottom: 20rpx;
+}
+
+.precautions-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.precautions-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 总结部分样式 */
+.summary {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-top: 20rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.summary-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+  text-align: center;
+}
+
+.summary-content {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 36rpx;
+  text-align: justify;
+}

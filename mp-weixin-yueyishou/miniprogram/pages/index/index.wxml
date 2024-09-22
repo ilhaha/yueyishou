@@ -1,0 +1,19 @@
+<view class="index-container">
+  <!--首页背景图-->
+  <view class="window-bgc"></view>
+
+  <!-- 页面主体区域 -->
+  <view class="container">
+
+    <!-- 轮播图区域 -->
+    <banner />
+
+    <!-- 预约卡片 -->
+    <reserve-card />
+
+    <!-- 成为回收员卡片 -->
+    <recycler-card />
+
+    <!-- 成为回收员 -->
+  </view>
+</view>

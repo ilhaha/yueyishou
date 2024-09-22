@@ -1,0 +1,122 @@
+/* 主容器布局 */
+.category-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background-color: #f8f8f8;
+}
+
+/* 左侧一级分类 */
+.category-left-view {
+  width: 220rpx;
+  height: 100%;
+  background-color: #ffffff;
+  overflow-y: auto;
+  border-right: 1rpx solid #e0e0e0;
+}
+
+.left-view-item {
+  padding: 30rpx 0;
+  font-size: 28rpx;
+  text-align: center;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.left-view-item.active {
+  background-color: #ffffff;
+  color: #ff6600;
+  font-weight: bold;
+}
+
+/* 右侧二级分类 */
+.category-right-view {
+  flex: 1;
+  background-color: #ffffff;
+  padding: 20rpx;
+  overflow-y: auto;
+  /* 确保内容溢出时可以滚动 */
+}
+
+/* 二级分类项样式 */
+.right-view-item {
+  display: inline-block;
+  /* 改用 inline-block 以便浮动布局 */
+  width: 40%;
+  /* 每个分类项占 48% 的宽度 */
+  margin-bottom: 20rpx;
+  /* 底部间距 */
+  margin-right: 3%;
+  /* 右边间距，保证两个分类项之间的间隔 */
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 12rpx 2rpx rgba(0, 0, 0, 0.1);
+  vertical-align: top;
+  /* 垂直对齐顶部 */
+  padding: 20rpx;
+  /* 内边距 */
+}
+
+/* 每行最后一个分类项去掉右边距 */
+.right-view-item:nth-of-type(2n) {
+  margin-right: 0;
+}
+
+/* 导航样式 */
+.navigator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* 图片样式 */
+.item-image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+/* 商品信息样式 */
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* 商品名称样式 */
+.goods_item_name {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 10rpx;
+  text-align: center;
+}
+
+/* 商品价格和单位样式 */
+.goods_item_price {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25rpx;
+  font-weight: bold;
+  background: #fffbf0;
+  color: #ff6600;
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  margin-top: 10rpx;
+  width: 100%;
+  text-align: center;
+}
+
+.goods_item_price text {
+  margin: 0 4rpx;
+}
+
+.goods_item_unit {
+  font-size: 24rpx;
+  color: #ff6600;
+  opacity: 0.8;
+}

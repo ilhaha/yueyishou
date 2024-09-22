@@ -3,8 +3,10 @@ package com.ilhaha.yueyishou.customer.controller;
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CategoryService;
+import com.ilhaha.yueyishou.model.vo.category.SubCategoryVo;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +23,16 @@ public class CategoryController {
 
     @Resource
     private CategoryService categoryService;
+
+    /**
+     * 获取父品类的所有子品类
+     * @param parentId
+     * @return
+     */
+    @GetMapping("/sub/{parentId}")
+    public Result<List<SubCategoryVo>> getSubCategories(@PathVariable("parentId") Long parentId){
+        return categoryService.getSubCategories(parentId);
+    }
 
     /**
      * 获取已启用的废品品类树

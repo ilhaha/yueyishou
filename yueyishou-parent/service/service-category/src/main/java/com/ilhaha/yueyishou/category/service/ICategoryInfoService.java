@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.category.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
+import com.ilhaha.yueyishou.model.vo.category.SubCategoryVo;
 
 import java.util.List;
 
@@ -48,4 +49,10 @@ public interface ICategoryInfoService extends IService<CategoryInfo> {
     List<CategoryInfo> getCategoryTree();
 
 
+    /**
+     * 获取父品类的所有子品类
+     * @param parentId
+     * @return
+     */
+    List<SubCategoryVo> getSubCategories(Long parentId);
 }

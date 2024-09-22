@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "banner": "./banner/banner",
+    "recycler-card": "./recycler-card/recycler-card",
+    "reserve-card": "./reserve-card/reserve-card"
+  }
+}

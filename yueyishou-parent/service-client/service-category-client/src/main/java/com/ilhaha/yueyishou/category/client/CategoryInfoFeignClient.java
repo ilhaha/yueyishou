@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.category.client;
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.model.form.category.UpdateCategoryStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.category.SubCategoryVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,14 @@ import java.util.List;
  */
 @FeignClient("service-category")
 public interface CategoryInfoFeignClient {
+
+    /**
+     * 获取父品类的所有子品类
+     * @param parentId
+     * @return
+     */
+    @GetMapping("/categoryInfo/sub/{parentId}")
+    Result<List<SubCategoryVo>> getSubCategories(@PathVariable("parentId") Long parentId);
 
     /**
      * 获取已启用的废品品类树

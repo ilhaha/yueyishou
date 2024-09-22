@@ -1,0 +1,11 @@
+<view class="container">
+  <view class="category-grid">
+    <!-- 分类项 -->
+    <view wx:for="{{categoryParentList}}" wx:key="id" class="category-item" data-parentid="{{ item.id }}" bind:tap="placeOrder">
+      <view class="item-content">
+        <image class="category-icon" src="{{item.icon}}" mode="aspectFit"></image>
+        <text class="category-text">{{item.categoryName}}</text>
+      </view>
+    </view>
+  </view>
+</view>

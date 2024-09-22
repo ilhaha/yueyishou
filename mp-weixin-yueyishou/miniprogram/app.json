@@ -1,0 +1,50 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/customer/order/order",
+    "pages/category/category",
+    "pages/customer/my/my",
+    "pages/quote/quote",
+    "pages/category-knowledge/category-knowledge",
+    "pages/place-order/place-order",
+    "pages/customer/address/address"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#00e3ae",
+    "navigationBarTitleText": "悦易收",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#252933",
+    "selectedColor": "#FF734C",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/tabbar/index.png",
+        "selectedIconPath": "assets/tabbar/index-active.png"
+      },
+      {
+        "pagePath": "pages/customer/order/order",
+        "text": "订单",
+        "iconPath": "assets/tabbar/order.png",
+        "selectedIconPath": "assets/tabbar/order-active.png"
+      },
+      {
+        "pagePath": "pages/customer/my/my",
+        "text": "个人中心",
+        "iconPath": "assets/tabbar/my.png",
+        "selectedIconPath": "assets/tabbar/my-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "van-icon": "@vant/weapp/icon/index"
+  }
+}

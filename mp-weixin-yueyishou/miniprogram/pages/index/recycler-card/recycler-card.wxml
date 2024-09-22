@@ -1,0 +1,15 @@
+<view class="container">
+  <!-- 绿色背景卡片 -->
+  <view class="section-header">
+    <text class="section-title">成为回收员</text>
+    <view class="details-button">
+      <text class="details-text">详情</text>
+      <van-icon name="arrow" size="0.5em" color="#00C853" />
+    </view>
+  </view>
+
+  <!-- 悬浮的白色卡片 -->
+  <view class="card-container">
+
+  </view>
+</view>

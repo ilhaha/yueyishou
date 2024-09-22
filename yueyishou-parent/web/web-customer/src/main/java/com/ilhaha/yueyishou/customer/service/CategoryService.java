@@ -2,6 +2,7 @@ package com.ilhaha.yueyishou.customer.service;
 
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.category.SubCategoryVo;
 
 import java.util.List;
 
@@ -25,4 +26,10 @@ public interface CategoryService {
      */
     Result<List<CategoryInfo>> getCategoryTree();
 
+    /**
+     * 获取父品类的所有子品类
+     * @param parentId
+     * @return
+     */
+    Result<List<SubCategoryVo>> getSubCategories(Long parentId);
 }
