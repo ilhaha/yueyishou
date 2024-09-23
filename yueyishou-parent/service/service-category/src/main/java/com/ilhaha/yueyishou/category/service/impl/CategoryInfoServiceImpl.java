@@ -41,13 +41,9 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
         List<CategoryInfo> categoryInfos = this.list(wrapper);
         // 根据父级查询所有的子品类
         List<CategoryInfo> result = categoryInfos.stream().map(item -> {
-            item.setIcon(ObjectUtils.isEmpty(item.getIcon()) ? item.getIcon() : cosFeignClient.getImageUrl(item.getIcon()).getData());
             LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
             categoryInfoLambdaQueryWrapper.eq(CategoryInfo::getParentId, item.getId());
             List<CategoryInfo> child = this.list(categoryInfoLambdaQueryWrapper);
-            for (CategoryInfo categoryInfo : child) {
-                categoryInfo.setIcon(ObjectUtils.isEmpty(categoryInfo.getIcon()) ? categoryInfo.getIcon() : cosFeignClient.getImageUrl(categoryInfo.getIcon()).getData());
-            }
             item.setChildren(child);
             return item;
         }).collect(Collectors.toList());
@@ -67,10 +63,7 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
         categoryInfoLambdaQueryWrapper.eq(CategoryInfo::getParentId, CategoryConstant.FIRST_LEVEL_CATEGORY_ID)
                 .eq(CategoryInfo::getStatus, CategoryConstant.ENABLE_STATUS);
         List<CategoryInfo> list = this.list(categoryInfoLambdaQueryWrapper);
-        return list.stream().map(item -> {
-            item.setIcon(ObjectUtils.isEmpty(item.getIcon()) ? item.getIcon() : cosFeignClient.getImageUrl(item.getIcon()).getData());
-            return item;
-        }).collect(Collectors.toList());
+        return list;
     }
 
     /**
@@ -116,9 +109,6 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
     @Override
     public CategoryInfo queryById(String id) {
         CategoryInfo categoryInfo = this.getById(id);
-        if (!ObjectUtils.isEmpty(categoryInfo)) {
-            categoryInfo.setIcon(ObjectUtils.isEmpty(categoryInfo.getIcon()) ? categoryInfo.getIcon() : cosFeignClient.getImageUrl(categoryInfo.getIcon()).getData());
-        }
         return categoryInfo;
     }
 
@@ -136,14 +126,10 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
         List<CategoryInfo> categoryInfos = this.list(wrapper);
         // 根据父级查询所有的子品类
         List<CategoryInfo> result = categoryInfos.stream().map(item -> {
-            item.setIcon(ObjectUtils.isEmpty(item.getIcon()) ? item.getIcon() : cosFeignClient.getImageUrl(item.getIcon()).getData());
             LambdaQueryWrapper<CategoryInfo> categoryInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
             categoryInfoLambdaQueryWrapper.eq(CategoryInfo::getParentId, item.getId())
                     .eq(CategoryInfo::getStatus,CategoryConstant.ENABLE_STATUS);
             List<CategoryInfo> child = this.list(categoryInfoLambdaQueryWrapper);
-            for (CategoryInfo categoryInfo : child) {
-                categoryInfo.setIcon(ObjectUtils.isEmpty(categoryInfo.getIcon()) ? categoryInfo.getIcon() : cosFeignClient.getImageUrl(categoryInfo.getIcon()).getData());
-            }
             item.setChildren(child);
             return item;
         }).collect(Collectors.toList());
@@ -168,7 +154,6 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
         return list.stream().map(item -> {
             SubCategoryVo subCategoryVo = new SubCategoryVo();
             BeanUtils.copyProperties(item,subCategoryVo);
-            subCategoryVo.setIcon(ObjectUtils.isEmpty(subCategoryVo.getIcon()) ? subCategoryVo.getIcon() : cosFeignClient.getImageUrl(subCategoryVo.getIcon()).getData());
             return subCategoryVo;
         }).collect(Collectors.toList());
     }

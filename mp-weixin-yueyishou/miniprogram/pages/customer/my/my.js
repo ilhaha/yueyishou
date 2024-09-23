@@ -43,7 +43,7 @@ ComponentWithStore({
         iconfont: 'icon-tixian'
       },
       {
-        url: '',
+        url: '/pages/customer/address/list/index',
         title: '回收地址',
         iconfont: 'icon-lianxidizhi'
       },

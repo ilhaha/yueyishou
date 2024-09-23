@@ -18,10 +18,4 @@ public interface CosService {
      */
     CosUploadVo upload(MultipartFile file, String path);
 
-    /**
-     * 获取图片临时签名URL
-     * @param path
-     * @return
-     */
-    String getImageUrl(String path);
 }

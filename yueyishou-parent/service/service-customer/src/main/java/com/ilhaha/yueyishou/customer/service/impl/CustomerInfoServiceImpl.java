@@ -126,10 +126,6 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfoLambdaQueryWrapper.like(StringUtils.hasText(customerInfo.getNickname()),
                 CustomerInfo::getNickname, customerInfo.getNickname());
         Page<CustomerInfo> pageList = this.page(page, customerInfoLambdaQueryWrapper);
-        pageList.setRecords(pageList.getRecords().stream().map(item -> {
-            item.setAvatarUrl(ObjectUtils.isEmpty(item.getAvatarUrl()) ? item.getAvatarUrl() : cosFeignClient.getImageUrl(item.getAvatarUrl()).getData());
-            return item;
-        }).collect(Collectors.toList()));
         return pageList;
     }
 
@@ -144,7 +140,6 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         if (ObjectUtils.isEmpty(customerInfoDB)) throw new YueYiShouException(ResultCodeEnum.CUSTOMER_INFO_NOT_EXIST);
         CustomerLoginInfoVo customerLoginInfoVo = new CustomerLoginInfoVo();
         BeanUtils.copyProperties(customerInfoDB,customerLoginInfoVo);
-        customerLoginInfoVo.setAvatarUrl(cosFeignClient.getImageUrl(customerLoginInfoVo.getAvatarUrl()).getData());
         return customerLoginInfoVo;
     }
 }

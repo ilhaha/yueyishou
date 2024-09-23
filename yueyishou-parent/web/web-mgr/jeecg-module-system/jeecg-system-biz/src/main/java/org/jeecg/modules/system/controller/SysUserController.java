@@ -145,12 +145,6 @@ public class SysUserController {
         queryWrapper.ne("username","_reserve_user_external");
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
 		IPage<SysUser> pageList = sysUserService.page(page, queryWrapper);
-        for (SysUser item : pageList.getRecords()) {
-            if (!ObjectUtils.isEmpty(item)) {
-                com.ilhaha.yueyishou.common.result.Result<String> cosResult = cosFeignClient.getImageUrl(item.getAvatar());
-                item.setAvatar(cosResult.getData());
-            }
-        }
         //批量查询用户的所属部门
         //step.1 先拿到全部的 useids
         //step.2 通过 useids，一次性查询用户的所属部门名字

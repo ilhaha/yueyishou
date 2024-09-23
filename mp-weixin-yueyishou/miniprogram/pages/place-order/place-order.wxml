@@ -1,5 +1,83 @@
 <view class="container">
-  <!-- 顶部分类选择部分 -->
+
+  <!-- 地址信息卡片 -->
+  <view class="address-card" wx:if="{{ address }}" bind:tap="chooseAddress">
+    <!-- 左侧的地址图标 -->
+    <view class="address-icon">
+      <image src="/assets/images/common/dingwei.png" mode="aspectFit"></image>
+    </view>
+
+    <!-- 中间的地址信息 -->
+    <view class="address-info">
+      <text class="address-name">{{address.address}}</text>
+      <view class="address-details">{{address.provinceName}} {{address.cityName}} {{address.districtName}}</view>
+      <view class="contact-info">{{address.name}} {{address.phone}}</view>
+    </view>
+
+    <!-- 右侧的地址簿图标 -->
+    <view class="address-book-icon">
+      <view class="icon-container">
+        <image src="/assets/images/common/dizhibu.png" mode="aspectFit"></image>
+        <text class="icon-text">地址簿</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 没有默认地址，选择地址 -->
+  <view class="address-card" wx:else bind:tap="chooseAddress">
+    <text class="address-title">选择回收地址</text>
+  </view>
+
+  <!-- 选择回收地址区域 -->
+  <van-action-sheet show="{{ show }}" title="">
+    <view>
+      <!-- 自定义头部区域 -->
+      <view class="custom-header">
+        <!-- 关闭按钮 -->
+        <van-icon name="cross" size="24px" bindtap="hideSheet" class="close-icon" />
+        <!-- 标题文本 -->
+        <text class="title-text">回收地址列表</text>
+
+        <!-- 添加新地址的图标 -->
+        <van-icon name="add" size="24px" bindtap="openAddAddressArea" class="add-icon" />
+      </view>
+      <view class="address-list" wx:if="{{ addressList.length > 0 }}">
+        <!-- 遍历地址列表 -->
+        <block wx:for="{{ addressList }}" wx:key="id">
+          <view class="address-item" bindtap="selectAddress" data-id="{{ item.id }}" data-index="{{ index }}">
+            <view class="address-left">
+              <view class="avatar">{{ item.initial }}</view>
+            </view>
+            <view class="address-info">
+              <view class="name-phone">
+                <text class="name">{{ item.name }}</text>
+                <text class="phone">{{ item.phone }}</text>
+              </view>
+              <text class="detail">{{ item.fullAddress }}</text>
+            </view>
+            <view class="address-right">
+              <van-icon name="checked" size="20px" class="radio-icon" color="{{ item.selected ? 'red' : '' }}" />
+            </view>
+          </view>
+        </block>
+      </view>
+      <van-empty description="还没有回收地址，快去添加吧～" wx:else />
+
+      <view class="footer">
+        <van-button type="danger" block bindtap="confirm" wx:if="{{ addressList.length > 0 }}">确定</van-button>
+      </view>
+    </view>
+
+  </van-action-sheet>
+
+  <!-- 新增地址区域 -->
+  <van-action-sheet show="{{ addAddressShow }}" title="新增回收地址" bind:close="closeAddArea">
+    <add-address id="add-address" bind:addAddressSuccess="onAddAddressSuccess"></add-address>
+  </van-action-sheet>
+
+
+
+  <!-- 分类选择部分 -->
   <view class="category-section">
     <text class="category-title">选择回收品类</text>
     <view class="category-grid">

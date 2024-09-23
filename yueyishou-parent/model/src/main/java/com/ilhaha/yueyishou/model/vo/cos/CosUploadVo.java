@@ -11,13 +11,8 @@ import lombok.Data;
 public class CosUploadVo {
 
     /**
-     * 上传路径
+     * 图片访问路径
      */
     private String url;
-
-    /**
-     * 回显地址
-     */
-    private String showUrl;
 
 }

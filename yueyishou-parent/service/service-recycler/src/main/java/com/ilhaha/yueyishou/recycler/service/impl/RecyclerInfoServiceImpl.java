@@ -77,37 +77,6 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
         Page<RecyclerInfo> page = new Page<>(pageNo, pageSize);
         Page<RecyclerInfo> pageList = this.page(page, recyclerInfoLambdaQueryWrapper);
 
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        for (RecyclerInfo item : pageList.getRecords()) {
-            // 异步获取 Avatar URL
-            CompletableFuture<Void> avatarFuture = CompletableFuture.supplyAsync(() ->
-                    ObjectUtils.isEmpty(item.getAvatarUrl()) ? item.getAvatarUrl() : cosFeignClient.getImageUrl(item.getAvatarUrl()).getData()
-            ).thenAccept(item::setAvatarUrl);
-            futures.add(avatarFuture);
-
-            // 异步获取 idcardFrontUrl
-            CompletableFuture<Void> idcardFrontFuture = CompletableFuture.supplyAsync(() ->
-                    cosFeignClient.getImageUrl(item.getIdcardFrontUrl()).getData()
-            ).thenAccept(item::setIdcardFrontUrl);
-            futures.add(idcardFrontFuture);
-
-            // 异步获取 idcardBackUrl
-            CompletableFuture<Void> idcardBackFuture = CompletableFuture.supplyAsync(() ->
-                    cosFeignClient.getImageUrl(item.getIdcardBackUrl()).getData()
-            ).thenAccept(item::setIdcardBackUrl);
-            futures.add(idcardBackFuture);
-
-            // 异步获取 idcardHandUrl
-            CompletableFuture<Void> idcardHandFuture = CompletableFuture.supplyAsync(() ->
-                    cosFeignClient.getImageUrl(item.getIdcardHandUrl()).getData()
-            ).thenAccept(item::setIdcardHandUrl);
-            futures.add(idcardHandFuture);
-        }
-
-        // 等待所有异步任务完成
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
         return pageList;
     }
 

@@ -18,9 +18,4 @@ public interface CosService {
      */
     CosUploadVo upload(MultipartFile file, String path);
 
-    /**
-     * 获取腾讯云图片临时访问路径
-     * @return
-     */
-    String getImageUrl(String path);
 }

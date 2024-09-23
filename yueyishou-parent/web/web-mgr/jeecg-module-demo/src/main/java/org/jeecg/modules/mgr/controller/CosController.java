@@ -35,8 +35,8 @@ public class CosController {
      * 获取腾讯云图片临时访问路径
      * @return
      */
-    @GetMapping("/image/url")
-    public Result<String> getImageUrl(@RequestParam("path") String path){
-        return Result.OK(cosService.getImageUrl(path));
-    }
+//    @GetMapping("/image/url")
+//    public Result<String> getImageUrl(@RequestParam("path") String path){
+//        return Result.OK(cosService.getImageUrl(path));
+//    }
 }

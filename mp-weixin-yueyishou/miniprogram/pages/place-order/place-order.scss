@@ -5,6 +5,77 @@
   height: 100vh;
 }
 
+/* 地址信息卡片样式 */
+.address-card {
+  display: flex;
+  align-items: inherit;
+  /* 中间的地址图标和地址簿图标都居中对齐 */
+  background-color: #ffffff;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 20rpx;
+}
+
+/* 左侧的地址图标样式 */
+.address-icon {
+  margin-right: 20rpx;
+}
+
+.address-icon image {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+/* 中间的地址信息样式 */
+.address-info {
+  flex: 1;
+}
+
+.address-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  margin-left: -10rpx;
+}
+
+.address-details,
+.contact-info {
+  font-size: 24rpx;
+  color: #666;
+  margin-left: -50rpx;
+  margin-top: 15rpx;
+}
+
+/* 右侧地址簿图标样式 */
+.address-book-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 20rpx;
+  /* 图标与地址信息的间距 */
+}
+
+.icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-container image {
+  width: 50rpx;
+  /* 图标大小 */
+  height: 50rpx;
+  margin-bottom: 10rpx;
+}
+
+.icon-text {
+  font-size: 24rpx;
+  color: #00c853;
+}
+
+
+
 /* 顶部分类选择部分 */
 .category-section {
   background-color: #fff;
@@ -104,3 +175,142 @@
   font-size: 32rpx;
   color: #ff6600;
 }
+
+.address-title {
+  font-size: 28rpx;
+  color: #ff6600;
+}
+
+
+
+/* 地址列表容器样式 */
+.address-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0 20rpx;
+  background-color: #fff;
+}
+
+/* 地址项样式 */
+.address-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.address-item:last-child {
+  border-bottom: none;
+}
+
+/* 左侧头像样式 */
+.address-left {
+  width: 80rpx;
+  height: 80rpx;
+  margin-right: 20rpx;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  background-color: #f5f5f5;
+  color: #ff6600;
+  border-radius: 50%;
+  font-size: 32rpx;
+}
+
+/* 地址信息样式 */
+.address-info {
+  flex: 1;
+}
+
+.name-phone {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+.phone {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.tag {
+  font-size: 22rpx;
+  color: #ff6600;
+  background-color: #fff5e5;
+  border: 1rpx solid #ff6600;
+  border-radius: 8rpx;
+  padding: 2rpx 6rpx;
+  margin-left: 10rpx;
+}
+
+.detail {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 右侧选择图标样式 */
+.address-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radio-icon {
+  color: #999;
+}
+
+.radio-icon.selected {
+  color: #ff6600;
+}
+
+/* 底部按钮样式 */
+.footer {
+  padding: 20rpx;
+  background-color: #fff;
+}
+
+/* 自定义头部样式 */
+.custom-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.add-icon {
+  color: #ff6600;
+  /* 图标颜色 */
+  margin-right: 10rpx;
+  /* 图标与标题的间距 */
+  cursor: pointer;
+}
+
+.title-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  /* 让标题文本占据剩余空间 */
+  text-align: center;
+}
+
+.close-icon {
+  color: #999;
+  /* 关闭按钮颜色 */
+}
+

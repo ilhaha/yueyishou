@@ -24,6 +24,7 @@ public enum ResultCodeEnum {
     IMAGE_AUDITION_FAIL( 218, "图片存在违规"),
     IMAGE_UPLOAD_FAIL( 219, "图片上传失败"),
     CUSTOMER_INFO_NOT_EXIST(220,"顾客信息不存在"),
+    CUSTOMER_ADDRESS_NOT_EXIST(230,"地址信息不存在"),
     SERVICE_ERROR(2012, "服务异常"),
 
 

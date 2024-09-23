@@ -8,7 +8,8 @@
     "pages/quote/quote",
     "pages/category-knowledge/category-knowledge",
     "pages/place-order/place-order",
-    "pages/customer/address/address"
+    "pages/customer/address/addorupdate/index",
+    "pages/customer/address/list/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -45,6 +46,31 @@
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {
-    "van-icon": "@vant/weapp/icon/index"
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-swipe-cell": "@vant/weapp/swipe-cell/index",
+    "van-checkbox": "@vant/weapp/checkbox/index",
+    "van-stepper": "@vant/weapp/stepper/index",
+    "van-submit-bar": "@vant/weapp/submit-bar/index",
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "van-button": "@vant/weapp/button/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-field": "@vant/weapp/field/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-datetime-picker": "@vant/weapp/datetime-picker/index",
+    "van-goods-action": "@vant/weapp/goods-action/index",
+    "van-goods-action-icon": "@vant/weapp/goods-action-icon/index",
+    "van-goods-action-button": "@vant/weapp/goods-action-button/index"
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "获取地理位置信息用于填写回收地址"
+    }
   }
 }

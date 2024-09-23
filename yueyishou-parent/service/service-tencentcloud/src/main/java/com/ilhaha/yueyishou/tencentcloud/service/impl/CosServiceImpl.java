@@ -8,10 +8,7 @@ import com.ilhaha.yueyishou.tencentcloud.service.CosService;
 import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.http.HttpMethodName;
-import com.qcloud.cos.model.GeneratePresignedUrlRequest;
-import com.qcloud.cos.model.ObjectMetadata;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.StorageClass;
+import com.qcloud.cos.model.*;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -39,59 +36,68 @@ public class CosServiceImpl implements CosService {
     private TencentCloudProperties tencentCloudProperties;
 
     /**
-     * 使用腾讯云cos上传图片
-     * @param file
-     * @param path
-     * @return
+     * 使用腾讯云 COS 上传图片，并设置为公有读
+     *
+     * @param file 上传的文件
+     * @param path 存储路径
+     * @return 上传后的文件信息，包括 URL
      */
     @Override
     public CosUploadVo upload(MultipartFile file, String path) {
-        //元数据信息
+        // 元数据信息
         ObjectMetadata meta = new ObjectMetadata();
         meta.setContentLength(file.getSize());
         meta.setContentEncoding("UTF-8");
         meta.setContentType(file.getContentType());
 
-        //向存储桶中保存文件
-        String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")); //文件后缀名
+        // 生成上传路径：path/uuid.文件后缀
+        String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         String uploadPath = path + "/" + UUID.randomUUID().toString().replaceAll("-", "") + fileType;
-        PutObjectRequest putObjectRequest = null;
+
+        PutObjectRequest putObjectRequest;
         try {
-            putObjectRequest = new PutObjectRequest(tencentCloudProperties.getBucketPrivate(), uploadPath, file.getInputStream(), meta);
+            // 创建 PutObjectRequest 对象
+            putObjectRequest = new PutObjectRequest(
+                    tencentCloudProperties.getBucketPrivate(),
+                    uploadPath,
+                    file.getInputStream(),
+                    meta
+            );
         } catch (IOException e) {
-            throw new YueYiShouException(ResultCodeEnum.IMAGE_UPLOAD_FAIL);
+            throw new RuntimeException("文件上传失败", e); // 自定义异常处理
         }
+
+        // 设置文件为标准存储
         putObjectRequest.setStorageClass(StorageClass.Standard);
-        cosClient.putObject(putObjectRequest); //上传文件
-        //审核图片
+
+        // 设置文件为公有读权限
+        putObjectRequest.setCannedAcl(CannedAccessControlList.PublicRead);
+
+        // 上传文件到 COS
+        cosClient.putObject(putObjectRequest);
+
+        // 审核图片（根据需要开启）
         Boolean isAuditing = ciService.imageAuditing(uploadPath);
-        if(!isAuditing) {
-            //删除违规图片
+        if (!isAuditing) {
+            // 删除违规图片
             cosClient.deleteObject(tencentCloudProperties.getBucketPrivate(), uploadPath);
-            throw new YueYiShouException(ResultCodeEnum.IMAGE_AUDITION_FAIL);
+            throw new RuntimeException("图片审核不通过，上传失败");
         }
-        //封装返回对象
+
+        // 封装返回对象
         CosUploadVo cosUploadVo = new CosUploadVo();
-        cosUploadVo.setUrl(uploadPath);
-        //图片临时访问url，回显使用
-        cosUploadVo.setShowUrl(getImageUrl(uploadPath));
+        cosUploadVo.setUrl(getPublicImageUrl(uploadPath)); // 获取文件的公有读 URL
         return cosUploadVo;
     }
 
     /**
-     * 获取图片临时签名URL
-     * @param path
-     * @return
+     * 获取公有读文件的永久有效 URL
+     *
+     * @param path 文件在 COS 中的路径
+     * @return 文件的公有读 URL
      */
-    @Override
-    public String getImageUrl(String path) {
-        if(!StringUtils.hasText(path)) return "";
-        GeneratePresignedUrlRequest request =
-                new GeneratePresignedUrlRequest(tencentCloudProperties.getBucketPrivate(), path, HttpMethodName.GET);
-        //设置临时URL有效期为一个小时
-//        Date expiration = new DateTime().plusMinutes(PublicConstant.COS_IMAGE_VALID_TIME).toDate();
-//        request.setExpiration(expiration);
-        URL url = cosClient.generatePresignedUrl(request);
-        return url.toString();
+    private String getPublicImageUrl(String path) {
+        return "https://" + tencentCloudProperties.getBucketPrivate() + ".cos."
+                + tencentCloudProperties.getRegion() + ".myqcloud.com/" + path;
     }
 }

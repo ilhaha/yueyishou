@@ -28,13 +28,4 @@ public interface CosFeignClient {
     Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file,
                                @RequestParam("path") String path);
 
-
-    /**
-     * 获取腾讯云图片临时访问路径
-     * @param path
-     * @return
-     */
-    @GetMapping("/cos/image/url")
-    Result<String> getImageUrl(@RequestParam("path") String path);
-
 }
