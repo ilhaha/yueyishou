@@ -1,5 +1,4 @@
 <view class="container">
-
   <!-- 地址信息卡片 -->
   <view class="address-card" wx:if="{{ address }}" bind:tap="chooseAddress">
     <!-- 左侧的地址图标 -->
@@ -75,8 +74,6 @@
     <add-address id="add-address" bind:addAddressSuccess="onAddAddressSuccess"></add-address>
   </van-action-sheet>
 
-
-
   <!-- 分类选择部分 -->
   <view class="category-section">
     <text class="category-title">选择回收品类</text>
@@ -91,4 +88,110 @@
       <text class="price-value">{{selectedCategory.unitPrice}} 元 / {{ selectedCategory.unit }}</text>
     </view>
   </view>
+
+  <!-- 选择重量部分 -->
+  <view class="weight-section">
+    <text class="weight-title">回收重量</text>
+    <view class="weight-grid">
+      <view class="weight-item {{weightCurrentIndex === index ? 'active' : ''}} " wx:for="{{weightList}}" wx:key="id" bindtap="selectWeight" data-id="{{item.id}}" data-index="{{index}}">
+        <text class="weight-name">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+  <!-- 上传图片 -->
+  <view class="photo-section">
+    <text class="photo-title">请上传回收物的照片</text>
+    <view class="photo-grid">
+      <van-uploader file-list="{{ fileList }}" max-count="4" bind:after-read="cosUpload" bind:delete="onDelete" />
+    </view>
+  </view>
+
+  <!-- 其他信息 -->
+  <view class="order-section">
+    <text class="order-title">其他</text>
+    <view class="order-grid">
+      <van-cell-group>
+        <van-field label="留言备注" value="{{ orderForm.remark }}" placeholder="请输入备注信息" border="{{ false }}" bind:change="getRemark" />
+      </van-cell-group>
+    </view>
+  </view>
+
+  <!-- 提示部分 -->
+  <view class="tip-section">
+    <text class="tip-title">回收流程</text>
+    <view class="tip-grid">
+      <!-- 流程步骤1: 手机下单 -->
+      <view class="tip-item">
+        <view class="icon-circle">
+          <image class="icon" src="../../assets/images/common/shoujixiadan.png" />
+        </view>
+        <text class="tip-text">手机下单</text>
+      </view>
+
+      <!-- 流程箭头 -->
+      <view class="arrow">→</view>
+
+      <!-- 流程步骤2: 预约上门 -->
+      <view class="tip-item">
+        <view class="icon-circle">
+          <image class="icon" src="../../assets/images/common/yuyueshangmen.png" />
+        </view>
+        <text class="tip-text">预约上门</text>
+      </view>
+
+      <!-- 流程箭头 -->
+      <view class="arrow">→</view>
+
+      <!-- 流程步骤3: 上门回收 -->
+      <view class="tip-item">
+        <view class="icon-circle">
+          <image class="icon" src="../../assets/images/common/shangmenhuishou.png" />
+        </view>
+        <text class="tip-text">上门回收</text>
+      </view>
+
+      <!-- 流程箭头 -->
+      <view class="arrow">→</view>
+
+      <!-- 流程步骤4: 完成结算 -->
+      <view class="tip-item">
+        <view class="icon-circle">
+          <image class="icon" src="../../assets/images/common/wanchengjiesuan.png" />
+        </view>
+        <text class="tip-text">完成结算</text>
+      </view>
+    </view>
+    <view class="notice-section">
+      <text class="notice-title">回收要求和注意事项</text>
+      <view class="notice-grid">
+        <!-- 第一个注意事项 -->
+        <view class="notice-item">
+          <text class="notice-item-title">拒绝捣水/捣杂</text>
+          <text class="notice-item-text">当回收物掺水/掺入其他异物导致重量与实际不符，回收员可拒绝回收。</text>
+        </view>
+
+        <!-- 第二个注意事项 -->
+        <view class="notice-item">
+          <text class="notice-item-title">上门时间</text>
+          <text class="notice-item-text">下单成功，回收小哥将会与您预约上门时间并准时上门服务。</text>
+        </view>
+
+        <!-- 第三个注意事项 -->
+        <view class="notice-item">
+          <text class="notice-item-title">单次10kg起</text>
+          <text class="notice-item-text">确保回收物重量超过10kg，低于10kg，暂不保证上门回收。</text>
+        </view>
+      </view>
+    </view>
+
+
+  </view>
+
+</view>
+<!-- 粘性布局的立即预约按钮 -->
+<view class="sticky-button">
+  <view class="tip">
+    <text class="terms-text">确认预约将自动默认 <text class="terms-link" bind:tap="goTerms">《悦易收回收上门服务条款》</text></text>
+  </view>
+  <van-button type="primary" block round bindtap="onBookNow" custom-class="order-button">立即预约</van-button>
 </view>

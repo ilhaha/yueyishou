@@ -3,6 +3,10 @@ import {
   reqAddressList
 } from '../../api/customer/address'
 
+import {
+  cosUpload
+} from '../../api/customer/cos'
+
 Page({
   data: {
     categoryList: [], // 分类数据
@@ -11,16 +15,78 @@ Page({
     address: {}, // 选择的地址信息
     show: false,
     addressList: [],
-    addAddressShow: false
+    addAddressShow: false,
+    weightList: [{
+        id: 1,
+        desc: '约10-100公斤',
+        value: 50
+      },
+      {
+        id: 2,
+        desc: '约200-500公斤',
+        value: 350
+      },
+      {
+        id: 3,
+        desc: '1000公斤以上',
+        value: 1000
+      },
+    ],
+    weightCurrentIndex: 0, // 当前选中的分类索引
+    selectedWeight: {}, // 当前选中的分类信息
+    fileList: [],
+    orderForm: {
+      categoryId: '',
+      address: {},
+      weightValue: '',
+      fileList: [],
+      remark: ''
+    }
   },
 
   onLoad(options) {
     const categoryList = JSON.parse(decodeURIComponent(options.sub));
     this.setData({
       categoryList,
-      selectedCategory: categoryList[0] // 默认选中第一个分类
+      selectedCategory: categoryList[0], // 默认选中第一个分类
+      selectedWeight: this.data.weightList[0] // 默认选中第一个重量
     });
     this.getDefaultAddress();
+  },
+  // 跳转条款页面
+  goTerms() {
+    wx.navigateTo({
+      url: '../place-order/terms/terms',
+    })
+  },
+  // 获取备注信息
+  getRemark(event) {
+    this.setData({
+      'orderForm.remark': event.detail
+    })
+  },
+  // 上传图片
+  async cosUpload(event) {
+    const res = await cosUpload(event);
+    // 构造新的文件对象
+    let file = {
+      url: res.data.url
+    }
+    // 使用扩展运算符生成新的 fileList 数组
+    this.setData({
+      fileList: [...this.data.fileList, file] // 扩展原数组并添加新文件
+    })
+
+  },
+  // 处理删除图片
+  onDelete(event) {
+    const index = event.detail.index; // 获取被删除的图片索引
+    const newFileList = [...this.data.fileList]; // 复制当前的 fileList
+    newFileList.splice(index, 1); // 删除对应索引的图片
+
+    this.setData({
+      fileList: newFileList // 更新 fileList
+    });
   },
   // 关闭新增地址区域
   closeAddArea() {
@@ -138,6 +204,16 @@ Page({
     this.setData({
       currentIndex: index, // 更新当前选中的分类索引
       selectedCategory // 更新当前选中的分类信息
+    });
+  },
+  // 选择重量的处理函数
+  selectWeight(event) {
+    const index = event.currentTarget.dataset.index;
+    const selectedWeight = this.data.weightList[index];
+
+    this.setData({
+      weightCurrentIndex: index, // 更新当前选中的分类索引
+      selectedWeight // 更新当前选中的分类信息
     });
   }
 });

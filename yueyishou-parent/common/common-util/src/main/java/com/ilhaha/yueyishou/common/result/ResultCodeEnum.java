@@ -16,7 +16,7 @@ public enum ResultCodeEnum {
     ILLEGAL_REQUEST(205, "非法请求"),
     REPEAT_SUBMIT(206, "重复提交"),
     FEIGN_FAIL(207, "远程调用失败"),
-    LOGIN_AUTH(208, "未登陆"),
+    LOGIN_AUTH(208, "未登录"),
     PERMISSION(209, "没有权限"),
     ARGUMENT_VALID_ERROR(210, "参数校验异常"),
     INCORRECT_LOGIN_INFORMATION(211,"登录信息有误"),

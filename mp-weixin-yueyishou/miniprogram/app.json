@@ -9,7 +9,8 @@
     "pages/category-knowledge/category-knowledge",
     "pages/place-order/place-order",
     "pages/customer/address/addorupdate/index",
-    "pages/customer/address/list/index"
+    "pages/customer/address/list/index",
+    "pages/place-order/terms/terms"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -62,7 +63,8 @@
     "van-datetime-picker": "@vant/weapp/datetime-picker/index",
     "van-goods-action": "@vant/weapp/goods-action/index",
     "van-goods-action-icon": "@vant/weapp/goods-action-icon/index",
-    "van-goods-action-button": "@vant/weapp/goods-action-button/index"
+    "van-goods-action-button": "@vant/weapp/goods-action-button/index",
+    "van-uploader": "@vant/weapp/uploader/index"
   },
   "requiredPrivateInfos": [
     "getLocation",

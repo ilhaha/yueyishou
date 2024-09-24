@@ -1,4 +1,4 @@
-// pages/customer/address/address.js
+// pages/place-order/terms/terms.js
 Page({
 
   /**

@@ -1,0 +1,42 @@
+/* 页面布局 */
+.terms-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* 滚动条样式 */
+.terms-content {
+  flex: 1;
+  padding: 20rpx;
+  background-color: #fff;
+  border-radius: 10rpx;
+  margin: 10rpx;
+  overflow-y: auto;
+}
+
+/* 标题样式 */
+.terms-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20rpx;
+  color: #333;
+}
+
+/* 每个章节的标题 */
+.terms-section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #00b577;
+  margin-top: 20rpx;
+  margin-bottom: 10rpx;
+}
+
+/* 段落样式 */
+.terms-text p {
+  font-size: 26rpx;
+  line-height: 36rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
