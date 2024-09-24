@@ -18,7 +18,9 @@ Page({
     districtCode: '', // 区 编码
     address: '', // 详细地址
     fullAddress: '', // 完整地址 (省 + 市 + 区 + 详细地址)
-    isDefault: false // 设置默认地址，是否默认地址 → 0：否  1：是
+    isDefault: false, // 设置默认地址，是否默认地址 → 0：否  1：是
+    longitude: '', // 经度
+    latitude: '' // 纬度
   },
   // 切换默认地址事件处理函数
   onDefaultChange(event) {
@@ -67,6 +69,10 @@ Page({
         } = res.result.ad_info
 
         this.setData({
+          // 经度
+          longitude,
+          // 纬度
+          latitude,
           // 省级: 前两位有值，后4位置0，如，河北省: 130000
           provinceCode: adcode.replace(adcode.substring(2, 6), '0000'),
           provinceName: province,
@@ -107,6 +113,7 @@ Page({
       fullAddress,
       isDefault: isDefault ? 1 : 0
     }
+
     // 调用方法对最终的请求参数进行验证
     const {
       valid
@@ -225,8 +232,6 @@ Page({
     this.qqmapsdk = new QQMapWX({
       key: 'RK6BZ-7VE67-QGMXL-PB44A-DJ2AQ-L5BJU'
     })
-
     this.getAddressInfoById(options.id)
-
   }
 })

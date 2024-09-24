@@ -91,6 +91,10 @@ Component({
           } = res.result.ad_info;
 
           this.setData({
+            // 经度
+            longitude,
+            // 纬度
+            latitude,
             provinceCode: adcode.replace(adcode.substring(2, 6), '0000'),
             provinceName: province,
             cityCode: city_code.slice(nation_code.length),

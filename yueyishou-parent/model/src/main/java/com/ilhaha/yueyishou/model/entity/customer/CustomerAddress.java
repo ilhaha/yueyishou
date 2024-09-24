@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 @Data
 @TableName("customer_address")
 @Accessors(chain = true)
@@ -39,4 +41,8 @@ public class CustomerAddress extends BaseEntity {
     private String fullAddress;
 	/**是否为默认地址，0表示否，1表示是*/
     private Integer isDefault;
+    /**经度*/
+    private BigDecimal longitude;
+    /**伟度*/
+    private BigDecimal latitude;
 }

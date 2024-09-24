@@ -17,8 +17,9 @@
       <!-- 省市区 -->
       <view class="row">
         <text class="title">所在地区</text>
-
-        <picker mode="region" value="{{ [provinceName , cityName , districtName] }}" bindchange="onAddressChange">
+        <!-- 
+        <picker mode="region" value="{{ [provinceName , cityName , districtName] }}" bindchange="onAddressChange"> -->
+        <picker mode="region" value="{{ [provinceName , cityName , districtName] }}" bindtap="onLocation" disabled="{{ true }}">
           <view class="region" wx:if="{{ provinceName }}">{{provinceName + " " + cityName + " " + districtName }}</view>
           <view class="placeholder" wx:else> 请选择回收人所在地区</view>
         </picker>
@@ -32,7 +33,8 @@
       <!-- 详细地址 -->
       <view class="row">
         <text class="title">详细地址</text>
-        <textarea auto-height placeholder-style="color: #969799" placeholder="门牌号(例：5号楼1单元203室)" model:value="{{ address }}" />
+        <textarea auto-height placeholder-style="color: #969799" placeholder="门牌号(例：5号楼1单元203室)" model:value="{{ address }}" disabled="{{true}}" bindtap="onLocation" />
+        <!-- <textarea auto-height placeholder-style="color: #969799" placeholder="门牌号(例：5号楼1单元203室)" model:value="{{ address }}" /> -->
       </view>
 
       <!-- 设置默认地址 -->
