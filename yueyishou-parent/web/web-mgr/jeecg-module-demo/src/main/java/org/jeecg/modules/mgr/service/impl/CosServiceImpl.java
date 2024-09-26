@@ -1,7 +1,7 @@
 package org.jeecg.modules.mgr.service.impl;
 
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
-import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import org.jeecg.modules.mgr.service.CosService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

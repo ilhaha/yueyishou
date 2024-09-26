@@ -10,7 +10,8 @@
     "pages/place-order/place-order",
     "pages/customer/address/addorupdate/index",
     "pages/customer/address/list/index",
-    "pages/place-order/terms/terms"
+    "pages/place-order/terms/terms",
+    "pages/recycler/index/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

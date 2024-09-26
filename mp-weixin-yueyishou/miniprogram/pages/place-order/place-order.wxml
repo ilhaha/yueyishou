@@ -102,7 +102,7 @@
   <view class="photo-section">
     <text class="photo-title">请上传回收物的照片</text>
     <view class="photo-grid">
-      <van-uploader file-list="{{ fileList }}" max-count="4" bind:after-read="cosUpload" bind:delete="onDelete" />
+      <van-uploader file-list="{{ fileList }}" max-count="4" bind:after-read="reqCosUpload" bind:delete="onDelete" />
     </view>
   </view>
 

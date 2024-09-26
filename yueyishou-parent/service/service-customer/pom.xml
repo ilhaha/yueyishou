@@ -17,6 +17,11 @@
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-miniapp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-recycler-client</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -6,7 +6,8 @@ import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
+import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface IRecyclerInfoService extends IService<RecyclerInfo> {
@@ -40,4 +41,18 @@ public interface IRecyclerInfoService extends IService<RecyclerInfo> {
      * @return
      */
      Result<CosUploadVo> upload(MultipartFile file, String path);
+
+    /**
+     * 根据顾客Id查询回收员认证信息
+     * @param customerId
+     * @return
+     */
+    RecyclerInfo getAuth(Long customerId);
+
+    /**
+     * 根据顾客Id获取回收员认证图片信息
+     * @param customerId
+     * @return
+     */
+    RecyclerAuthImagesVo getAuthImages(Long customerId);
 }

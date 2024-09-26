@@ -1,7 +1,11 @@
+import {
+  customerStore
+} from '../../stores/customerStore'
+
 /**
  * 上传文件
  */
-export const cosUpload = (event) => {
+export const reqCosUpload = (event, path) => {
   const {
     file
   } = event.detail;
@@ -11,8 +15,11 @@ export const cosUpload = (event) => {
       url: 'http://localhost/customer-api/cos/upload',
       filePath: file.url,
       name: 'file',
+      header: {
+        'token': customerStore.token
+      },
       formData: {
-        path: 'order'
+        path
       },
       success(res) {
         // 上传成功，解析响应结果并调用 resolve

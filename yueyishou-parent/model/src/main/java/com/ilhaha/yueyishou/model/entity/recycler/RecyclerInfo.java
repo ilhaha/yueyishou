@@ -16,11 +16,8 @@ import java.util.Date;
 public class RecyclerInfo extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-
-	/**微信openId*/
-    private String wxOpenId;
-	/**昵称*/
-    private String nickname;
+    /**顾客id*/
+    private Long customerId;
 	/**头像*/
     private String avatarUrl;
 	/**电话*/
@@ -43,6 +40,10 @@ public class RecyclerInfo extends BaseEntity {
     private String idcardBackUrl;
 	/**手持身份证*/
     private String idcardHandUrl;
+    /**正脸照*/
+    private String fullFaceUrl;
+    /**人脸模型*/
+    private String faceRecognitionUrl;
 	/**腾讯云人脸模型id*/
     private String faceModelId;
 	/**回收员工号*/

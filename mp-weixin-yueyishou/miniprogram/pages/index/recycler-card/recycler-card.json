@@ -1,5 +1,6 @@
 {
   "component": true,
   "usingComponents": {
+    "register-recycler": "../../recycler/register-recycler/register-recycler"
   }
 }

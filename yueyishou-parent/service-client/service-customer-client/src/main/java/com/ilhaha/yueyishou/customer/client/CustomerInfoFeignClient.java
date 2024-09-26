@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-customer")
 public interface CustomerInfoFeignClient {
+
+    /**
+     * 认证成为回收员
+     * @param recyclerApplyForm
+     * @return
+     */
+    @PostMapping("/customerInfo/auth/recycler")
+    Result<Boolean> authRecycler(@RequestBody RecyclerApplyForm recyclerApplyForm);
 
     /**
      * 获取顾客登录之后的顾客信息

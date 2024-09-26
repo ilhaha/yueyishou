@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 
 public interface ICustomerInfoService extends IService<CustomerInfo> {
@@ -36,4 +37,12 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @return
      */
     CustomerLoginInfoVo getLoginInfo(Long customerId);
+
+    /**
+     * 认证成为回收员
+     * @param recyclerApplyForm
+     * @return
+     */
+    Boolean authRecycler(RecyclerApplyForm recyclerApplyForm);
+
 }

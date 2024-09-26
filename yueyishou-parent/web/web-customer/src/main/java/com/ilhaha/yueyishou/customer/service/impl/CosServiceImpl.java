@@ -3,7 +3,7 @@ package com.ilhaha.yueyishou.customer.service.impl;
 import com.alibaba.fastjson2.util.DateUtils;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CosService;
-import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

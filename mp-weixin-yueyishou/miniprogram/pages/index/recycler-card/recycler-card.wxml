@@ -3,13 +3,20 @@
   <view class="section-header">
     <text class="section-title">成为回收员</text>
     <view class="details-button">
-      <text class="details-text">详情</text>
+      <!-- 未登录 -->
+      <text class="details-text" bind:tap="navigateToPage" data-url="/pages/login/login" wx:if="{{toekn}}">详情</text>
+      <!-- 已登录，但回收员身份未认证 -->
+      <text class="details-text" wx:else bind:tap="switchCertificationShow">详情</text>
       <van-icon name="arrow" size="0.5em" color="#00C853" />
     </view>
   </view>
 
+  <!-- 已登录，但回收员身份未认证 弹出填写认证信息窗口 -->
+  <van-action-sheet show="{{ certificationShow }}" title="认证回收员" bind:close="switchCertificationShow">
+    <!-- 认证为回收员 -->
+    <register-recycler wx:if="{{ certificationShow }}" bind:gotoRecyclerIndex="gotoRecyclerIndex" />
+  </van-action-sheet>
   <!-- 悬浮的白色卡片 -->
   <view class="card-container">
-
   </view>
 </view>

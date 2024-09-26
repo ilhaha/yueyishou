@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -20,6 +21,27 @@ import java.util.Arrays;
 public class RecyclerInfoController {
 	@Resource
 	private IRecyclerInfoService recyclerInfoService;
+
+	/**
+	 * 根据顾客Id获取回收员认证图片信息
+	 * @param customerId
+	 * @return
+	 */
+	@GetMapping("/get/authImages")
+	public Result<RecyclerAuthImagesVo> getAuthImages(@RequestParam("customerId") Long customerId){
+		return Result.ok(recyclerInfoService.getAuthImages(customerId));
+	}
+
+
+	/**
+	 * 根据顾客Id查询回收员认证信息
+	 * @param customerId
+	 * @return
+	 */
+	@PostMapping("/get/auth")
+	public Result<RecyclerInfo> getAuth(@RequestParam("customerId") Long customerId){
+		return Result.ok(recyclerInfoService.getAuth(customerId));
+	}
 
 	/**
 	 * 回收员审核
@@ -74,7 +96,7 @@ public class RecyclerInfoController {
 	 * @param recyclerInfo
 	 * @return
 	 */
-	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
+	@PostMapping(value = "/edit")
 	public Result<String> edit(@RequestBody RecyclerInfo recyclerInfo) {
 		recyclerInfoService.updateById(recyclerInfo);
 		return Result.ok("编辑成功!");

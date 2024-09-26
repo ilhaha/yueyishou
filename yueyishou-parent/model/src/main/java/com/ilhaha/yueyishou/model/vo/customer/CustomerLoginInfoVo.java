@@ -22,4 +22,5 @@ public class CustomerLoginInfoVo {
      * 昵称
      */
     private String nickname;
+
 }

@@ -45,16 +45,20 @@
             ><a-icon type="audit" />未过审核</a-menu-item
           >
 
-           <a-menu-item key="5" @click="batchReview(1, selectedRowKeys)" v-if="queryParam.authStatus == '2'"
+          <a-menu-item key="5" @click="batchReview(1, selectedRowKeys)" v-if="queryParam.authStatus == '2'"
             ><a-icon type="audit" />重新审核</a-menu-item
           >
 
-            <a-menu-item key="6" @click="batchDel" v-if="queryParam.authStatus == '-1'"
+          <a-menu-item key="6" @click="batchDel" v-if="queryParam.authStatus == '-1'"
             ><a-icon type="delete" />删除</a-menu-item
           >
 
-          <a-menu-item key="1" @click="switchStatus(1, selectedRowKeys)"  v-if="queryParam.authStatus == '2'"><a-icon type="check" />启用</a-menu-item>
-          <a-menu-item key="2" @click="switchStatus(2, selectedRowKeys)"  v-if="queryParam.authStatus == '2'"><a-icon type="close" />停用</a-menu-item>
+          <a-menu-item key="1" @click="switchStatus(1, selectedRowKeys)" v-if="queryParam.authStatus == '2'"
+            ><a-icon type="check" />启用</a-menu-item
+          >
+          <a-menu-item key="2" @click="switchStatus(2, selectedRowKeys)" v-if="queryParam.authStatus == '2'"
+            ><a-icon type="close" />停用</a-menu-item
+          >
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -105,13 +109,14 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="review(2,record)" v-if="record.authStatus == 1">通过审核</a>
-          <a-divider type="vertical" v-if="record.authStatus == 1"/>
-          <a @click="review(-1,record)" v-if="record.authStatus == 1">未过审核</a>
-          <a @click="review(1,record)" v-if="record.authStatus == 2">重新审核</a>
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)"  v-if="record.authStatus == -1">
-                  <a>删除</a>
-          </a-popconfirm>
+          <a @click="review(2, record)" v-if="record.authStatus == 1">通过审核</a>
+          <a-divider type="vertical" v-if="record.authStatus == 1" />
+          <a @click="review(-1, record)" v-if="record.authStatus == 1">未过审核</a>
+          <a @click="review(1, record)" v-if="record.authStatus == 2">重新审核</a>
+          <!-- <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)" v-if="record.authStatus == -1">
+            <a>删除</a>
+          </a-popconfirm> -->
+          <span v-if="record.authStatus == -1" style="font-size: 12px; font-style: italic">无操作</span>
         </span>
       </a-table>
     </div>
@@ -199,6 +204,13 @@ export default {
           scopedSlots: { customRender: 'imgSlot' },
         },
         {
+          title: '正脸照',
+          align: 'center',
+          width: 150,
+          dataIndex: 'fullFaceUrl',
+          scopedSlots: { customRender: 'imgSlot' },
+        },
+        {
           title: '认证状态',
           align: 'center',
           dataIndex: 'authStatus',
@@ -220,7 +232,7 @@ export default {
           dataIndex: 'status',
           customRender: (text, record) => {
             const isChecked = text == '1'
-            const isDisabled = record.authStatus != 2;
+            const isDisabled = record.authStatus != 2
             return (
               <a-space direction="vertical">
                 <a-switch
@@ -238,11 +250,6 @@ export default {
           title: '回收员工号',
           align: 'center',
           dataIndex: 'jobNo',
-        },
-        {
-          title: '昵称',
-          align: 'center',
-          dataIndex: 'nickname',
         },
         {
           title: '头像',
@@ -318,7 +325,7 @@ export default {
     },
   },
   methods: {
-    review(authStatus,record){
+    review(authStatus, record) {
       let recyclerIds = []
       recyclerIds.push(record.id)
       this.batchReview(authStatus, recyclerIds)
@@ -344,7 +351,6 @@ export default {
     initDictConfig() {},
     getSuperFieldList() {
       let fieldList = []
-      fieldList.push({ type: 'string', value: 'nickname', text: '昵称', dictCode: '' })
       fieldList.push({ type: 'string', value: 'avatarUrl', text: '头像', dictCode: '' })
       fieldList.push({ type: 'string', value: 'phone', text: '电话', dictCode: '' })
       fieldList.push({ type: 'string', value: 'name', text: '姓名', dictCode: '' })

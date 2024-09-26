@@ -8,6 +8,7 @@ import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,17 @@ import java.util.Arrays;
 public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
+
+	/**
+	 * 认证成为回收员
+	 * @param recyclerApplyForm
+	 * @return
+	 */
+	@PostMapping("/auth/recycler")
+	public Result<Boolean> authRecycler(@RequestBody RecyclerApplyForm recyclerApplyForm){
+		return Result.ok(customerInfoService.authRecycler(recyclerApplyForm));
+	}
+
 
 	/**
 	 * 获取顾客登录之后的顾客信息

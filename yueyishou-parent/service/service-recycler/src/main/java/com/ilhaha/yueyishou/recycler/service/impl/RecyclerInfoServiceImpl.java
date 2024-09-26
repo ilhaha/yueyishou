@@ -9,20 +9,18 @@ import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.recycler.mapper.RecyclerInfoMapper;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
-import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import jakarta.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, RecyclerInfo> implements IRecyclerInfoService {
@@ -88,6 +86,34 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
     @Override
     public Result<CosUploadVo> upload(MultipartFile file, String path) {
         return cosFeignClient.upload(file,path);
+    }
+
+
+    /**
+     * 根据顾客Id删除回收员认证信息
+     * @param customerId
+     * @return
+     */
+    @Override
+    public RecyclerInfo getAuth(Long customerId) {
+        LambdaQueryWrapper<RecyclerInfo> recyclerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        recyclerInfoLambdaQueryWrapper.eq(RecyclerInfo::getCustomerId,customerId);
+        return this.getOne(recyclerInfoLambdaQueryWrapper);
+    }
+
+    /**
+     * 根据顾客Id获取回收员认证图片信息
+     * @param customerId
+     * @return
+     */
+    @Override
+    public RecyclerAuthImagesVo getAuthImages(Long customerId) {
+        RecyclerInfo recyclerInfoDB = this.getAuth(customerId);
+        RecyclerAuthImagesVo recyclerAuthImagesVo = new RecyclerAuthImagesVo();
+        if (!ObjectUtils.isEmpty(recyclerInfoDB)) {
+            BeanUtils.copyProperties(recyclerInfoDB,recyclerAuthImagesVo);
+        }
+        return recyclerAuthImagesVo;
     }
 
 }

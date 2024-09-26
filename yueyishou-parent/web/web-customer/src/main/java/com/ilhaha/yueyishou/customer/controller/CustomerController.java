@@ -3,12 +3,11 @@ package com.ilhaha.yueyishou.customer.controller;
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CustomerService;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author ilhaha
@@ -21,6 +20,29 @@ public class CustomerController {
 
     @Resource
     private CustomerService customerService;
+
+    /**
+     * 根据顾客Id获取回收员认证图片信息
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/get/authImages")
+    public Result<RecyclerAuthImagesVo> getAuthImages(){
+        return customerService.getAuthImages();
+    }
+
+    /**
+     * 认证成为回收员
+     * @param recyclerApplyForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/auth/recycler")
+    public Result<Boolean> authRecycler(@RequestBody RecyclerApplyForm recyclerApplyForm){
+        System.out.println(recyclerApplyForm);
+        return customerService.authRecycler(recyclerApplyForm);
+    }
+
 
     /**
      * 获取顾客登录之后的顾客信息

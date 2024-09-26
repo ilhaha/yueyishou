@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.common.util.RecyclerIDGenerator;
 import com.ilhaha.yueyishou.model.constant.CustomerConstant;
 import com.ilhaha.yueyishou.common.constant.RedisConstant;
 import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
@@ -16,11 +18,16 @@ import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.customer.mapper.CustomerInfoMapper;
 import com.ilhaha.yueyishou.customer.service.ICustomerInfoService;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
+import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
+import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import com.ilhaha.yueyishou.common.util.PhoneNumberUtils;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.tencentcloud.client.FaceModelFeignClient;
 import jakarta.annotation.Resource;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.BeanUtils;
@@ -47,7 +54,10 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     private ICustomerAccountService customerAccountService;
 
     @Resource
-    private CosFeignClient cosFeignClient;
+    private RecyclerInfoFeignClient recyclerInfoFeignClient;
+
+    @Resource
+    private FaceModelFeignClient faceModelFeignClient;
 
     /**
      * 小程序授权登录
@@ -142,4 +152,39 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         BeanUtils.copyProperties(customerInfoDB,customerLoginInfoVo);
         return customerLoginInfoVo;
     }
+
+
+    /**
+     * 认证成为回收员
+     * @param recyclerApplyForm
+     * @return
+     */
+    @Override
+    public Boolean authRecycler(RecyclerApplyForm recyclerApplyForm) {
+        // 先查询是否存在回收员的认证信息，如果有则修改，没有则添加
+        RecyclerInfo recyclerInfoDB = recyclerInfoFeignClient.getAuth(recyclerApplyForm.getCustomerId()).getData();
+        if (ObjectUtils.isEmpty(recyclerInfoDB)) {
+            // 添加查询顾客的基本信息
+            CustomerInfo customerInfoDB = this.getById(recyclerApplyForm.getCustomerId());
+            if (ObjectUtils.isEmpty(customerInfoDB)) {
+                throw new YueYiShouException(ResultCodeEnum.DATA_ERROR);
+            }
+            // 创建新的 RecyclerInfo 对象并设置属性
+            RecyclerInfo recyclerInfo = new RecyclerInfo();
+            BeanUtils.copyProperties(recyclerApplyForm, recyclerInfo);
+            recyclerInfo.setAvatarUrl(customerInfoDB.getAvatarUrl());
+            recyclerInfo.setPhone(customerInfoDB.getPhone());
+            recyclerInfo.setJobNo(RecyclerIDGenerator.generateEmployeeID());
+            recyclerInfo.setAuthStatus(RecyclerAuthStatus.UNDER_REVIEW.getStatus());
+            // 添加新的回收员认证信息
+            recyclerInfoFeignClient.add(recyclerInfo);
+        } else {
+            // 更新现有的回收员认证信息
+            BeanUtils.copyProperties(recyclerApplyForm, recyclerInfoDB);
+            recyclerInfoDB.setAuthStatus(RecyclerAuthStatus.UNDER_REVIEW.getStatus());
+            recyclerInfoFeignClient.edit(recyclerInfoDB);
+        }
+        return true;
+    }
+
 }

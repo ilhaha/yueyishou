@@ -5,17 +5,14 @@ import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.tencentcloud.config.TencentCloudProperties;
 import com.ilhaha.yueyishou.tencentcloud.service.CiService;
 import com.ilhaha.yueyishou.tencentcloud.service.CosService;
-import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import com.qcloud.cos.COSClient;
-import com.qcloud.cos.http.HttpMethodName;
 import com.qcloud.cos.model.*;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 
 /**
@@ -64,7 +61,7 @@ public class CosServiceImpl implements CosService {
                     meta
             );
         } catch (IOException e) {
-            throw new RuntimeException("文件上传失败", e); // 自定义异常处理
+            throw new YueYiShouException(ResultCodeEnum.IMAGE_UPLOAD_FAIL);
         }
 
         // 设置文件为标准存储
@@ -81,7 +78,7 @@ public class CosServiceImpl implements CosService {
         if (!isAuditing) {
             // 删除违规图片
             cosClient.deleteObject(tencentCloudProperties.getBucketPrivate(), uploadPath);
-            throw new RuntimeException("图片审核不通过，上传失败");
+            throw new YueYiShouException(ResultCodeEnum.IMAGE_AUDITION_FAIL);
         }
 
         // 封装返回对象

@@ -1,4 +1,4 @@
-package com.ilhaha.yueyishou.model.vo.cos;
+package com.ilhaha.yueyishou.model.vo.tencentcloud;
 
 import lombok.Data;
 

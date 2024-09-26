@@ -1,7 +1,7 @@
 package com.ilhaha.yueyishou.recycler.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

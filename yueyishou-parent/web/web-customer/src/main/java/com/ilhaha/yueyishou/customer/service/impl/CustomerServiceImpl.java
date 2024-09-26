@@ -4,7 +4,10 @@ import com.ilhaha.yueyishou.customer.client.CustomerInfoFeignClient;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CustomerService;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
+import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Resource
     private CustomerInfoFeignClient customerInfoFeignClient;
+
+    @Resource
+    private RecyclerInfoFeignClient recyclerInfoFeignClient;
 
 
 
@@ -42,5 +48,25 @@ public class CustomerServiceImpl implements CustomerService {
         Long customerId = AuthContextHolder.getCustomerId();
         // 远程调用获取顾客信息
         return customerInfoFeignClient.getLoginInfo(customerId);
+    }
+
+    /**
+     * 认证成为回收员
+     * @param recyclerApplyForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> authRecycler(RecyclerApplyForm recyclerApplyForm) {
+        recyclerApplyForm.setCustomerId(AuthContextHolder.getCustomerId());
+        return customerInfoFeignClient.authRecycler(recyclerApplyForm);
+    }
+
+    /**
+     * 根据顾客Id获取回收员认证图片信息
+     * @return
+     */
+    @Override
+    public Result<RecyclerAuthImagesVo> getAuthImages() {
+        return recyclerInfoFeignClient.getAuthImages(AuthContextHolder.getCustomerId());
     }
 }

@@ -2,7 +2,7 @@ package com.ilhaha.yueyishou.recycler.controller;
 
 import com.ilhaha.yueyishou.recycler.service.RecyclerService;
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.vo.cos.CosUploadVo;
+import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

@@ -4,7 +4,7 @@ import {
 } from '../../api/customer/address'
 
 import {
-  cosUpload
+  reqCosUpload
 } from '../../api/customer/cos'
 
 Page({
@@ -66,8 +66,8 @@ Page({
     })
   },
   // 上传图片
-  async cosUpload(event) {
-    const res = await cosUpload(event);
+  async reqCosUpload(event) {
+    const res = await reqCosUpload(event, 'order');
     // 构造新的文件对象
     let file = {
       url: res.data.url

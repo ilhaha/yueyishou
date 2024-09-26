@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,24 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-recycler")
 public interface RecyclerInfoFeignClient {
+
+    /**
+     * 根据顾客Id获取回收员认证图片信息
+     * @param customerId
+     * @return
+     */
+    @GetMapping("/recyclerInfo/get/authImages")
+    Result<RecyclerAuthImagesVo> getAuthImages(@RequestParam("customerId") Long customerId);
+
+
+    /**
+     *  编辑
+     *
+     * @param recyclerInfo
+     * @return
+     */
+    @PostMapping("/recyclerInfo/edit")
+    Result<String> edit(@RequestBody RecyclerInfo recyclerInfo);
 
     /**
      * 回收员审核
@@ -62,4 +81,20 @@ public interface RecyclerInfoFeignClient {
      */
     @DeleteMapping(value = "/recyclerInfo/deleteBatch")
     Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids);
+
+    /**
+     * 根据顾客Id获取回收员认证信息
+     * @param customerId
+     * @return
+     */
+    @PostMapping("/recyclerInfo/get/auth")
+    Result<RecyclerInfo> getAuth(@RequestParam("customerId") Long customerId);
+
+    /**
+     * 添加回收员信息
+     * @param recyclerInfo
+     * @return
+     */
+    @PostMapping(value = "/recyclerInfo/add")
+    Result<String> add(@RequestBody RecyclerInfo recyclerInfo);
 }
