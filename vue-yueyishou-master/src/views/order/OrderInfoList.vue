@@ -20,12 +20,11 @@
                 <a-select-option value="1">待接单</a-select-option>
                 <a-select-option value="2">已接单</a-select-option>
                 <a-select-option value="3">前往回收点</a-select-option>
-                <a-select-option value="4">到达回收点</a-select-option>
-                <a-select-option value="5">待确认</a-select-option>
-                <a-select-option value="6">未付款</a-select-option>
-                <a-select-option value="7">已完成</a-select-option>
-                <a-select-option value="8">待评价</a-select-option>
-                <a-select-option value="9">已取消</a-select-option>
+                <a-select-option value="4">待确认</a-select-option>
+                <a-select-option value="5">未付款</a-select-option>
+                <a-select-option value="6">已完成</a-select-option>
+                <a-select-option value="7">待评价</a-select-option>
+                <a-select-option value="8">已取消</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>

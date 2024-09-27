@@ -6,13 +6,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
 import com.ilhaha.yueyishou.recycler.mapper.RecyclerInfoMapper;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.recycler.service.IRecyclerPersonalizationService;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import jakarta.annotation.Resource;
@@ -27,6 +30,9 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
 
     @Resource
     private CosFeignClient cosFeignClient;
+
+    @Resource
+    private IRecyclerPersonalizationService recyclerPersonalizationService;
 
     /**
      * 回收员状态切换
@@ -114,6 +120,23 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
             BeanUtils.copyProperties(recyclerInfoDB,recyclerAuthImagesVo);
         }
         return recyclerAuthImagesVo;
+    }
+
+    /**
+     * 获取回收员基本信息
+     * @param recyclerId
+     * @return
+     */
+    @Override
+    public RecyclerBaseInfoVo getBaseInfo(Long recyclerId) {
+        // 查询回收员信息
+        RecyclerBaseInfoVo recyclerBaseInfoVo = new RecyclerBaseInfoVo();
+        RecyclerInfo recyclerInfoDB = this.getById(recyclerId);
+        BeanUtils.copyProperties(recyclerInfoDB,recyclerBaseInfoVo);
+        // 查询回收设置
+        RecyclerPersonalization personalization = recyclerPersonalizationService.getPersonalizationByRecyclerId(recyclerInfoDB.getId());
+        BeanUtils.copyProperties(personalization,recyclerBaseInfoVo);
+        return recyclerBaseInfoVo;
     }
 
 }

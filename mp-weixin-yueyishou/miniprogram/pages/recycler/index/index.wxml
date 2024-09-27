@@ -1,0 +1,6 @@
+<van-tabs active="{{ active }}" bind:change="onChange">
+  <view class="container">
+    <van-tab wx:for="{{tabList}}" wx:key="index" title="{{item.title}}">内容 1</van-tab>
+  </view>
+
+</van-tabs>

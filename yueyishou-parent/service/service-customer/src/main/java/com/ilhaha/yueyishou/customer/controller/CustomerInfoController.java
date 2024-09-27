@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.customer.service.ICustomerInfoService;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -22,6 +23,17 @@ import java.util.Arrays;
 public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
+
+
+	/**
+	 * 更新顾客基本信息
+	 * @param updateCustomerBaseInfoForm
+	 * @return
+	 */
+	@PostMapping("/update/base/info")
+	public Result<Boolean> updateBaseInfo(@RequestBody UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm){
+		return Result.ok(customerInfoService.updateBaseInfo(updateCustomerBaseInfoForm));
+	}
 
 	/**
 	 * 认证成为回收员

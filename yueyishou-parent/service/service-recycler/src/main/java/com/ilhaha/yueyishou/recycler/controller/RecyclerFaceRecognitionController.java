@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerFaceRecognition;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerFaceRecognitionService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -21,7 +22,32 @@ import java.util.Arrays;
 public class RecyclerFaceRecognitionController {
 	@Resource
 	private IRecyclerFaceRecognitionService recyclerFaceRecognitionService;
-	
+
+
+	/**
+	 *   添加
+	 *
+	 * @param recyclerFaceRecognition
+	 * @return
+	 */
+	@PostMapping(value = "/add")
+	public Result<String> add(@RequestBody RecyclerFaceRecognition recyclerFaceRecognition) {
+		recyclerFaceRecognitionService.save(recyclerFaceRecognition);
+		return Result.ok("添加成功！");
+	}
+
+	/**
+	 *  编辑
+	 *
+	 * @param recyclerFaceRecognition
+	 * @return
+	 */
+	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
+	public Result<String> edit(@RequestBody RecyclerFaceRecognition recyclerFaceRecognition) {
+		recyclerFaceRecognitionService.updateById(recyclerFaceRecognition);
+		return Result.ok("编辑成功!");
+	}
+
 	/**
 	 * 分页列表查询
 	 *
@@ -42,29 +68,7 @@ public class RecyclerFaceRecognitionController {
 		return Result.ok(pageList);
 	}
 	
-	/**
-	 *   添加
-	 *
-	 * @param recyclerFaceRecognition
-	 * @return
-	 */
-	@PostMapping(value = "/add")
-	public Result<String> add(@RequestBody RecyclerFaceRecognition recyclerFaceRecognition) {
-		recyclerFaceRecognitionService.save(recyclerFaceRecognition);
-		return Result.ok("添加成功！");
-	}
-	
-	/**
-	 *  编辑
-	 *
-	 * @param recyclerFaceRecognition
-	 * @return
-	 */
-	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> edit(@RequestBody RecyclerFaceRecognition recyclerFaceRecognition) {
-		recyclerFaceRecognitionService.updateById(recyclerFaceRecognition);
-		return Result.ok("编辑成功!");
-	}
+
 	
 	/**
 	 *   通过id删除

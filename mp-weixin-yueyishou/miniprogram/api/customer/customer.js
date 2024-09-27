@@ -31,3 +31,10 @@ export const reqRecyclerAuth = (recyclerApplyForm) => {
 export const reqGetAuthImages = () => {
   return http.get(urlPrefix + `/customer/get/authImages`)
 }
+
+/**
+ * 更新顾客头像和昵称
+ */
+export const reqUpdateBaseInfo = (params) => {
+  return http.post(urlPrefix + `/customer/update/base/info`, params)
+}

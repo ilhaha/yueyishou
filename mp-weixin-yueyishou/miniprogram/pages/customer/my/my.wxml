@@ -58,7 +58,7 @@
         </view>
 
         <view class="order-content-wrap">
-          <view class="order-content-item" wx:for="{{ initpanel }}">
+          <view class="order-content-item" wx:for="{{ initpanel }}" wx:key="index">
             <navigator url="{{ token ? item.url : '/pages/login/login' }}">
               <view class="iconfont {{ item.iconfont }}"></view>
               <text>{{ item.title }}</text>
@@ -74,7 +74,7 @@
         </view>
 
         <view class="order-content-wrap">
-          <view class="order-content-item" wx:for="{{ initCommonlyPanel }}">
+          <view class="order-content-item" wx:for="{{ initCommonlyPanel }}" wx:key="index">
             <navigator url="{{ token ? item.url : '/pages/login/login' }}">
               <view class="iconfont {{ item.iconfont }}"></view>
               <text>{{ item.title }}</text>

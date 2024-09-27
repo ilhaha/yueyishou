@@ -1,5 +1,7 @@
 package com.ilhaha.yueyishou.recycler.controller;
 
+import com.ilhaha.yueyishou.common.anno.LoginVerification;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
 import com.ilhaha.yueyishou.recycler.service.RecyclerService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
@@ -18,6 +20,17 @@ public class RecyclerController {
 
     @Resource
     private RecyclerService recyclerService;
+
+    /**
+     * 获取回收员基本信息
+     * @param
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/base/info")
+    public Result<RecyclerBaseInfoVo> getBaseInfo(){
+        return recyclerService.getBaseInfo();
+    }
 
     /**
      * 回收员上传图片

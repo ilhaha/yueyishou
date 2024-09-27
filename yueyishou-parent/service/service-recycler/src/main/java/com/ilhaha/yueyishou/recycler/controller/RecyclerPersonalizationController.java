@@ -20,6 +20,16 @@ import java.util.Arrays;
 public class RecyclerPersonalizationController {
 	@Resource
 	private IRecyclerPersonalizationService recyclerPersonalizationService;
+
+	/**
+	 * 根据回收员ID获取回收员的个性化设置
+	 * @param recyclerId
+	 * @return
+	 */
+	@GetMapping("/info/by/{recyclerId}")
+	public Result<RecyclerPersonalization> getPersonalizationByRecyclerId(@PathVariable("recyclerId") Long recyclerId){
+		return Result.ok(recyclerPersonalizationService.getPersonalizationByRecyclerId(recyclerId));
+	}
 	
 	/**
 	 * 分页列表查询
@@ -42,7 +52,7 @@ public class RecyclerPersonalizationController {
 	}
 	
 	/**
-	 *   添加
+	 *   添加回收员个性化设置
 	 *
 	 * @param recyclerPersonalization
 	 * @return

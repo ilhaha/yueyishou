@@ -163,25 +163,6 @@ export default {
           align: 'center',
           dataIndex: 'name',
         },
-
-        {
-          title: '身份证号码',
-          align: 'center',
-          dataIndex: 'idcardNo',
-        },
-        {
-          title: '身份证地址',
-          align: 'center',
-          dataIndex: 'idcardAddress',
-        },
-        {
-          title: '身份证有效期',
-          align: 'center',
-          dataIndex: 'idcardExpire',
-          customRender: function (text) {
-            return !text ? '' : text.length > 10 ? text.substr(0, 10) : text
-          },
-        },
         {
           title: '身份证正面',
           align: 'center',
@@ -211,20 +192,11 @@ export default {
           scopedSlots: { customRender: 'imgSlot' },
         },
         {
-          title: '认证状态',
+          title: '人脸模型',
           align: 'center',
-          dataIndex: 'authStatus',
-          customRender: function (text) {
-            if (text == '0') {
-              return '未认证'
-            } else if (text == '1') {
-              return '待审核'
-            } else if (text == '2') {
-              return '已通过'
-            } else {
-              return '未通过'
-            }
-          },
+          width: 150,
+          dataIndex: 'faceRecognitionUrl',
+          scopedSlots: { customRender: 'imgSlot' },
         },
         {
           title: '状态',
@@ -247,10 +219,40 @@ export default {
           },
         },
         {
-          title: '回收员工号',
+          title: '身份证号码',
           align: 'center',
-          dataIndex: 'jobNo',
+          dataIndex: 'idcardNo',
         },
+        {
+          title: '身份证地址',
+          align: 'center',
+          dataIndex: 'idcardAddress',
+        },
+        {
+          title: '身份证有效期',
+          align: 'center',
+          dataIndex: 'idcardExpire',
+          customRender: function (text) {
+            return !text ? '' : text.length > 10 ? text.substr(0, 10) : text
+          },
+        },
+        {
+          title: '认证状态',
+          align: 'center',
+          dataIndex: 'authStatus',
+          customRender: function (text) {
+            if (text == '0') {
+              return '未认证'
+            } else if (text == '1') {
+              return '待审核'
+            } else if (text == '2') {
+              return '已通过'
+            } else {
+              return '未通过'
+            }
+          },
+        },
+
         {
           title: '头像',
           align: 'center',

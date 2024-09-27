@@ -7,6 +7,9 @@ import {
 import {
   ComponentWithStore
 } from 'mobx-miniprogram-bindings'
+import {
+  toast
+} from '../../../utils/extendApi';
 
 
 ComponentWithStore({
@@ -27,6 +30,19 @@ ComponentWithStore({
    * 组件的方法列表
    */
   methods: {
+    // 注册成为回收员
+    registerRecycler() {
+      if (this.data.token) {
+        this.switchCertificationShow()
+      } else {
+        toast({
+          title: "您未登录，请您先登录"
+        })
+        wx.navigateTo({
+          url: '/pages/login/login'
+        })
+      }
+    },
     // 审核通过，跳转回收员端
     gotoRecyclerIndex(event) {
       const data = event.detail;
@@ -34,9 +50,13 @@ ComponentWithStore({
         certificationShow: false
       })
       if (data == 2) {
+        wx.showTabBar({
+          animation: true // 可选：带动画效果
+        });
         wx.navigateTo({
           url: '/pages/recycler/index/index'
         })
+
       }
 
     },

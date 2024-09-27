@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.customer.controller;
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CustomerService;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
@@ -20,6 +21,17 @@ public class CustomerController {
 
     @Resource
     private CustomerService customerService;
+
+    /**
+     * 更新顾客基本信息
+     * @param updateCustomerBaseInfoForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/update/base/info")
+    public Result<Boolean> updateBaseInfo(@RequestBody UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm){
+        return customerService.updateBaseInfo(updateCustomerBaseInfoForm);
+    }
 
     /**
      * 根据顾客Id获取回收员认证图片信息

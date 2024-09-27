@@ -2,6 +2,7 @@ package com.ilhaha.yueyishou.customer.client;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
@@ -16,6 +17,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-customer")
 public interface CustomerInfoFeignClient {
+
+    /**
+     * 更新顾客基本信息
+     * @param updateCustomerBaseInfoForm
+     * @return
+     */
+    @PostMapping("/customerInfo/update/base/info")
+    Result<Boolean> updateBaseInfo(@RequestBody UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm);
 
     /**
      * 认证成为回收员

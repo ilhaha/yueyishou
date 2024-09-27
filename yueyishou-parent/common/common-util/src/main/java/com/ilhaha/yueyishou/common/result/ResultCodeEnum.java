@@ -27,6 +27,7 @@ public enum ResultCodeEnum {
     CUSTOMER_ADDRESS_NOT_EXIST(230,"地址信息不存在"),
     ID_CARD_NOT_RECOGNIZED(240,"身份证无法识别"),
     FACE_MODEL_CREATION_FAILED(250,"人脸模型创建失败"),
+    UNCERTIFIED_RECYCLER(260,"未认证回收员"),
     SERVICE_ERROR(2012, "服务异常"),
 
 

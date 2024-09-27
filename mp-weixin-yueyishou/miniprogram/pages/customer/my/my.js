@@ -33,7 +33,7 @@ ComponentWithStore({
       }
     ],
     initCommonlyPanel: [{
-        url: '',
+        url: '/pages/customer/setting/setting',
         title: '个人设置',
         iconfont: 'icon-gerenshezhi'
       },

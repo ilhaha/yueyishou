@@ -1,6 +1,7 @@
 package com.ilhaha.yueyishou.customer.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
@@ -39,4 +40,10 @@ public interface CustomerService {
      */
     Result<RecyclerAuthImagesVo> getAuthImages();
 
+    /**
+     * 更新顾客基本信息
+     * @param updateCustomerBaseInfoForm
+     * @return
+     */
+    Result<Boolean> updateBaseInfo(UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm);
 }

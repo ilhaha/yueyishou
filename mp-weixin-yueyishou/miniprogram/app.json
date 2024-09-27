@@ -11,7 +11,8 @@
     "pages/customer/address/addorupdate/index",
     "pages/customer/address/list/index",
     "pages/place-order/terms/terms",
-    "pages/recycler/index/index"
+    "pages/recycler/index/index",
+    "pages/customer/setting/setting"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -65,7 +66,9 @@
     "van-goods-action": "@vant/weapp/goods-action/index",
     "van-goods-action-icon": "@vant/weapp/goods-action-icon/index",
     "van-goods-action-button": "@vant/weapp/goods-action-button/index",
-    "van-uploader": "@vant/weapp/uploader/index"
+    "van-uploader": "@vant/weapp/uploader/index",
+    "van-tab": "@vant/weapp/tab/index",
+    "van-tabs": "@vant/weapp/tabs/index"
   },
   "requiredPrivateInfos": [
     "getLocation",

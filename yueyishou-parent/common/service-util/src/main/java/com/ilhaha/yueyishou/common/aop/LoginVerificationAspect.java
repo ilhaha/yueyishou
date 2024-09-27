@@ -44,5 +44,11 @@ public class LoginVerificationAspect {
             throw new YueYiShouException(ResultCodeEnum.LOGIN_AUTH);
         }
         AuthContextHolder.setCustomerId(Long.valueOf(customerId));
+
+        String recyclerId = (String) redisTemplate.opsForValue().get(RedisConstant.RECYCLER_INFO_KEY_PREFIX + token);
+        if (!ObjectUtils.isEmpty(recyclerId)) {
+            AuthContextHolder.setRecyclerId(Long.valueOf(recyclerId));
+        }
+
     }
 }

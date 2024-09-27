@@ -6,9 +6,11 @@ import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.mysql.cj.log.Log;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,40 @@ import java.util.Arrays;
 public class RecyclerInfoController {
 	@Resource
 	private IRecyclerInfoService recyclerInfoService;
+
+	/**
+	 * 获取回收员基本信息
+	 * @param recyclerId
+	 * @return
+	 */
+	@GetMapping("/base/info/{recyclerId}")
+	public Result<RecyclerBaseInfoVo> getBaseInfo(@PathVariable("recyclerId") Long recyclerId){
+		return Result.ok(recyclerInfoService.getBaseInfo(recyclerId));
+	}
+
+	/**
+	 *   添加
+	 *
+	 * @param recyclerInfo
+	 * @return
+	 */
+	@PostMapping(value = "/add")
+	public Result<RecyclerInfo> add(@RequestBody RecyclerInfo recyclerInfo) {
+		recyclerInfoService.save(recyclerInfo);
+		return Result.ok(recyclerInfo);
+	}
+
+	/**
+	 *  编辑
+	 *
+	 * @param recyclerInfo
+	 * @return
+	 */
+	@PostMapping(value = "/edit")
+	public Result<String> edit(@RequestBody RecyclerInfo recyclerInfo) {
+		recyclerInfoService.updateById(recyclerInfo);
+		return Result.ok("编辑成功!");
+	}
 
 	/**
 	 * 根据顾客Id获取回收员认证图片信息
@@ -77,30 +113,7 @@ public class RecyclerInfoController {
 													 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		return Result.ok(recyclerInfoService.queryPageList(recyclerInfo,pageNo,pageSize));
 	}
-	
-	/**
-	 *   添加
-	 *
-	 * @param recyclerInfo
-	 * @return
-	 */
-	@PostMapping(value = "/add")
-	public Result<String> add(@RequestBody RecyclerInfo recyclerInfo) {
-		recyclerInfoService.save(recyclerInfo);
-		return Result.ok("添加成功！");
-	}
-	
-	/**
-	 *  编辑
-	 *
-	 * @param recyclerInfo
-	 * @return
-	 */
-	@PostMapping(value = "/edit")
-	public Result<String> edit(@RequestBody RecyclerInfo recyclerInfo) {
-		recyclerInfoService.updateById(recyclerInfo);
-		return Result.ok("编辑成功!");
-	}
+
 	
 	/**
 	 *   通过id删除回收员

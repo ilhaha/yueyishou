@@ -4,6 +4,7 @@ import com.ilhaha.yueyishou.customer.client.CustomerInfoFeignClient;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CustomerService;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
@@ -68,5 +69,16 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Result<RecyclerAuthImagesVo> getAuthImages() {
         return recyclerInfoFeignClient.getAuthImages(AuthContextHolder.getCustomerId());
+    }
+
+    /**
+     * 更新顾客基本信息
+     * @param updateCustomerBaseInfoForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> updateBaseInfo(UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm) {
+        updateCustomerBaseInfoForm.setId(AuthContextHolder.getCustomerId());
+        return customerInfoFeignClient.updateBaseInfo(updateCustomerBaseInfoForm);
     }
 }

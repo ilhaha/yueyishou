@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.customer.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
+import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
@@ -44,5 +45,12 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @return
      */
     Boolean authRecycler(RecyclerApplyForm recyclerApplyForm);
+
+    /**
+     * 更新顾客基本信息
+     * @param updateCustomerBaseInfoForm
+     * @return
+     */
+    Boolean updateBaseInfo(UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm);
 
 }

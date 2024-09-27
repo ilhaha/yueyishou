@@ -6,6 +6,7 @@ import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,5 +97,14 @@ public interface RecyclerInfoFeignClient {
      * @return
      */
     @PostMapping(value = "/recyclerInfo/add")
-    Result<String> add(@RequestBody RecyclerInfo recyclerInfo);
+    Result<RecyclerInfo> add(@RequestBody RecyclerInfo recyclerInfo);
+
+
+    /**
+     * 获取回收员基本信息
+     * @param recyclerId
+     * @return
+     */
+    @GetMapping("/recyclerInfo/base/info/{recyclerId}")
+    Result<RecyclerBaseInfoVo> getBaseInfo(@PathVariable("recyclerId") Long recyclerId);
 }
