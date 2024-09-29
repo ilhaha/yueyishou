@@ -7,6 +7,15 @@ import {
   reqCosUpload
 } from '../../api/customer/cos'
 
+import {
+  reqCalculateOrderFee,
+  reqPlaceOrder
+} from '../../api/customer/order'
+
+import {
+  toast
+} from '../../utils/extendApi.js'
+
 Page({
   data: {
     categoryList: [], // 分类数据
@@ -14,17 +23,18 @@ Page({
     selectedCategory: {}, // 当前选中的分类信息
     address: {}, // 选择的地址信息
     show: false,
+    dialogShow: false,
     addressList: [],
     addAddressShow: false,
     weightList: [{
         id: 1,
         desc: '约10-100公斤',
-        value: 50
+        value: 100
       },
       {
         id: 2,
         desc: '约200-500公斤',
-        value: 350
+        value: 500
       },
       {
         id: 3,
@@ -35,23 +45,168 @@ Page({
     weightCurrentIndex: 0, // 当前选中的分类索引
     selectedWeight: {}, // 当前选中的分类信息
     fileList: [],
+    multiArray: [
+      ['今天', '明天', '后天'],
+      []
+    ],
+    multiIndex: [0, 0],
+    normalHours: [],
+    todayHours: [],
+    formattedDate: '', // 用于显示选择后的时间
     orderForm: {
-      categoryId: '',
-      address: {},
-      weightValue: '',
-      fileList: [],
-      remark: ''
+      customerLocation: '',
+      customerPointLongitude: '',
+      customerPointLatitude: '',
+      parentCategoryId: '',
+      parentCategoryName: '',
+      sonCategoryId: '',
+      sonCategoryName: '',
+      unitPrice: '',
+      appointmentTime: '',
+      actualPhotos: '',
+      recycleWeigh: '',
+      remark: '',
+      expectRecyclerPlatformAmount: '',
+      expectCustomerPlatformAmount: '',
+      orderContactPerson: '',
+      orderContactPhone: '',
     }
   },
-
+  // 初始化数据
   onLoad(options) {
     const categoryList = JSON.parse(decodeURIComponent(options.sub));
     this.setData({
       categoryList,
       selectedCategory: categoryList[0], // 默认选中第一个分类
-      selectedWeight: this.data.weightList[0] // 默认选中第一个重量
+      selectedWeight: this.data.weightList[0], // 默认选中第一个重量
+      'orderForm.parentCategoryId': options.parentCategoryId,
+      'orderForm.parentCategoryName': options.parentCategoryName
     });
     this.getDefaultAddress();
+  },
+  // 确认下单
+  async placeOrder(event) {
+    const res = await reqPlaceOrder(this.data.orderForm);
+    if (res.data) {
+      toast({
+        title: '预约成功',
+        icon: 'success',
+        duration: 1000 // 设置显示时间为1.5秒
+      });
+
+      // 等待toast显示完成后再跳转页面
+      setTimeout(() => {
+        wx.switchTab({
+          url: '/pages/customer/order/order'
+        });
+      }, 1000); // 延迟1.5秒跳转，与toast显示时间一致
+
+    }
+  },
+
+  // 预估回收金额
+  async estimatedAmount() {
+    // 校验参数
+    if (this.checkParams()) {
+      return;
+    }
+    const res = await reqCalculateOrderFee({
+      unitPrice: this.data.selectedCategory.unitPrice,
+      recycleWeigh: this.data.selectedWeight.value
+    });
+    const data = res.data;
+    this.setData({
+      'orderForm.estimatedTotalAmount': data.estimatedTotalAmount,
+      'orderForm.expectRecyclerPlatformAmount': data.expectRecyclerPlatformAmount,
+      'orderForm.expectCustomerPlatformAmount': data.expectCustomerPlatformAmount,
+    })
+    this.checkOrder();
+  },
+  // 整理订单信息
+  checkOrder() {
+    // 整理参数
+    const {
+      address,
+      selectedCategory,
+      selectedWeight,
+      formattedDate,
+      fileList,
+      orderForm
+    } = this.data;
+    // 填充 orderForm 参数
+    this.setData({
+      'orderForm.customerLocation': address.fullAddress, // 设置回收地址
+      'orderForm.customerPointLongitude': address.longitude, // 设置地址经度
+      'orderForm.customerPointLatitude': address.latitude, // 设置地址纬度
+      'orderForm.unitPrice': selectedCategory.unitPrice, // 单价
+      'orderForm.appointmentTime': formattedDate, // 设置预约时间
+      'orderForm.actualPhotos': fileList.map(file => file.url).join(','), // 将图片URL拼接为字符串
+      'orderForm.recycleWeigh': selectedWeight.value, // 设置重量值
+      'orderForm.orderContactPerson': address.name,
+      'orderForm.orderContactPhone': address.phone,
+      'orderForm.sonCategoryId': selectedCategory.id,
+      'orderForm.sonCategoryName': selectedCategory.categoryName,
+      dialogShow: true
+    });
+  },
+  // 校验参数
+  checkParams() {
+    const {
+      address,
+      selectedCategory,
+      formattedDate,
+      fileList,
+      selectedWeight
+    } = this.data;
+
+    if (!address.fullAddress) {
+      wx.showToast({
+        title: '请选择回收地址',
+        icon: 'none'
+      });
+      return true;
+    }
+
+    if (!selectedCategory.id) {
+      wx.showToast({
+        title: '请选择回收品类',
+        icon: 'none'
+      });
+      return true;
+    }
+
+    if (!selectedWeight.value) {
+      wx.showToast({
+        title: '请选择回收重量',
+        icon: 'none'
+      });
+      return true;
+    }
+
+    if (!formattedDate) {
+      wx.showToast({
+        title: '请选择上门时间',
+        icon: 'none'
+      });
+      return true;
+    }
+
+    if (fileList.length === 0) {
+      wx.showToast({
+        title: '请上传至少一张回收物的照片',
+        icon: 'none'
+      });
+      return true;
+    }
+
+    return false;
+  },
+
+  // 获取备注信息
+  getRemark(event) {
+    this.setData({
+      'orderForm.remark': event.detail
+    });
   },
   // 跳转条款页面
   goTerms() {
@@ -114,6 +269,12 @@ Page({
       addAddressShow: true,
       show: false
     })
+  },
+  // 关闭确认订单弹出
+  onClose() {
+    this.setData({
+      dialogShow: false
+    });
   },
   // 关闭回收地址列表
   hideSheet() {
@@ -215,5 +376,120 @@ Page({
       weightCurrentIndex: index, // 更新当前选中的分类索引
       selectedWeight // 更新当前选中的分类信息
     });
+  },
+
+  onShow() {
+    this.initHour();
+  },
+
+  // 初始化小时数组
+  initHour() {
+    const hour = new Date().getHours();
+    const minute = new Date().getMinutes();
+
+    // 如果分钟不是整点，+1小时开始，否则直接从当前小时开始
+    const todayStartHour = minute > 0 ? (hour >= 8 ? hour + 1 : 8) : (hour >= 8 ? hour : 8);
+
+    const todayHours = this.generateTodayHoursArray(todayStartHour); // 从下一个小时开始生成“今天”的数组
+    const normalHours = this.generateHoursArray(); // 生成“明天”和“后天”的默认小时数组
+
+    const multiArray = this.data.multiArray;
+
+    multiArray[1] = todayHours; // 设置“今天”的小时数组
+    this.setData({
+      todayHours: todayHours,
+      normalHours: normalHours,
+      multiArray: todayHours.length > 0 ? multiArray : [
+        ['明天', '后天'], normalHours
+      ],
+    });
+  },
+
+  // 处理picker改变
+  bindMultiPickerChange: function (e) {
+    const {
+      multiArray,
+      multiIndex
+    } = this.data;
+    const selectedDay = multiArray[0][multiIndex[0]]; // 选择的天
+    const selectedTime = multiArray[1][multiIndex[1]]; // 选择的时间段
+
+    const endTime = selectedTime.split('-')[1]; // 获取结束时间，如 "10:00"
+
+    const formattedDate = this.formatSelectedDate(selectedDay, endTime.trim()); // 将结束时间传递
+    this.setData({
+      multiIndex: e.detail.value,
+      formattedDate: formattedDate
+    });
+  },
+
+  // 处理列改变
+  bindMultiPickerColumnChange: function (e) {
+    const column = e.detail.column;
+    const value = e.detail.value;
+    const data = {
+      multiArray: this.data.multiArray,
+      multiIndex: this.data.multiIndex
+    };
+    data.multiIndex[column] = value;
+
+    switch (column) {
+      case 0: // 第一列的变化
+        switch (value) {
+          case 0:
+            data.multiArray[1] = this.data.todayHours.length > 0 && data.multiArray[0].length > 2 ? this.data.todayHours : this.data.normalHours; // 切换到今天时间数组
+            break;
+          case 1:
+          case 2:
+            data.multiArray[1] = this.data.normalHours; // 明天、后天选择全天时间
+            break;
+        }
+        break;
+    }
+    this.setData(data);
+  },
+
+  // 生成“今天”的时间数组，从当前时间的下一个小时开始
+  generateTodayHoursArray(start) {
+    const arrayHours = [];
+    for (let i = start; i < 21; i++) { // 限制时间段到 06:00-20:00
+      const hourStr = `${i < 10 ? '0' : ''}${i}:00-${i + 1 < 10 ? '0' : ''}${i + 1}:00`;
+      arrayHours.push(hourStr);
+    }
+    return arrayHours;
+  },
+
+  // 生成“明天”和“后天”的时间数组，默认从 06:00 开始
+  generateHoursArray(start = 8) {
+    const arrayHours = [];
+    for (let i = start; i < 21; i++) {
+      const hourStr = `${i < 10 ? '0' : ''}${i}:00-${i + 1 < 10 ? '0' : ''}${i + 1}:00`;
+      arrayHours.push(hourStr);
+    }
+    return arrayHours;
+  },
+  // 格式化选择的时间为 "yyyy-MM-dd HH:mm"
+  formatSelectedDate(selectedDay, selectedTime) {
+    const today = new Date();
+    let selectedDate = new Date();
+
+    if (selectedDay === '今天') {
+      selectedDate = today;
+    } else if (selectedDay === '明天') {
+      selectedDate.setDate(today.getDate() + 1);
+    } else if (selectedDay === '后天') {
+      selectedDate.setDate(today.getDate() + 2);
+    }
+
+    const [hour, minute] = selectedTime.split(':');
+    selectedDate.setHours(parseInt(hour), parseInt(minute));
+
+    const year = selectedDate.getFullYear();
+    const month = (selectedDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = selectedDate.getDate().toString().padStart(2, '0');
+    const formattedHour = selectedDate.getHours().toString().padStart(2, '0');
+    const formattedMinute = selectedDate.getMinutes().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day} ${formattedHour}:${formattedMinute}`;
   }
 });

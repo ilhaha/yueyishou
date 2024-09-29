@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
+import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
+
+    /**
+     * 下单
+     * @param placeOrderForm
+     * @return
+     */
+    @PostMapping("/orderInfo/place")
+    Result<Boolean> placeOrder(@RequestBody PlaceOrderForm placeOrderForm);
 
     /**
      * 订单分页列表查询

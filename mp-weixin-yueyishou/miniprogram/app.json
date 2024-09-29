@@ -2,7 +2,6 @@
   "pages": [
     "pages/index/index",
     "pages/login/login",
-    "pages/customer/order/order",
     "pages/category/category",
     "pages/customer/my/my",
     "pages/quote/quote",
@@ -12,7 +11,8 @@
     "pages/customer/address/list/index",
     "pages/place-order/terms/terms",
     "pages/recycler/index/index",
-    "pages/customer/setting/setting"
+    "pages/customer/setting/setting",
+    "pages/customer/order/order"
   ],
   "window": {
     "backgroundTextStyle": "light",

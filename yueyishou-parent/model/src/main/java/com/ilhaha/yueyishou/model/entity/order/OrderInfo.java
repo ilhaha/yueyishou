@@ -26,14 +26,22 @@ public class OrderInfo implements Serializable {
     private BigDecimal customerPointLongitude;
 	/**客户地点伟度*/
     private BigDecimal customerPointLatitude;
-	/**订单回收分类ID*/
-    private Integer categoryId;
-    /**预约回收开始时间*/
-    private Date appointmentStartTime;
-    /**预约回收结束时间*/
-    private Date appointmentEndTime;
+	/**订单回收分类父ID*/
+    private Long parentCategoryId;
+    /**订单回收分类父名称*/
+    private String parentCategoryName;
+    /**订单回收分类子ID*/
+    private Long sonCategoryId;
+    /**订单回收分类子名称*/
+    private String sonCategoryName;
+    /**单价*/
+    private BigDecimal unitPrice;
+    /**预约时间*/
+    private Date appointmentTime;
     /**实物照片*/
     private String actualPhotos;
+    /**回收重量*/
+    private BigDecimal recycleWeigh;
 	/**回收员ID*/
     private Integer recyclerId;
 	/**回收员接单时间*/
@@ -50,8 +58,8 @@ public class OrderInfo implements Serializable {
     private String orderContactPerson;
     /**订单联系电话*/
     private String orderContactPhone;
-	/**回收员预支付订单金额*/
-    private BigDecimal expectRecyclerAmount;
+	/**订单预计回收总金额*/
+    private BigDecimal estimatedTotalAmount;
 	/**回收员预支付平台订单金额*/
     private BigDecimal expectRecyclerPlatformAmount;
 	/**顾客预支付平台订单金额*/

@@ -5,9 +5,9 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="预约结束时间">
+            <a-form-item label="预约时间">
               <a-date-picker
-                v-model:value="queryParam.appointmentEndTime"
+                v-model:value="queryParam.appointmentTime"
                 @change="searchQuery"
                 :format="dateFormat"
                 :value-format="dateFormat"
@@ -195,7 +195,7 @@ export default {
         {
           title: '预约回收时间',
           align: 'center',
-          dataIndex: 'appointmentStartTime',
+          dataIndex: 'appointmentTime',
           customRender: function (text, record) {
             let startTime = this.formatDate(text)
             let endTime = this.formatDate(record.appointmentEndTime)
@@ -205,12 +205,12 @@ export default {
           }.bind(this),
         },
         {
-          title: '回收员预支付订单金额',
+          title: '订单预计回收总金额',
           align: 'center',
-          dataIndex: 'expectRecyclerAmount',
+          dataIndex: 'estimatedTotalAmount',
         },
         {
-          title: '回收员预支付订单金额',
+          title: '订单预计回收总金额',
           align: 'center',
           dataIndex: 'expectRecyclerPlatformAmount',
         },
@@ -305,7 +305,7 @@ export default {
             {
               title: '预约回收时间',
               align: 'center',
-              dataIndex: 'appointmentStartTime',
+              dataIndex: 'appointmentTime',
               customRender: function (text, record) {
                 let startTime = this.formatDate(text)
                 let endTime = this.formatDate(record.appointmentEndTime)
@@ -315,12 +315,12 @@ export default {
               }.bind(this),
             },
             {
-              title: '回收员预支付订单金额',
+              title: '订单预计回收总金额',
               align: 'center',
-              dataIndex: 'expectRecyclerAmount',
+              dataIndex: 'estimatedTotalAmount',
             },
             {
-              title: '回收员预支付订单金额',
+              title: '订单预计回收总金额',
               align: 'center',
               dataIndex: 'expectRecyclerPlatformAmount',
             },
@@ -388,7 +388,7 @@ export default {
             {
               title: '预约回收时间',
               align: 'center',
-              dataIndex: 'appointmentStartTime',
+              dataIndex: 'appointmentTime',
               customRender: function (text, record) {
                 let startTime = this.formatDate(text)
                 let endTime = this.formatDate(record.appointmentEndTime)
@@ -411,12 +411,12 @@ export default {
               }.bind(this),
             },
             {
-              title: '回收员预支付订单金额',
+              title: '订单预计回收总金额',
               align: 'center',
-              dataIndex: 'expectRecyclerAmount',
+              dataIndex: 'estimatedTotalAmount',
             },
             {
-              title: '回收员预支付订单金额',
+              title: '订单预计回收总金额',
               align: 'center',
               dataIndex: 'expectRecyclerPlatformAmount',
             },
@@ -484,7 +484,7 @@ export default {
             {
               title: '预约回收时间',
               align: 'center',
-              dataIndex: 'appointmentStartTime',
+              dataIndex: 'appointmentTime',
               customRender: function (text, record) {
                 let startTime = this.formatDate(text)
                 let endTime = this.formatDate(record.appointmentEndTime)
@@ -515,12 +515,12 @@ export default {
               }.bind(this),
             },
             {
-              title: '回收员预支付订单金额',
+              title: '订单预计回收总金额',
               align: 'center',
-              dataIndex: 'expectRecyclerAmount',
+              dataIndex: 'estimatedTotalAmount',
             },
             {
-              title: '回收员预支付订单金额',
+              title: '订单预计回收总金额',
               align: 'center',
               dataIndex: 'expectRecyclerPlatformAmount',
             },
@@ -619,12 +619,12 @@ export default {
       fieldList.push({ type: 'int', value: 'categoryId', text: '订单回收分类ID', dictCode: '' })
       fieldList.push({ type: 'int', value: 'recyclerId', text: '回收员ID', dictCode: '' })
       fieldList.push({ type: 'date', value: 'acceptTime', text: '回收员接单时间' })
-      fieldList.push({ type: 'date', value: 'appointmentStartTime', text: '预约服务开始时间' })
+      fieldList.push({ type: 'date', value: 'appointmentTime', text: '预约时间' })
       fieldList.push({ type: 'date', value: 'arriveTime', text: '回收员到达时间' })
       fieldList.push({ type: 'int', value: 'status', text: '订单状态', dictCode: '' })
       fieldList.push({ type: 'string', value: 'cancelMessage', text: '取消订单信息', dictCode: '' })
       fieldList.push({ type: 'string', value: 'remark', text: '订单备注信息', dictCode: '' })
-      fieldList.push({ type: 'BigDecimal', value: 'expectRecyclerAmount', text: '回收员预支付订单金额', dictCode: '' })
+      fieldList.push({ type: 'BigDecimal', value: 'estimatedTotalAmount', text: '订单预计回收总金额', dictCode: '' })
       fieldList.push({
         type: 'string',
         value: 'orderContactPhone',

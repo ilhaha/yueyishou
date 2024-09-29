@@ -2,7 +2,10 @@ package com.ilhaha.yueyishou.order.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
+import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -19,7 +22,17 @@ import java.util.Arrays;
 public class OrderInfoController {
 	@Resource
 	private IOrderInfoService orderInfoService;
-	
+
+	/**
+	 * 下单
+	 * @param placeOrderForm
+	 * @return
+	 */
+	@PostMapping("/place")
+	public Result<Boolean> placeOrder(@RequestBody PlaceOrderForm placeOrderForm) {
+		return Result.ok(orderInfoService.placeOrder(placeOrderForm));
+	}
+
 	/**
 	 * 订单分页列表查询
 	 *

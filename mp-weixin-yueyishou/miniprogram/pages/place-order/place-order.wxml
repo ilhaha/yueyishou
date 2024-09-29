@@ -100,6 +100,14 @@
   </view>
   <!-- 上传图片 -->
   <view class="photo-section">
+    <view class="picker">
+      <text class="photo-title">请选择上门时间</text>
+      <picker mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" value="{{multiIndex}}" range="{{multiArray}}">
+        <view class="picker">
+          <van-field label="当前选择" value="{{formattedDate}}" placeholder="请选择时间" readonly clickable />
+        </view>
+      </picker>
+    </view>
     <text class="photo-title">请上传回收物的照片</text>
     <view class="photo-grid">
       <van-uploader file-list="{{ fileList }}" max-count="4" bind:after-read="reqCosUpload" bind:delete="onDelete" />
@@ -193,5 +201,45 @@
   <view class="tip">
     <text class="terms-text">确认预约将自动默认 <text class="terms-link" bind:tap="goTerms">《悦易收回收上门服务条款》</text></text>
   </view>
-  <van-button type="primary" block round bindtap="onBookNow" custom-class="order-button">立即预约</van-button>
+  <van-button type="primary" block round bindtap="estimatedAmount" custom-class="order-button">立即预约</van-button>
 </view>
+<van-dialog use-slot title="核对订单信息" show="{{ dialogShow }}" show-cancel-button bind:close="onClose" bind:confirm="placeOrder">
+
+  <view class="dialog-content">
+    <view>
+      <text>回收地址：</text>
+      <text class="dialog-value">{{ orderForm.customerLocation }}</text>
+    </view>
+    <view class="dialog-item">
+      <text>联系人:</text>
+      <text class="dialog-value">{{ orderForm.orderContactPerson }}</text>
+    </view>
+    <view class="dialog-item">
+      <text>联系电话:</text>
+      <text class="dialog-value">{{ orderForm.orderContactPhone }}</text>
+    </view>
+    <view class="dialog-item">
+      <text>预约时间:</text>
+      <text class="dialog-value">{{ orderForm.appointmentTime }}</text>
+    </view>
+    <view class="dialog-item">
+      <text>单价:</text>
+      <text class="dialog-value">{{ orderForm.unitPrice }}/{{selectedCategory.unit}}</text>
+    </view>
+    <view class="dialog-item">
+      <text>重量:</text>
+      <text class="dialog-value">{{ orderForm.recycleWeigh }}{{selectedCategory.unit}}</text>
+    </view>
+    <view class="dialog-item">
+      <text>回收总金额:</text>
+      <text class="dialog-value">{{ orderForm.estimatedTotalAmount }}元</text>
+    </view>
+    <view class="dialog-item">
+      <text>服务手续费:</text>
+      <text class="dialog-value">{{ orderForm.expectCustomerPlatformAmount }}元</text>
+    </view>
+  </view>
+  <view class="dialog-tip">
+    <text>提示: 以上信息为预估值，实际回收重量、总金额及手续费需与回收员确认。</text>
+  </view>
+</van-dialog>
