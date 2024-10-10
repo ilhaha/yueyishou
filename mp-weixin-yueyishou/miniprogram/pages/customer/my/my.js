@@ -58,5 +58,12 @@ ComponentWithStore({
         iconfont: 'icon-exit'
       },
     ],
+  },
+  methods: {
+    goLogin() {
+      wx.navigateTo({
+        url: '/pages/login/login',
+      })
+    }
   }
 })

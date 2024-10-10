@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ilhaha.yueyishou.common.constant.RedisConstant;
 import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
@@ -20,10 +21,13 @@ import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, RecyclerInfo> implements IRecyclerInfoService {
@@ -33,6 +37,9 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
 
     @Resource
     private IRecyclerPersonalizationService recyclerPersonalizationService;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     /**
      * 回收员状态切换
@@ -137,6 +144,28 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
         RecyclerPersonalization personalization = recyclerPersonalizationService.getPersonalizationByRecyclerId(recyclerInfoDB.getId());
         BeanUtils.copyProperties(personalization,recyclerBaseInfoVo);
         return recyclerBaseInfoVo;
+    }
+
+    /**
+     * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
+     * 也就是redis中无该回收员Id
+     *
+     * @param customerId
+     * @param token
+     * @return
+     */
+    @Override
+    public Boolean replenishInfo(Long customerId, String token) {
+        LambdaQueryWrapper<RecyclerInfo> recyclerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        recyclerInfoLambdaQueryWrapper.eq(RecyclerInfo::getCustomerId,customerId);
+        RecyclerInfo recyclerInfoDB = this.getOne(recyclerInfoLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(recyclerInfoDB)) return false;
+        String key = RedisConstant.RECYCLER_INFO_KEY_PREFIX + token;
+        if (!redisTemplate.hasKey(key)) {
+            redisTemplate.opsForValue().set(key, recyclerInfoDB.getId().toString(),
+                    RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
+        }
+        return true;
     }
 
 }

@@ -1,1 +1,101 @@
-/* pages/recycler/index/index.wxss */
+.van-empty__image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.van-empty__image__img {
+  width: 180rpx !important;
+  height: 180rpx !important;
+}
+
+.van-empty__description {
+  margin-top: -40rpx !important;
+}
+
+/* 顶部导航栏 */
+.navigation {
+  background-color: #00C853;
+  padding: 20rpx;
+  color: #fff;
+}
+
+/* 内容部分 */
+.content {
+  padding: 20rpx;
+}
+
+/* 侧边栏头部样式 */
+.sidebar-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 40rpx 25rpx;
+}
+
+.avatar {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.username {
+  font-size: 36rpx;
+  color: #333;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* 菜单项样式 */
+.sidebar-content {
+  padding: 20rpx 25rpx;
+  background-color: #fff;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 20rpx;
+  margin-bottom: 15rpx;
+  border-radius: 10rpx;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+  /* 点击时缩小的轻微动画 */
+}
+
+.menu-item:hover {
+  background-color: #f3f3f3;
+  /* 悬停效果 */
+  box-shadow: 0 6rpx 12rpx rgba(0, 0, 0, 0.1);
+  /* 增加阴影以增强立体感 */
+  transform: translateY(-2rpx);
+  /* 悬浮时轻微上移 */
+}
+
+.menu-icon {
+  width: 50rpx;
+  height: 50rpx;
+  margin-right: 15rpx;
+}
+
+.menu-item text {
+  font-size: 30rpx;
+  color: #333;
+  line-height: 50rpx;
+}
+
+/* 提高菜单项点击区域 */
+.menu-item text,
+.menu-icon {
+  cursor: pointer;
+}
+
+.switch-control {
+  margin-left: 45rpx;
+  /* 让开关稍微大一些 */
+}

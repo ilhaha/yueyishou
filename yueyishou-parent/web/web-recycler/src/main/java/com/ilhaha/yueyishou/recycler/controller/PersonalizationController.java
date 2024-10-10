@@ -1,13 +1,11 @@
 package com.ilhaha.yueyishou.recycler.controller;
 
+import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.recycler.service.PersonalizationService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author ilhaha
@@ -20,6 +18,17 @@ public class PersonalizationController {
 
     @Resource
     private PersonalizationService personalizationService;
+
+    /**
+     * 修改回收员服务状态
+     * @param serviceStatus
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/switch/service/{serviceStatus}")
+    public Result<Boolean> takeOrders(@PathVariable("serviceStatus") Integer serviceStatus){
+        return personalizationService.takeOrders(serviceStatus);
+    }
 
     /**
      * 根据回收员ID获取回收员的个性化设置

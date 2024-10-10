@@ -1,0 +1,80 @@
+/* 导航栏样式 */
+.custom-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100rpx;
+  background-color: #00C853;
+  padding: 0 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 保持左边图标和居中标题 */
+.nav-left {
+  position: absolute;
+  left: 35rpx;
+  display: flex;
+  align-items: center;
+}
+
+.nav-title {
+  color: #fff;
+  font-size: 30rpx;
+  text-align: center;
+}
+
+.icon {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+}
+
+/* 标签栏样式 */
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  background-color: #00C853;
+  padding-top: 20rpx;
+  border-radius: 0 0 25rpx 25rpx;
+  /* 左右下角圆角 */
+}
+
+.tab-item {
+  display: inline-block;
+  /* 让每个标签根据内容长度自动调整宽度 */
+  text-align: center;
+  color: #fff;
+  font-size: 28rpx;
+  padding-bottom: 10rpx;
+  position: relative;
+  /* 为 ::after 定位做准备 */
+  transition: all 0.3s ease;
+}
+
+.tab-item.active {
+  font-weight: bold;
+}
+
+/* 使用 ::after 伪元素来生成与文字长度一致的下划线 */
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  /* 下划线长度与文字宽度相同 */
+  height: 4rpx;
+  /* 下划线高度 */
+  background-color: #fff;
+  border-radius: 2rpx;
+}
+
+/* 页面内容样式 */
+.content {
+  padding: 20rpx;
+  text-align: center;
+}
+
+van-empty {
+  margin-top: 100rpx;
+}

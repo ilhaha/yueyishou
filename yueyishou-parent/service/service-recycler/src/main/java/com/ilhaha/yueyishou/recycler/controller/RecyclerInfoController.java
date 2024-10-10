@@ -25,6 +25,19 @@ public class RecyclerInfoController {
 	private IRecyclerInfoService recyclerInfoService;
 
 	/**
+	 * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
+	 * 也就是redis中无该回收员Id
+	 * @param customerId
+	 * @param token
+	 * @return
+	 */
+	@PostMapping("/replenish/info/{customerId}")
+	public Result<Boolean> replenishInfo(@PathVariable("customerId") Long customerId,
+										 @RequestHeader("token") String token){
+		return Result.ok(recyclerInfoService.replenishInfo(customerId,token));
+	}
+
+	/**
 	 * 获取回收员基本信息
 	 * @param recyclerId
 	 * @return

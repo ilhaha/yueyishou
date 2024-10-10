@@ -19,6 +19,17 @@ import org.springframework.web.bind.annotation.*;
 public interface RecyclerInfoFeignClient {
 
     /**
+     * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
+     * 也就是redis中无该回收员Id
+     * @param customerId
+     * @param token
+     * @return
+     */
+    @PostMapping("/recyclerInfo/replenish/info/{customerId}")
+    Result<Boolean> replenishInfo(@PathVariable("customerId") Long customerId,
+                                         @RequestHeader("token") String token);
+
+    /**
      * 根据顾客Id获取回收员认证图片信息
      * @param customerId
      * @return

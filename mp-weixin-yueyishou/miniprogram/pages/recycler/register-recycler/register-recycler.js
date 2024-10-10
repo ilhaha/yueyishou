@@ -12,7 +12,9 @@ import {
   reqRecyclerAuth,
   reqGetAuthImages
 } from '../../../api/customer/customer'
-
+import {
+  toast
+} from '../../../utils/extendApi'
 Component({
   data: {
     tip: '',
@@ -234,7 +236,6 @@ Component({
         gender: this.data.recyclerApplyForm.gender
       }
       const res = await reqCreateFaceModel(event, faceModelForm);
-
       if (res.code != 200) {
         wx.showToast({
           title: res.message,
@@ -243,8 +244,17 @@ Component({
         });
         return;
       }
+      if (res.data.faceModelId == null) {
+        toast({
+          title: '人脸创建失败',
+          icon: 'error'
+        });
+      }
 
       const data = res.data;
+      if (data.faceRecognitionUrl == null) {
+        return;
+      }
       const file = {
         url: data.faceRecognitionUrl
       }; // 构造新的文件对象

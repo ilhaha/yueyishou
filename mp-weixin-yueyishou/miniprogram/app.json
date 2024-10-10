@@ -12,7 +12,8 @@
     "pages/place-order/terms/terms",
     "pages/recycler/index/index",
     "pages/customer/setting/setting",
-    "pages/customer/order/order"
+    "pages/customer/order/order",
+    "pages/customer/order/order-details/order-details"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -49,6 +50,7 @@
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {
+    "van-switch": "@vant/weapp/switch/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "van-icon": "@vant/weapp/icon/index",
     "van-empty": "@vant/weapp/empty/index",
@@ -68,7 +70,9 @@
     "van-goods-action-button": "@vant/weapp/goods-action-button/index",
     "van-uploader": "@vant/weapp/uploader/index",
     "van-tab": "@vant/weapp/tab/index",
-    "van-tabs": "@vant/weapp/tabs/index"
+    "van-tabs": "@vant/weapp/tabs/index",
+    "van-card": "@vant/weapp/card/index",
+    "van-toast": "@vant/weapp/toast/index"
   },
   "requiredPrivateInfos": [
     "getLocation",

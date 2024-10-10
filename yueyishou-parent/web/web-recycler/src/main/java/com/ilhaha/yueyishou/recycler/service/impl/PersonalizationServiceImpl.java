@@ -29,4 +29,15 @@ public class PersonalizationServiceImpl implements PersonalizationService {
     public Result<RecyclerPersonalization> getPersonalizationByRecyclerId() {
         return recyclerPersonalizationFeignClient.getPersonalizationByRecyclerId(AuthContextHolder.getRecyclerId());
     }
+
+    /**
+     * 修改回收员服务状态
+     * @param serviceStatus
+     * @return
+     */
+    @Override
+    public Result<Boolean> takeOrders(Integer serviceStatus) {
+
+        return recyclerPersonalizationFeignClient.takeOrders(AuthContextHolder.getRecyclerId(),serviceStatus);
+    }
 }

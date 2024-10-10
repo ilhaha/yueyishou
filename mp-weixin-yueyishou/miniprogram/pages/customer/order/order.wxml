@@ -1,2 +1,19 @@
-<!--pages/customer/order/order.wxml-->
-<text>pages/customer/order/order.wxml</text>
+<van-tabs active="{{ active }}" bind:change="switchList">
+  <van-tab wx:for="{{tabList}}" wx:key="index" title="{{item.title}}" class="container" class="{{active != index ? 'none' : ''}}">
+    <block wx:if="{{orderList.length > 0}}">
+      <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
+        <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
+          <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" desc="{{order.appointmentTime}}前上门" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}}" tag="{{item.title}}">
+            <view slot="footer" class="button-group">
+              <van-button size="mini" type="primary" class="action-button" catch:tap="remind">提醒接单</van-button>
+              <van-button size="mini" class="action-button" catch:tap="cancelOrder" data-orderid="{{order.id}}">取消订单</van-button>
+            </view>
+          </van-card>
+        </view>
+      </block>
+    </block>
+    <block wx:else>
+      <van-empty description="订单空空如也" />
+    </block>
+  </van-tab>
+</van-tabs>

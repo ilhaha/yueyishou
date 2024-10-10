@@ -4,13 +4,14 @@ import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.OrderService;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.vo.order.CustomerOrderDetailsVo;
+import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
 import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author ilhaha
@@ -23,6 +24,37 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/cancel/{orderId}")
+    public Result<Boolean> cancelOrder(@PathVariable("orderId") Long orderId){
+        return orderService.cancelOrder(orderId);
+    }
+
+
+    /**
+     * 根据订单ID获取订单详情
+     */
+    @GetMapping("/details/{orderId}")
+    @LoginVerification
+    public Result<CustomerOrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId) {
+        return orderService.getOrderDetails(orderId);
+    }
+
+    /**
+     * 根据订单状态获取订单列表
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/list/{status}")
+    public Result<List<CustomerOrderListVo>> orderList(@PathVariable("status") Integer status){
+        return orderService.orderList(status);
+    }
 
     /**
      * 下单

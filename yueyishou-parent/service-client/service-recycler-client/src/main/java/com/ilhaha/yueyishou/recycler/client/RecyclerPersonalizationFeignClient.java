@@ -17,6 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface RecyclerPersonalizationFeignClient {
 
     /**
+     * 修改回收员服务状态
+     * @param recyclerId
+     * @param serviceStatus
+     * @return
+     */
+    @PostMapping("/recyclerPersonalization/switch/service/{recyclerId}/{serviceStatus}")
+    Result<Boolean> takeOrders(@PathVariable("recyclerId") Long recyclerId,
+                                      @PathVariable("serviceStatus") Integer serviceStatus);
+
+    /**
      * 根据回收员ID获取回收员的个性化设置
      * @param recyclerId
      * @return

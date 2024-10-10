@@ -8,7 +8,7 @@
       <view wx:if="{{ !token }}" class="user-container">
         <view class="avatar-container">
           <image src="/assets/images/my/avatar.png"></image>
-          <view class="no-login">
+          <view class="no-login" bind:tap="goLogin">
             <text class="ellipsis">未登录</text>
             <text>点击授权登录</text>
           </view>

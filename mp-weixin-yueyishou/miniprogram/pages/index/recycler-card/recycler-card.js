@@ -10,6 +10,9 @@ import {
 import {
   toast
 } from '../../../utils/extendApi';
+import {
+  reqReplenishInfo
+} from '../../../api/customer/customer'
 
 
 ComponentWithStore({
@@ -31,9 +34,12 @@ ComponentWithStore({
    */
   methods: {
     // 注册成为回收员
-    registerRecycler() {
+    async registerRecycler() {
       if (this.data.token) {
-        this.switchCertificationShow()
+        this.switchCertificationShow();
+        // 以防如果用户还未退出登录就已经审核成功出现信息不全问题
+        await reqReplenishInfo();
+
       } else {
         toast({
           title: "您未登录，请您先登录"

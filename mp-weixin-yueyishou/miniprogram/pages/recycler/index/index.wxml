@@ -1,6 +1,58 @@
-<van-tabs active="{{ active }}" bind:change="onChange">
-  <view class="container">
-    <van-tab wx:for="{{tabList}}" wx:key="index" title="{{item.title}}">内容 1</van-tab>
+<navigation title="悦易收回收员端" activeTab="{{activeTab}}" bind:tabChange="onTabChange" bind:leftTap="onLeftTap" bind:getRecyclerInfo="getRecyclerInfo">
+</navigation>
+
+<view class="content">
+  <!-- 判断接单状态 -->
+  <view wx:if="{{recyclerInfo.serviceStatus == 0}}">
+    <van-empty image="/assets/images/common/start_take_orders.png" description="请点击下方的按钮，开始接单～">
+      <van-button round type="danger" class="bottom-button" bindtap="takeOrders">
+        点击开始接单
+      </van-button>
+    </van-empty>
   </view>
 
-</van-tabs>
+  <!-- 判断订单列表是否有订单 -->
+  <view wx:elif="{{orderList.length > 0}}">
+    111
+  </view>
+
+  <!-- 如果都没有订单 -->
+  <van-empty wx:else description="订单空空如也" />
+</view>
+
+<!-- 左侧弹出层 -->
+<van-popup show="{{popupShow}}" bind:close="onLeftTap" position="left" custom-style="height: 100%; width: 75%;">
+  <view class="sidebar-header">
+    <image class="avatar" src="{{recyclerInfo.avatarUrl || '/assets/images/common/recycler_default_avatar.png'}}"></image>
+    <text class="username">{{recyclerInfo.name || '微信用户'}}</text>
+  </view>
+  <view class="sidebar-content">
+    <!-- 菜单项 -->
+    <view class="menu-item" bindtap="goToOrders">
+      <image src="/assets/images/common/setting.png" class="menu-icon"></image>
+      <text>接单设置</text>
+    </view>
+    <view class="menu-item" bindtap="goToOrders">
+      <image src="/assets/images/common/my_order.png" class="menu-icon"></image>
+      <text>我的订单</text>
+    </view>
+    <view class="menu-item" bindtap="goToPayment">
+      <image src="/assets/images/common/income_expenditure.png" class="menu-icon"></image>
+      <text>收支明细</text>
+    </view>
+    <view class="menu-item" bindtap="goToReviews">
+      <image src="/assets/images/common/evaluate.png" class="menu-icon"></image>
+      <text>我的评价</text>
+    </view>
+    <view class="menu-item" bindtap="goToAboutUs">
+      <image src="/assets/images/common/about_us.png" class="menu-icon"></image>
+      <text>关于我们</text>
+    </view>
+
+    <!-- 是否接单的开关项 -->
+    <view class="menu-item">
+      <text>是否接单</text>
+      <van-switch class="switch-control" checked="{{ recyclerInfo.serviceStatus == 1 }}" catch:change="switchServiceStatus" size="20px" />
+    </view>
+  </view>
+</van-popup>

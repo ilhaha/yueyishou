@@ -22,6 +22,18 @@ public class RecyclerPersonalizationController {
 	private IRecyclerPersonalizationService recyclerPersonalizationService;
 
 	/**
+	 * 修改回收员服务状态
+	 * @param recyclerId
+	 * @param serviceStatus
+	 * @return
+	 */
+	@PostMapping("/switch/service/{recyclerId}/{serviceStatus}")
+	public Result<Boolean> takeOrders(@PathVariable("recyclerId") Long recyclerId,
+									  @PathVariable("serviceStatus") Integer serviceStatus){
+		return Result.ok(recyclerPersonalizationService.takeOrders(recyclerId,serviceStatus));
+	}
+
+	/**
 	 * 根据回收员ID获取回收员的个性化设置
 	 * @param recyclerId
 	 * @return

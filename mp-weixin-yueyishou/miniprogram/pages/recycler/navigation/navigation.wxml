@@ -1,0 +1,14 @@
+<view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-left">
+    <image wx:if="{{recyclerInfo.avatarUrl}}" class="icon" src="{{recyclerInfo.avatarUrl}}" bindtap="onLeftTap"></image>
+
+    <image wx:else class="icon" src="../../../assets/images/common/recycler_default_avatar.png" bindtap="onLeftTap"></image>
+  </view>
+  <view class="nav-title">悦易收回收员端</view>
+</view>
+
+<view class="tabs">
+  <view class="tab-item {{activeTab === 0 ? 'active' : ''}}" bindtap="onTabTap" data-index="0" data-status="1">待抢单</view>
+  <view class="tab-item {{activeTab === 1 ? 'active' : ''}}" bindtap="onTabTap" data-index="1" data-status="2">待上门</view>
+  <view class="tab-item {{activeTab === 2 ? 'active' : ''}}" bindtap="onTabTap" data-index="2" data-status="3">待确认</view>
+</view>

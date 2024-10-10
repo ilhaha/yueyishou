@@ -9,3 +9,4 @@ const urlPrefix = '/recycler-api';
 export const reqRecyclerBaseInfo = () => {
   return http.get(urlPrefix + `/recycler/base/info`)
 }
+

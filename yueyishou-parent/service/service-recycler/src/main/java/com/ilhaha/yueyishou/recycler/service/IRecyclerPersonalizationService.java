@@ -12,4 +12,11 @@ public interface IRecyclerPersonalizationService extends IService<RecyclerPerson
      */
     RecyclerPersonalization getPersonalizationByRecyclerId(Long recyclerId);
 
+    /**
+     * 修改回收员服务状态
+     * @param recyclerId
+     * @param serviceStatus
+     * @return
+     */
+    Boolean takeOrders(Long recyclerId, Integer serviceStatus);
 }

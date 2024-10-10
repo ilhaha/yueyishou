@@ -6,9 +6,9 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
-import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
-import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
-import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
+import com.ilhaha.yueyishou.model.vo.order.*;
+
+import java.util.List;
 
 public interface IOrderInfoService extends IService<OrderInfo> {
 
@@ -27,4 +27,23 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean placeOrder(PlaceOrderForm placeOrderForm);
+
+    /**
+     * 根据订单状态获取订单列表
+     * @param status
+     * @return
+     */
+    List<CustomerOrderListVo> orderList(Integer status, Long customerId);
+
+    /**
+     * 根据订单ID获取订单详情
+     */
+    CustomerOrderDetailsVo getOrderDetails(Long orderId);
+
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     */
+    Boolean cancelOrder(Long orderId);
 }

@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.vo.order.CustomerOrderDetailsVo;
+import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
 import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author ilhaha
@@ -19,6 +20,30 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
+
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/orderInfo/cancel/{orderId}")
+    Result<Boolean> cancelOrder(@PathVariable("orderId") Long orderId);
+
+    /**
+     * 根据订单ID获取订单详情
+     */
+    @GetMapping("/orderInfo/details/{orderId}")
+    Result<CustomerOrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId);
+
+    /**
+     * 根据订单状态获取订单列表
+     * @param status
+     * @return
+     */
+    @GetMapping("/orderInfo/list/{status}/{customerId}")
+    Result<List<CustomerOrderListVo>> orderList(@PathVariable("status") Integer status,
+                                                       @PathVariable("customerId") Long customerId);
+
 
     /**
      * 下单

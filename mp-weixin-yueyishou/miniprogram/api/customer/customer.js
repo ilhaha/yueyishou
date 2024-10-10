@@ -38,3 +38,11 @@ export const reqGetAuthImages = () => {
 export const reqUpdateBaseInfo = (params) => {
   return http.post(urlPrefix + `/customer/update/base/info`, params)
 }
+
+/**
+ * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
+ * 也就是redis中无该回收员Id
+ */
+export const reqReplenishInfo = () => {
+  return http.post(urlPrefix + `/customer/replenish/info`)
+}

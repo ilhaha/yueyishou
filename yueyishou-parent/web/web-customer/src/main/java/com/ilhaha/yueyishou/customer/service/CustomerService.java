@@ -46,4 +46,12 @@ public interface CustomerService {
      * @return
      */
     Result<Boolean> updateBaseInfo(UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm);
+
+    /**
+     * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
+     * 也就是redis中无该回收员Id
+     * @param token
+     * @return
+     */
+    Result<Boolean> replenishInfo(String token);
 }

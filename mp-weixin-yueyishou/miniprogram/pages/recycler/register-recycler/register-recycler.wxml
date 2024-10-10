@@ -11,13 +11,13 @@
     <view class="upload-row">
       <view class="upload-item">
         <text class="form-label">身份证正面</text>
-        <van-uploader name="idFront" file-list="{{ idFrontList }}" bind:after-read="uploadIDCard" bind:delete="deleteIdFront" max-count="1" deletable="{{ authStatus != 1 }}" />
+        <van-uploader name="idFront" file-list="{{ idFrontList }}" bind:after-read="uploadIDCard" bind:delete="deleteIdFront" max-count="1" deletable="{{ authStatus != 1 && authStatus != -1}}" />
       </view>
 
       <!-- 身份证反面 -->
       <view class="upload-item">
         <text class="form-label">身份证反面</text>
-        <van-uploader name="idBack" file-list="{{ idBackList }}" bind:after-read="uploadIDCard" bind:delete="deleteIdBack" max-count="1" deletable="{{ authStatus != 1 }}" />
+        <van-uploader name="idBack" file-list="{{ idBackList }}" bind:after-read="uploadIDCard" bind:delete="deleteIdBack" max-count="1" deletable="{{ authStatus != 1 && authStatus != -1}}" />
       </view>
     </view>
 
@@ -25,12 +25,12 @@
     <view class="upload-row">
       <view class="upload-item">
         <text class="form-label">手持身份证</text>
-        <van-uploader name="idcardHand" file-list="{{ idcardHandList }}" bind:after-read="upload" bind:delete="deleteIdcardHand" max-count="1" deletable="{{ authStatus != 1 }}" />
+        <van-uploader name="idcardHand" file-list="{{ idcardHandList }}" bind:after-read="upload" bind:delete="deleteIdcardHand" max-count="1" deletable="{{ authStatus != 1 && authStatus != -1}}" />
       </view>
 
       <view class="upload-item">
         <text class="form-label">正脸照</text>
-        <van-uploader name="fullFace" file-list="{{ fullFaceList }}" bind:after-read="upload" bind:delete="deleteFullFace" max-count="1" deletable="{{ authStatus != 1 }}" />
+        <van-uploader name="fullFace" file-list="{{ fullFaceList }}" bind:after-read="upload" bind:delete="deleteFullFace" max-count="1" deletable="{{ authStatus != 1 && authStatus != -1}}" />
       </view>
     </view>
 
@@ -38,7 +38,7 @@
     <view class="upload-row" wx:if="{{idFrontList.length > 0}}">
       <view class="upload-item">
         <text class="form-label">人脸识别模型</text>
-        <van-uploader name="faceRecognition" file-list="{{ faceRecognitionList }}" bind:after-read="uploadFaceModel" bind:delete="deleteFaceRecognition" max-count="1" deletable="{{ authStatus != 1 }}" />
+        <van-uploader name="faceRecognition" file-list="{{ faceRecognitionList }}" bind:after-read="uploadFaceModel" bind:delete="deleteFaceRecognition" max-count="1" deletable="{{ authStatus != 1 && authStatus != -1}}" />
       </view>
     </view>
 

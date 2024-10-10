@@ -63,4 +63,14 @@ public interface IRecyclerInfoService extends IService<RecyclerInfo> {
      * @return
      */
     RecyclerBaseInfoVo getBaseInfo(Long recyclerId);
+
+    /**
+     * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
+     * 也就是redis中无该回收员Id
+     *
+     * @param customerId
+     * @param token
+     * @return
+     */
+    Boolean replenishInfo(Long customerId, String token);
 }

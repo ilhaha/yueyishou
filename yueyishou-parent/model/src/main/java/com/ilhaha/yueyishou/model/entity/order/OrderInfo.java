@@ -1,6 +1,7 @@
 package com.ilhaha.yueyishou.model.entity.order;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ilhaha.yueyishou.model.entity.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -13,7 +14,7 @@ import java.util.Date;
 @TableName("order_info")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-public class OrderInfo implements Serializable {
+public class OrderInfo extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
 	/**客户ID*/
@@ -48,7 +49,7 @@ public class OrderInfo implements Serializable {
     private Date acceptTime;
 	/**回收员到达时间*/
     private Date arriveTime;
-	/**订单状态：1等待接单，2回收员已接单，3回收员前往回收点，4待顾客确认，5回收员未付款，6回收员已付款订单完成，7待评价，8订单已取消*/
+	/**订单状态：1等待接单，2回收员已接单，3待顾客确认，4回收员未付款，5回收员已付款待评价，6已完成，7订单已取消*/
     private Integer status;
 	/**取消订单信息*/
     private String cancelMessage;
@@ -60,8 +61,6 @@ public class OrderInfo implements Serializable {
     private String orderContactPhone;
 	/**订单预计回收总金额*/
     private BigDecimal estimatedTotalAmount;
-	/**回收员预支付平台订单金额*/
-    private BigDecimal expectRecyclerPlatformAmount;
 	/**顾客预支付平台订单金额*/
     private BigDecimal expectCustomerPlatformAmount;
 }

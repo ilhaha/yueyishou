@@ -23,6 +23,18 @@ public class CustomerController {
     private CustomerService customerService;
 
     /**
+     * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
+     * 也就是redis中无该回收员Id
+     * @param token
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/replenish/info")
+    public Result<Boolean> replenishInfo(@RequestHeader("token") String token){
+        return customerService.replenishInfo(token);
+    }
+
+    /**
      * 更新顾客基本信息
      * @param updateCustomerBaseInfoForm
      * @return

@@ -15,4 +15,11 @@ public interface PersonalizationService {
      * @return
      */
     Result<RecyclerPersonalization> getPersonalizationByRecyclerId();
+
+    /**
+     * 修改回收员服务状态
+     * @param serviceStatus
+     * @return
+     */
+    Result<Boolean> takeOrders(Integer serviceStatus);
 }

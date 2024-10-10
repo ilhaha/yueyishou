@@ -193,7 +193,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             // 创建新的 RecyclerInfo 对象并设置属性
             RecyclerInfo recyclerInfo = new RecyclerInfo();
             BeanUtils.copyProperties(recyclerApplyForm, recyclerInfo);
-            recyclerInfo.setAvatarUrl(customerInfoDB.getAvatarUrl());
+            recyclerInfo.setAvatarUrl(recyclerApplyForm.getFullFaceUrl());
             recyclerInfo.setPhone(customerInfoDB.getPhone());
             recyclerInfo.setJobNo(RecyclerIDGenerator.generateEmployeeID());
             recyclerInfo.setAuthStatus(RecyclerAuthStatus.UNDER_REVIEW.getStatus());

@@ -128,11 +128,6 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
-              <a-form-model-item label="单位" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="unit">
-                <a-input v-model="model.unit" placeholder="请输入单位"></a-input>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="24">
               <a-form-model-item label="品类描述" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="categoryDescribe">
                 <a-input v-model="model.categoryDescribe" placeholder="请输入品类描述"></a-input>
               </a-form-model-item>
@@ -187,11 +182,6 @@
             <a-col :span="24">
               <a-form-model-item label="单价" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="unitPrice">
                 <a-input-number v-model="model.unitPrice" placeholder="请输入单价" style="width: 100%" />
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="24">
-              <a-form-model-item label="单位" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="unit">
-                <a-input v-model="model.unit" placeholder="请输入单位"></a-input>
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
@@ -253,7 +243,6 @@ export default {
         categoryName: [{ required: true, message: '请输入分类名称!' }],
         parentId: [{ required: true, message: '请输入上层分类ID，0表示顶级分类!' }],
         unitPrice: [{ required: true, message: '请输入单价!' }],
-        unit: [{ required: true, message: '请输入单位!' }],
         icon: [{ required: true, message: '请上传icon!' }],
       },
       addSonOpen: false,

@@ -1,7 +1,7 @@
 <view class="container">
   <!-- 绿色背景卡片 -->
   <view class="section-header">
-    <text class="section-title">成为回收员</text>
+    <text class="section-title">进入悦易收回收员端</text>
     <view class="details-button">
       <text class="details-text" bind:tap="registerRecycler">详情</text>
       <!-- 已登录，但回收员身份未认证 -->

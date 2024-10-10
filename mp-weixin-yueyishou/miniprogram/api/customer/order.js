@@ -16,3 +16,24 @@ export const reqCalculateOrderFee = (params) => {
 export const reqPlaceOrder = (params) => {
   return http.post(urlPrefix + `/order/place`, params)
 }
+
+/**
+ * 根据订单状态获取订单列表
+ */
+export const reqOrderList = (status) => {
+  return http.get(urlPrefix + `/order/list/${status}`)
+}
+
+/**
+ * 根据订单ID获取订单详情
+ */
+export const reqOrderDetails = (orderId) => {
+  return http.get(urlPrefix + `/order/details/${orderId}`)
+}
+
+/**
+ * 根据订单ID取消订单
+ */
+export const reqCancelOrder = (orderId) => {
+  return http.post(urlPrefix + `/order/cancel/${orderId}`)
+}

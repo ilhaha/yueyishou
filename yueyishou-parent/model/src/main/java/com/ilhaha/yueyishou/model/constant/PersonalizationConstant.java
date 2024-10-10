@@ -12,14 +12,14 @@ import java.math.BigDecimal;
 @Data
 public class PersonalizationConstant {
     /**
-     * 服务状态：接单中
-     */
-    public static final Integer START_TAKING_ORDERS = 1;
-
-    /**
      * 服务状态：停止接单
      */
     public static final Integer STOP_TAKING_ORDERS = 0;
+
+    /**
+     * 服务状态：接单中
+     */
+    public static final Integer START_TAKING_ORDERS = 1;
 
     /**
      * 服务状态：有单中
