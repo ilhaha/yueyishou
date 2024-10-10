@@ -3,6 +3,8 @@ package com.ilhaha.yueyishou.recycler.controller;
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
+import com.ilhaha.yueyishou.model.form.recycler.OrderSettingForm;
+import com.ilhaha.yueyishou.model.vo.recycler.OrderSettingVo;
 import com.ilhaha.yueyishou.recycler.service.PersonalizationService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,28 @@ public class PersonalizationController {
 
     @Resource
     private PersonalizationService personalizationService;
+
+    /**
+     * 修改回收员接单设置
+     * @param orderSettingForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/update/order/setting")
+    public Result<Boolean> updateOrderSetting(@RequestBody OrderSettingForm orderSettingForm) {
+        return personalizationService.updateOrderSetting(orderSettingForm);
+    }
+
+
+    /**
+     * 获取回收员的接单设置
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/order/setting")
+    public Result<OrderSettingVo> orderSetting() {
+        return personalizationService.orderSetting();
+    }
 
     /**
      * 修改回收员服务状态

@@ -16,6 +16,32 @@ Page({
   data: {
     activeTab: 0,
     recyclerInfo: {},
+    menuList: [{
+        text: '接单设置',
+        icon: '/assets/images/common/setting.png',
+        url: '/pages/recycler/order-setting/order-setting'
+      },
+      {
+        text: '我的订单',
+        icon: '/assets/images/common/my_order.png',
+        url: 'goToOrders'
+      },
+      {
+        text: '收支明细',
+        icon: '/assets/images/common/income_expenditure.png',
+        url: 'goToPayment'
+      },
+      {
+        text: '我的评价',
+        icon: '/assets/images/common/evaluate.png',
+        url: 'goToReviews'
+      },
+      {
+        text: '关于我们',
+        icon: '/assets/images/common/about_us.png',
+        url: 'goToReviews'
+      }
+    ],
     orderList: [],
     popupShow: false,
     dialogShow: false,
@@ -27,6 +53,13 @@ Page({
   },
   // 初始化数据
   onLoad() {},
+
+  // 跳转对应的菜单页
+  gotoMenu(event) {
+    wx.navigateTo({
+      url: event.currentTarget.dataset.url
+    })
+  },
 
   // 校验人脸模型
   async verifyDriverFace() {

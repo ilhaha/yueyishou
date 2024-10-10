@@ -4,6 +4,8 @@ import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
+import com.ilhaha.yueyishou.model.form.recycler.OrderSettingForm;
+import com.ilhaha.yueyishou.model.vo.recycler.OrderSettingVo;
 import com.ilhaha.yueyishou.recycler.client.RecyclerPersonalizationFeignClient;
 import com.ilhaha.yueyishou.recycler.service.PersonalizationService;
 import jakarta.annotation.Resource;
@@ -39,5 +41,25 @@ public class PersonalizationServiceImpl implements PersonalizationService {
     public Result<Boolean> takeOrders(Integer serviceStatus) {
 
         return recyclerPersonalizationFeignClient.takeOrders(AuthContextHolder.getRecyclerId(),serviceStatus);
+    }
+
+    /**
+     * 获取回收员的接单设置
+     * @return
+     */
+    @Override
+    public Result<OrderSettingVo> orderSetting() {
+        return recyclerPersonalizationFeignClient.orderSetting(AuthContextHolder.getRecyclerId());
+    }
+
+    /**
+     * 修改回收员接单设置
+     * @param orderSettingForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> updateOrderSetting(OrderSettingForm orderSettingForm) {
+        orderSettingForm.setRecyclerId(AuthContextHolder.getRecyclerId());
+        return recyclerPersonalizationFeignClient.updateOrderSetting(orderSettingForm);
     }
 }

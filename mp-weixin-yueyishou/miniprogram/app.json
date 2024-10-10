@@ -13,7 +13,8 @@
     "pages/recycler/index/index",
     "pages/customer/setting/setting",
     "pages/customer/order/order",
-    "pages/customer/order/order-details/order-details"
+    "pages/customer/order/order-details/order-details",
+    "pages/recycler/order-setting/order-setting"
   ],
   "window": {
     "backgroundTextStyle": "light",

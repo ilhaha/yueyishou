@@ -28,27 +28,10 @@
   </view>
   <view class="sidebar-content">
     <!-- 菜单项 -->
-    <view class="menu-item" bindtap="goToOrders">
-      <image src="/assets/images/common/setting.png" class="menu-icon"></image>
-      <text>接单设置</text>
+    <view class="menu-item" wx:for="{{menuList}}" wx:key="index" bind:tap="gotoMenu" data-url="{{item.url}}">
+      <image src="{{item.icon}}" class="menu-icon"></image>
+      <text>{{item.text}}</text>
     </view>
-    <view class="menu-item" bindtap="goToOrders">
-      <image src="/assets/images/common/my_order.png" class="menu-icon"></image>
-      <text>我的订单</text>
-    </view>
-    <view class="menu-item" bindtap="goToPayment">
-      <image src="/assets/images/common/income_expenditure.png" class="menu-icon"></image>
-      <text>收支明细</text>
-    </view>
-    <view class="menu-item" bindtap="goToReviews">
-      <image src="/assets/images/common/evaluate.png" class="menu-icon"></image>
-      <text>我的评价</text>
-    </view>
-    <view class="menu-item" bindtap="goToAboutUs">
-      <image src="/assets/images/common/about_us.png" class="menu-icon"></image>
-      <text>关于我们</text>
-    </view>
-
     <!-- 是否接单的开关项 -->
     <view class="menu-item">
       <text>是否接单</text>

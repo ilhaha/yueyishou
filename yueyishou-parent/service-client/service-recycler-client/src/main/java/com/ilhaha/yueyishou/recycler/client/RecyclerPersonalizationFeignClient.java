@@ -2,6 +2,8 @@ package com.ilhaha.yueyishou.recycler.client;
 
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
+import com.ilhaha.yueyishou.model.form.recycler.OrderSettingForm;
+import com.ilhaha.yueyishou.model.vo.recycler.OrderSettingVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,22 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @FeignClient("service-recycler")
 public interface RecyclerPersonalizationFeignClient {
+
+    /**
+     * 修改回收员接单设置
+     * @param orderSettingForm
+     * @return
+     */
+    @PostMapping("/recyclerPersonalization/update/order/setting")
+    Result<Boolean> updateOrderSetting(@RequestBody OrderSettingForm orderSettingForm);
+
+    /**
+     * 获取回收员的接单设置
+     * @param recyclerId
+     * @return
+     */
+    @GetMapping("/recyclerPersonalization/order/setting/{recyclerId}")
+    Result<OrderSettingVo> orderSetting(@PathVariable("recyclerId") Long recyclerId);
 
     /**
      * 修改回收员服务状态

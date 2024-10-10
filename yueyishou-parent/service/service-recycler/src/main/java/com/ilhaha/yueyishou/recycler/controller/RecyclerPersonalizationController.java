@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
+import com.ilhaha.yueyishou.model.form.recycler.OrderSettingForm;
+import com.ilhaha.yueyishou.model.vo.recycler.OrderSettingVo;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerPersonalizationService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -20,6 +22,27 @@ import java.util.Arrays;
 public class RecyclerPersonalizationController {
 	@Resource
 	private IRecyclerPersonalizationService recyclerPersonalizationService;
+
+	/**
+	 * 修改回收员接单设置
+	 * @param orderSettingForm
+	 * @return
+	 */
+	@PostMapping("/update/order/setting")
+	public Result<Boolean> updateOrderSetting(@RequestBody OrderSettingForm orderSettingForm) {
+		return Result.ok(recyclerPersonalizationService.updateOrderSetting(orderSettingForm));
+	}
+
+	/**
+	 * 获取回收员的接单设置
+	 * @param recyclerId
+	 * @return
+	 */
+	@GetMapping("/order/setting/{recyclerId}")
+	public Result<OrderSettingVo> orderSetting(@PathVariable("recyclerId") Long recyclerId) {
+		return Result.ok(recyclerPersonalizationService.orderSetting(recyclerId));
+	}
+
 
 	/**
 	 * 修改回收员服务状态

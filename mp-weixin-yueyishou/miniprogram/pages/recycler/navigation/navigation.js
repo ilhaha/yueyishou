@@ -17,8 +17,8 @@ Component({
     statusBarHeight: 20,
     recyclerInfo: {}
   },
-  lifetimes: {
-    attached() {
+  pageLifetimes: {
+    show() {
       wx.getSystemSetting({
         success: (res) => {
           const systemInfo = res.systemInfo;

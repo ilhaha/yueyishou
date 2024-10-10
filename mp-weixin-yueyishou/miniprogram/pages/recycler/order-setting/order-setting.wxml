@@ -1,0 +1,23 @@
+<view class="container">
+  <view class="category-section">
+    <text class="category-title">选择回收品类（可多选）</text>
+    <view class="category-grid">
+      <view class="category-item {{item.isActive ? 'active' : ''}}" wx:for="{{categoryList}}" wx:key="id" bindtap="selectCategory" data-id="{{item.id}}" data-index="{{index}}">
+        <image class="category-icon" src="{{item.icon}}" mode="aspectFit"></image>
+        <text class="category-name">{{item.categoryName}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="order-section">
+    <text class="order-title">接单里程（最小5公里，最大20公里）</text>
+    <view class="order-grid">
+      <van-cell-group>
+        <van-stepper value="{{ orderSetting.acceptDistance }}" min="5" max="20" step="0.5" bind:change="setAcceptDistance" />
+      </van-cell-group>
+    </view>
+  </view>
+  <view class="footer">
+    <!-- 保存按钮 -->
+    <view class="btn" bindtap="saveSetting">保存</view>
+  </view>
+</view>

@@ -9,6 +9,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/recycler/order-setting/order-setting",
+          "pathName": "pages/recycler/order-setting/order-setting",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/customer/order/order",
           "pathName": "pages/customer/order/order",
           "query": "",
