@@ -2,6 +2,7 @@ package com.ilhaha.yueyishou.tencentcloud.controller;
 
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.tencentcloud.FaceModelForm;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerFaceModelForm;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.FaceModelVo;
 import com.ilhaha.yueyishou.tencentcloud.service.FaceModelService;
@@ -20,6 +21,16 @@ public class FaceModelController {
 
     @Resource
     private FaceModelService faceModelService;
+
+    /***
+     * 回收员每日人脸识别
+     * @param recyclerFaceModelForm
+     * @return
+     */
+    @PostMapping("/verifyDriverFace")
+    public Result<Boolean> verifyDriverFace(@RequestBody RecyclerFaceModelForm recyclerFaceModelForm) {
+        return Result.ok(faceModelService.verifyDriverFace(recyclerFaceModelForm));
+    }
 
     /**
      * 创建人脸模型

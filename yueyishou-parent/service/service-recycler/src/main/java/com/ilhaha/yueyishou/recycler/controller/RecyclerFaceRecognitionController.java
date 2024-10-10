@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerFaceRecognition;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerFaceModelForm;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerFaceRecognitionService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -20,8 +21,19 @@ import java.util.Arrays;
 @RequestMapping("/recyclerFaceRecognition")
 @Slf4j
 public class RecyclerFaceRecognitionController {
+
 	@Resource
 	private IRecyclerFaceRecognitionService recyclerFaceRecognitionService;
+
+	/**
+	 * 判读回收员是否已进行了每日人脸签到
+	 * @param recyclerId
+	 * @return
+	 */
+	@GetMapping("/is/sign/{recyclerId}")
+	public Result<Boolean> isSign(@PathVariable("recyclerId") Long recyclerId){
+		return Result.ok(recyclerFaceRecognitionService.isSign(recyclerId));
+	}
 
 
 	/**

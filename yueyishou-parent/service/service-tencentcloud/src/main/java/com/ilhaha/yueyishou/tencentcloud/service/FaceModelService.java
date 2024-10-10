@@ -1,6 +1,7 @@
 package com.ilhaha.yueyishou.tencentcloud.service;
 
 import com.ilhaha.yueyishou.model.form.tencentcloud.FaceModelForm;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerFaceModelForm;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.FaceModelVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,4 +27,12 @@ public interface FaceModelService {
      * @return
      */
     Boolean deleteFaceModel(Long customerId);
+
+
+    /***
+     * 回收员每日人脸识别
+     * @param recyclerFaceModelForm
+     * @return
+     */
+    Boolean verifyDriverFace(RecyclerFaceModelForm recyclerFaceModelForm);
 }

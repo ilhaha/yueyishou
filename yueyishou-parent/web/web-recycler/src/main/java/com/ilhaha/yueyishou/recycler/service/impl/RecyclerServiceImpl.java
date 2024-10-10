@@ -26,16 +26,6 @@ public class RecyclerServiceImpl implements RecyclerService {
     private RecyclerInfoFeignClient recyclerInfoFeignClient;
 
     /**
-     * 回收员上传图片
-     * @param file
-     * @return
-     */
-    @Override
-    public Result<CosUploadVo> upload(MultipartFile file, String path) {
-        return cosFeignClient.upload(file,path);
-    }
-
-    /**
      * 获取回收员基本信息
      * @return
      */

@@ -5,20 +5,23 @@ import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.model.constant.TencentcloudConstant;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerFaceRecognition;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.form.tencentcloud.FaceModelForm;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerFaceModelForm;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.FaceModelVo;
+import com.ilhaha.yueyishou.recycler.client.RecyclerFaceRecognitionFeignClient;
 import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.tencentcloud.config.TencentCloudProperties;
 import com.ilhaha.yueyishou.tencentcloud.service.CosService;
 import com.ilhaha.yueyishou.tencentcloud.service.FaceModelService;
+import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
+import com.tencentcloudapi.common.profile.ClientProfile;
+import com.tencentcloudapi.common.profile.HttpProfile;
 import com.tencentcloudapi.iai.v20200303.IaiClient;
-import com.tencentcloudapi.iai.v20200303.models.CreatePersonRequest;
-import com.tencentcloudapi.iai.v20200303.models.CreatePersonResponse;
-import com.tencentcloudapi.iai.v20200303.models.DeletePersonRequest;
-import com.tencentcloudapi.iai.v20200303.models.DeletePersonResponse;
+import com.tencentcloudapi.iai.v20200303.models.*;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -27,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Date;
 
 /**
  * @Author ilhaha
@@ -46,16 +50,17 @@ public class FaceModelServiceImpl implements FaceModelService {
     private IaiClient iaiClient;
 
     @Resource
-    private RecyclerInfoFeignClient recyclerInfoFeignClient;
+    private RecyclerFaceRecognitionFeignClient recyclerFaceRecognitionFeignClient;
 
     /**
      * 创建人脸模型
+     *
      * @param file
      * @param faceModelForm
      * @return
      */
     @Override
-    public FaceModelVo createFaceModel(MultipartFile file, String faceModelForm,Long customerId) {
+    public FaceModelVo createFaceModel(MultipartFile file, String faceModelForm, Long customerId) {
         FaceModelVo faceModelVo = new FaceModelVo();
         try {
             // 实例化一个请求对象,每个接口都会对应一个request对象
@@ -75,19 +80,20 @@ public class FaceModelServiceImpl implements FaceModelService {
             CreatePersonResponse resp = iaiClient.CreatePerson(req);
             // 输出json格式的字符串回包
             if (StringUtils.hasText(resp.getFaceId())) {
-               // 保存人脸模型图片
+                // 保存人脸模型图片
                 CosUploadVo cosUploadVo = cosService.upload(file, TencentcloudConstant.FACE_MODEL_DEFAULT_URL);
                 faceModelVo.setFaceModelId(resp.getFaceId());
                 faceModelVo.setFaceRecognitionUrl(cosUploadVo.getUrl());
             }
         } catch (TencentCloudSDKException e) {
-            throw new YueYiShouException(ResultCodeEnum.FACE_MODEL_CREATION_FAILED.getCode(),e.getMessage());
+            throw new YueYiShouException(ResultCodeEnum.FACE_MODEL_CREATION_FAILED.getCode(), e.getMessage());
         }
         return faceModelVo;
-     }
+    }
 
     /**
      * 删除人脸模型
+     *
      * @param customerId
      * @return
      */
@@ -107,8 +113,60 @@ public class FaceModelServiceImpl implements FaceModelService {
         return true;
     }
 
+    /***
+     * 回收员每日人脸识别
+     * @param recyclerFaceModelForm
+     * @return
+     */
+    @Override
+    public Boolean verifyDriverFace(RecyclerFaceModelForm recyclerFaceModelForm) {
+        try {
+            // 实例化一个请求对象,每个接口都会对应一个request对象
+            VerifyFaceRequest req = new VerifyFaceRequest();
+            req.setImage(recyclerFaceModelForm.getImageBase64());
+            req.setPersonId(String.valueOf(recyclerFaceModelForm.getCustomerId()));
+            // 返回的resp是一个VerifyFaceResponse的实例，与请求对象对应
+            VerifyFaceResponse resp = iaiClient.VerifyFace(req);
+            if (resp.getIsMatch()) {
+                //活体检查
+                if(this.detectLiveFace(recyclerFaceModelForm.getImageBase64())) {
+                    RecyclerFaceRecognition recyclerFaceRecognition = new RecyclerFaceRecognition();
+                    recyclerFaceRecognition.setRecyclerId(recyclerFaceModelForm.getRecyclerId());
+                    recyclerFaceRecognition.setFaceDate(new Date());
+                    recyclerFaceRecognitionFeignClient.add(recyclerFaceRecognition);
+                    return true;
+                };
+            }
+        } catch (TencentCloudSDKException e) {
+            e.printStackTrace();
+        }
+       return false;
+    }
+
     /**
-     *  将 MultipartFile 转换为 Base64 编码的字符串
+     * 人脸静态活体检测
+     * @param imageBase64
+     * @return
+     */
+    private Boolean detectLiveFace(String imageBase64) {
+        try{
+            // 实例化一个请求对象,每个接口都会对应一个request对象
+            DetectLiveFaceRequest req = new DetectLiveFaceRequest();
+            req.setImage(imageBase64);
+            // 返回的resp是一个DetectLiveFaceResponse的实例，与请求对象对应
+            DetectLiveFaceResponse resp = iaiClient.DetectLiveFace(req);
+            if(resp.getIsLiveness()) {
+                return true;
+            }
+        } catch (TencentCloudSDKException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 将 MultipartFile 转换为 Base64 编码的字符串
+     *
      * @param file
      * @return
      */
@@ -128,6 +186,7 @@ public class FaceModelServiceImpl implements FaceModelService {
 
     /**
      * 将JSON转成对应的FaceModelForm对象
+     *
      * @param formData
      * @return
      */

@@ -56,3 +56,13 @@
     </view>
   </view>
 </van-popup>
+
+<!-- 每日人脸识别弹出框 -->
+<view class="uploader-container">
+  <!-- 图片上传的 Dialog -->
+  <van-dialog use-slot id="van-dialog" show="{{ dialogShow }}" title="请进行每日人脸校验" show-cancel-button bind:close="switchDialog" before-close="{{beforeClose}}" bind:confirm="verifyDriverFace">
+    <view class="uploader-wrapper">
+      <van-uploader name="faceRecognition" file-list="{{ faceRecognitionList }}" bind:after-read="uploadFaceModel" bind:delete="deleteFaceRecognition" max-count="1" />
+    </view>
+  </van-dialog>
+</view>

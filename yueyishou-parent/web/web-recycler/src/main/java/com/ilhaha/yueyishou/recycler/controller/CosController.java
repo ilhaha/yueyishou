@@ -1,34 +1,35 @@
 package com.ilhaha.yueyishou.recycler.controller;
 
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
-import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
-import com.ilhaha.yueyishou.recycler.service.RecyclerService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
+import com.ilhaha.yueyishou.recycler.service.CosService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Author ilhaha
- * @Create 2024/9/8 17:18
+ * @Create 2024/9/24 10:36
  * @Version 1.0
  */
 @RestController
-@RequestMapping("/recycler")
-public class RecyclerController {
+@RequestMapping("/cos")
+public class CosController {
 
     @Resource
-    private RecyclerService recyclerService;
+    private CosService cosService;
 
     /**
-     * 获取回收员基本信息
-     * @param
+     * 上传文件
+     * @param file
+     * @param path
      * @return
      */
     @LoginVerification
-    @GetMapping("/base/info")
-    public Result<RecyclerBaseInfoVo> getBaseInfo(){
-        return recyclerService.getBaseInfo();
+    @PostMapping("/upload")
+    public Result<CosUploadVo> upload(@RequestPart("file") MultipartFile file,
+                                      @RequestParam("path") String path){
+        return cosService.upload(file,path);
     }
 }

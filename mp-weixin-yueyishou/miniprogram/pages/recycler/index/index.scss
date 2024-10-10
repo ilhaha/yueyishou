@@ -99,3 +99,21 @@
   margin-left: 45rpx;
   /* 让开关稍微大一些 */
 }
+
+/* 居中容器 */
+.uploader-container {
+  display: flex;
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  height: 100vh;
+  /* 占满整个视口高度 (根据需要调整) */
+}
+
+/* 居中上传组件的容器 */
+.uploader-wrapper {
+  width: auto;
+  text-align: center;
+  margin: 20rpx;
+}

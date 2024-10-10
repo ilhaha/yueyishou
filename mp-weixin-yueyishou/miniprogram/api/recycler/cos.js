@@ -5,12 +5,15 @@ import {
 /**
  * 上传文件
  */
-export const reqCosUpload = (filePath, path) => {
+export const reqCosUpload = (event, path) => {
+  const {
+    file
+  } = event.detail;
   // 返回一个 Promise 对象
   return new Promise((resolve, reject) => {
     wx.uploadFile({
-      url: 'http://localhost/recycler-api/recycler/upload',
-      filePath,
+      url: 'http://localhost/recycler-api/cos/upload',
+      filePath: file.url,
       name: 'file',
       header: {
         'token': customerStore.token
