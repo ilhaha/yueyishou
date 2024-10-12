@@ -1,7 +1,6 @@
 <view class="container">
   <view class="shipping-info">
     <text>{{orderInfo.customerLocation}}</text>
-
     <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
   </view>
 
@@ -41,7 +40,7 @@
         <text class="label">预收手续费</text>
         <text class="value">¥{{orderInfo.expectCustomerPlatformAmount}}</text>
       </view>
-      <view class="meta-item">
+      <view class="meta-item" wx:if="{{orderInfo.remark}}">
         <text class="label">备注</text>
         <text class="value">{{orderInfo.remark}}</text>
       </view>
@@ -55,3 +54,4 @@
     </view>
   </view>
 </view>
+<van-submit-bar price="{{ (orderInfo.estimatedTotalAmount - orderInfo.expectCustomerPlatformAmount) * 100}}" button-text="取消订单" bind:tap="cancelOrder" />

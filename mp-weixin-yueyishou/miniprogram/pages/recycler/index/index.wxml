@@ -13,7 +13,19 @@
 
   <!-- 判断订单列表是否有订单 -->
   <view wx:elif="{{orderList.length > 0}}">
-    111
+    <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
+      <view class="card-container" data-orderid="{{order.id}}" data-apart="{{order.apart}}" bind:tap="showDetails">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{item.title}}">
+          <view slot="desc" class="custom-desc">
+            <view>{{order.appointmentTime}}前上门</view>
+            <view>距离 {{order.apart}} 公里</view>
+          </view>
+          <view slot="footer" class="button-group">
+            <van-button size="mini" type="primary" class="action-button" catch:tap="grabOrder" data-orderid="{{order.id}}">抢单</van-button>
+          </view>
+        </van-card>
+      </view>
+    </block>
   </view>
 
   <!-- 如果都没有订单 -->

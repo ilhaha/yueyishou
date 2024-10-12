@@ -19,6 +19,7 @@
         <module>service-category</module>
         <module>service-coupon</module>
         <module>service-tencentcloud</module>
+        <module>service-map</module>
     </modules>
 
     <dependencies>

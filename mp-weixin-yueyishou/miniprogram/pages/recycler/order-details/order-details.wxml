@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="shipping-info">
+    <text>{{orderInfo.customerLocation}}</text>
+    <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
+  </view>
+
+  <view class="order-details">
+    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.estimatedTotalAmount}} + {{orderInfo.expectRecyclerPlatformAmount}}(服务费)" tag="待接单">
+      <view slot="desc" class="custom-desc">
+        <view>{{orderInfo.appointmentTime}}前上门</view>
+        <view>距离 {{apart}} 公里</view>
+      </view>
+    </van-card>
+    <view class="order-meta">
+      <view class="meta-item">
+        <text class="label">订单编号</text>
+        <text class="value">{{orderInfo.orderNo}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">创建时间</text>
+        <text class="value">{{orderInfo.createTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">预约时间</text>
+        <text class="value">{{orderInfo.appointmentTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">回收品类</text>
+        <text class="value">{{orderInfo.sonCategoryName}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">品类单价</text>
+        <text class="value">¥{{orderInfo.unitPrice}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">回收重量(公斤)</text>
+        <text class="value">{{orderInfo.recycleWeigh}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">预支付回收款</text>
+        <text class="value">¥{{orderInfo.estimatedTotalAmount}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">预收手续费</text>
+        <text class="value">¥{{orderInfo.expectRecyclerPlatformAmount}}</text>
+      </view>
+      <view class="meta-item" wx:if="{{orderInfo.remark}}">
+        <text class="label">备注</text>
+        <text class="value">{{orderInfo.remark}}</text>
+      </view>
+
+      <view class="meta-img">
+        <text class="label">实物照片</text>
+        <view class="photo-grid">
+          <image wx:for="{{orderInfo.actualPhotoList}}" src="{{item}}" wx:key="index" mode="aspectFill" class="img" alt="实物照片"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+<van-submit-bar price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}" />

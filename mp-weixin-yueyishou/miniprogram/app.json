@@ -14,7 +14,8 @@
     "pages/customer/setting/setting",
     "pages/customer/order/order",
     "pages/customer/order/order-details/order-details",
-    "pages/recycler/order-setting/order-setting"
+    "pages/recycler/order-setting/order-setting",
+    "pages/recycler/order-details/order-details"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -81,7 +82,7 @@
   ],
   "permission": {
     "scope.userLocation": {
-      "desc": "获取地理位置信息用于填写回收地址"
+      "desc": "获取当前地理位置信息"
     }
   }
 }

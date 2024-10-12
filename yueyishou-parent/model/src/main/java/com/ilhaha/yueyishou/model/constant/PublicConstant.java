@@ -10,7 +10,7 @@ package com.ilhaha.yueyishou.model.constant;
 public class PublicConstant {
 
     /**
-     * 腾讯云访问图片30分钟过期
+     * 地球半径
      */
-    public static final Integer COS_IMAGE_VALID_TIME = 60;
+    public static final Integer EARTH_RADIUS = 6371;
 }

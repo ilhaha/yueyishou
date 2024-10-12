@@ -1,7 +1,7 @@
 package com.ilhaha.yueyishou.common.aop;
 
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
-import com.ilhaha.yueyishou.common.constant.RedisConstant;
+import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;

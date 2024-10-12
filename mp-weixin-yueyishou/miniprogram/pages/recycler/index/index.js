@@ -3,16 +3,28 @@ import {
 } from '../../../api/recycler/personalization'
 import {
   reqRecyclerIsSign,
-  reqVerifyDriverFace
+  reqVerifyDriverFace,
 } from '../../../api/recycler/recycler'
 import {
   reqCosUpload
 } from '../../../api/recycler/cos'
-
+import {
+  reqUpdateRecyclerLocation,
+  reqRemoveRecyclerLocation
+} from '../../../api/recycler/map'
 import {
   toast
 } from '../../../utils/extendApi'
+import {
+  permissionBehavior
+} from '../../../behavior/permissionBehavior'
+import {
+  reqRetrieveMatchingOrders,
+  reqGrabOrder
+} from '../../../api/recycler/order'
+
 Page({
+  behaviors: [permissionBehavior],
   data: {
     activeTab: 0,
     recyclerInfo: {},
@@ -50,10 +62,80 @@ Page({
       imageBase64: ''
     },
     beforeClose: null,
+    currentLocation: null,
+    locationInterval: null // 用于保存定时器的ID
   },
   // 初始化数据
   onLoad() {},
 
+  // 抢单
+  async grabOrder(event) {
+    const res = await reqGrabOrder(event.currentTarget.dataset.orderid);
+    toast({
+      title: res.data ? '抢单成功' : '该单已被抢',
+      icon: res.data ? 'success' : 'error',
+      duration: 1000
+    })
+    this.retrieveMatchingOrders();
+  },
+  // 查看订单详情
+  showDetails(event) {
+    const orderId = event.currentTarget.dataset.orderid;
+    const apart = event.currentTarget.dataset.apart;
+    wx.navigateTo({
+      url: `/pages/recycler/order-details/order-details?orderId=${orderId}&apart=${apart}`,
+    })
+  },
+  // 获取符合回收员的接单的订单
+  async retrieveMatchingOrders() {
+    const res = await reqRetrieveMatchingOrders(this.data.recyclerInfo);
+    this.setData({
+      orderList: res.data
+    })
+  },
+
+  // 获取回收员地理位置信息
+  async getCurrentLocation() {
+    // 尝试先隐藏任何可能的加载或提示
+    wx.hideLoading();
+    wx.hideToast();
+
+    wx.getLocation({
+      type: 'gcj02', // 使用 gcj02 坐标
+      success: async (res) => {
+        // 成功获取用户位置
+        const {
+          latitude,
+          longitude
+        } = res;
+        this.setData({
+          currentLocation: {
+            latitude,
+            longitude
+          }
+        });
+
+        // 获取成功后保存地理位置到 Redis
+        await reqUpdateRecyclerLocation(this.data.currentLocation);
+        // 获取符合的订单
+        this.retrieveMatchingOrders();
+      },
+      fail: (error) => {
+        // 获取失败时提示错误，不使用加载图标
+        wx.showToast({
+          title: '获取位置信息失败',
+          icon: 'none',
+          duration: 2000
+        });
+        console.error('获取位置信息失败：', error);
+      },
+      complete: () => {
+        // 确保即便操作完成后也不显示加载图标
+        wx.hideLoading();
+        wx.hideToast();
+      }
+    });
+  },
   // 跳转对应的菜单页
   gotoMenu(event) {
     wx.navigateTo({
@@ -95,7 +177,6 @@ Page({
         // 如果校验成功，手动关闭对话框
         this.setData({
           dialogShow: false,
-          'recyclerInfo.serviceStatus': 1,
           'faceRecognitionList': []
         });
       } else {
@@ -207,6 +288,7 @@ Page({
       faceRecognitionList
     });
   },
+
   // 切换回收员服务状态
   async switchServiceStatus(event) {
     if (event.detail) {
@@ -215,15 +297,34 @@ Page({
       } = await reqRecyclerIsSign();
       // 没进行每日人脸识别
       if (!data) {
-        this.switchDialog()
+        this.switchDialog();
         return;
       }
     }
+
+    const hasPermission = await this.userPermission('scope.userLocation');
+    if (!hasPermission) {
+      toast({
+        title: "拒绝授权",
+        icon: 'error'
+      });
+      return;
+    }
+
+    if (event.detail) {
+      // 开始每隔 30 秒获取一次定位并获取符合接单要求的新订单
+      this.startLocationUpdates();
+    } else {
+      // 停止获取定位
+      this.stopLocationUpdates();
+    }
+
     await reqSwitchServiceStatus(event.detail ? 1 : 0);
     this.setData({
       'recyclerInfo.serviceStatus': event.detail ? 1 : 0
-    })
+    });
   },
+
   // 开始接单
   async takeOrders() {
     const {
@@ -234,6 +335,17 @@ Page({
       this.switchDialog()
       return;
     }
+    // 判断是否有定位授权
+    const hasPermission = await this.userPermission('scope.userLocation');
+    if (!hasPermission) {
+      toast({
+        title: "拒绝授权",
+        icon: 'error'
+      })
+      return
+    }
+    // 上传定位
+    this.startLocationUpdates();
     const res = await reqSwitchServiceStatus(1)
     if (res.data) {
       toast({
@@ -246,11 +358,37 @@ Page({
     }
   },
 
+  // 开始获取定位，每 30 秒获取一次
+  startLocationUpdates() {
+    this.getCurrentLocation(); // 立即获取一次
+    const locationInterval = setInterval(() => {
+      this.getCurrentLocation();
+    }, 30000); // 每隔 30 秒获取一次
+    this.setData({
+      locationInterval
+    });
+  },
+
+  // 停止获取定位
+  async stopLocationUpdates() {
+    if (this.data.locationInterval) {
+      clearInterval(this.data.locationInterval);
+      this.setData({
+        locationInterval: null
+      });
+    }
+    // 清空回收员的位置信息
+    await reqRemoveRecyclerLocation();
+  },
+
   // 获取回收员信息
   getRecyclerInfo(e) {
     this.setData({
       recyclerInfo: e.detail.recyclerInfo
     })
+    if (this.data.recyclerInfo.serviceStatus == 1) {
+      this.startLocationUpdates();
+    }
   },
 
   // 切换tab页

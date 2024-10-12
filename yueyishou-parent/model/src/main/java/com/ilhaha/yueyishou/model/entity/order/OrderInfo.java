@@ -44,7 +44,7 @@ public class OrderInfo extends BaseEntity {
     /**回收重量*/
     private BigDecimal recycleWeigh;
 	/**回收员ID*/
-    private Integer recyclerId;
+    private Long recyclerId;
 	/**回收员接单时间*/
     private Date acceptTime;
 	/**回收员到达时间*/
@@ -63,4 +63,6 @@ public class OrderInfo extends BaseEntity {
     private BigDecimal estimatedTotalAmount;
 	/**顾客预支付平台订单金额*/
     private BigDecimal expectCustomerPlatformAmount;
+    /**回收员预支付平台订单金额*/
+    private BigDecimal expectRecyclerPlatformAmount;
 }

@@ -2,9 +2,8 @@ package com.ilhaha.yueyishou.order.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
-import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 
@@ -38,7 +37,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     /**
      * 根据订单ID获取订单详情
      */
-    CustomerOrderDetailsVo getOrderDetails(Long orderId);
+    OrderDetailsVo getOrderDetails(Long orderId);
 
     /**
      * 取消订单
@@ -46,4 +45,19 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean cancelOrder(Long orderId);
+
+    /**
+     * 回收员获取符合接单的订单
+     * @param matchingOrderForm
+     * @return
+     */
+    List<MatchingOrderVo> retrieveMatchingOrders(MatchingOrderForm matchingOrderForm);
+
+    /**
+     * 回收员抢单
+     * @param recyclerId
+     * @param orderId
+     * @return
+     */
+    Boolean grabOrder(Long recyclerId, Long orderId);
 }

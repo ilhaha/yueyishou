@@ -4,7 +4,7 @@ import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.OrderService;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
-import com.ilhaha.yueyishou.model.vo.order.CustomerOrderDetailsVo;
+import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
 import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
@@ -42,7 +42,7 @@ public class OrderController {
      */
     @GetMapping("/details/{orderId}")
     @LoginVerification
-    public Result<CustomerOrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId) {
+    public Result<OrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId) {
         return orderService.getOrderDetails(orderId);
     }
 

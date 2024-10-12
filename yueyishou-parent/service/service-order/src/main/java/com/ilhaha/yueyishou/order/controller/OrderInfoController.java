@@ -3,8 +3,8 @@ package com.ilhaha.yueyishou.order.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
-import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
@@ -24,6 +24,28 @@ public class OrderInfoController {
     private IOrderInfoService orderInfoService;
 
     /**
+     * 回收员抢单
+     * @param recyclerId
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/grab/{recyclerId}/{orderId}")
+    public Result<Boolean> grabOrder(@PathVariable("recyclerId") Long recyclerId,
+                                     @PathVariable("orderId") Long orderId){
+        return Result.ok(orderInfoService.grabOrder(recyclerId,orderId));
+    }
+
+    /**
+     * 回收员获取符合接单的订单
+     * @param matchingOrderForm
+     * @return
+     */
+    @PostMapping("/matching")
+    public Result<List<MatchingOrderVo>> retrieveMatchingOrders(@RequestBody MatchingOrderForm matchingOrderForm){
+        return Result.ok(orderInfoService.retrieveMatchingOrders(matchingOrderForm));
+    }
+
+    /**
      * 取消订单
      * @param orderId
      * @return
@@ -37,7 +59,7 @@ public class OrderInfoController {
 	 * 根据订单ID获取订单详情
 	 */
     @GetMapping("/details/{orderId}")
-    public Result<CustomerOrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId) {
+    public Result<OrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId) {
 		return Result.ok(orderInfoService.getOrderDetails(orderId));
     }
 

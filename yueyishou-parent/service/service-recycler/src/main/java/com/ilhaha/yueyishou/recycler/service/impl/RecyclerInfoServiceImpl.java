@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ilhaha.yueyishou.common.constant.RedisConstant;
+import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;

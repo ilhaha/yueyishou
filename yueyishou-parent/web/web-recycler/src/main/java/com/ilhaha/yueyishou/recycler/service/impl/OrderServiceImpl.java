@@ -1,0 +1,55 @@
+package com.ilhaha.yueyishou.recycler.service.impl;
+
+import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.common.util.AuthContextHolder;
+import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
+import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
+import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
+import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
+import com.ilhaha.yueyishou.recycler.service.OrderService;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * @Author ilhaha
+ * @Create 2024/10/12 16:41
+ * @Version 1.0
+ */
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    @Resource
+    private OrderInfoFeignClient orderInfoFeignClient;
+
+    /**
+     * 回收员获取符合接单的订单
+     * @param matchingOrderForm
+     * @return
+     */
+    @Override
+    public Result<List<MatchingOrderVo>> retrieveMatchingOrders(MatchingOrderForm matchingOrderForm) {
+        matchingOrderForm.setCustomerId(AuthContextHolder.getCustomerId());
+        matchingOrderForm.setRecyclerId(AuthContextHolder.getRecyclerId());
+        return orderInfoFeignClient.retrieveMatchingOrders(matchingOrderForm);
+    }
+
+    /**
+     * 根据订单ID获取订单详情
+     */
+    @Override
+    public Result<OrderDetailsVo> getOrderDetails(Long orderId) {
+        return orderInfoFeignClient.getOrderDetails(orderId);
+    }
+
+    /**
+     * 回收员抢单
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Result<Boolean> grabOrder(Long orderId) {
+        return orderInfoFeignClient.grabOrder(AuthContextHolder.getRecyclerId(),orderId);
+    }
+}

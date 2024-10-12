@@ -7,6 +7,7 @@ import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
+import com.ilhaha.yueyishou.model.vo.recycler.UpdateRecyclerLocationForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-recycler")
 public interface RecyclerInfoFeignClient {
-
     /**
      * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
      * 也就是redis中无该回收员Id

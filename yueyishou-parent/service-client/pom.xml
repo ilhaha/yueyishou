@@ -19,6 +19,7 @@
         <module>service-recycler-client</module>
         <module>service-coupon-client</module>
         <module>service-tencentcloud-client</module>
+        <module>service-map-client</module>
     </modules>
 
     <dependencies>

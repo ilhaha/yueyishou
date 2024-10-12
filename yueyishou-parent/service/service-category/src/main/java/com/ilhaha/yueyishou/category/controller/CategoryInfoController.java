@@ -80,10 +80,10 @@ public class CategoryInfoController {
 	 */
 	@Caching(evict = {
 			@CacheEvict(value = "category",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data"),
 			@CacheEvict(value = "userCategory",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data")
 	})
 	@PostMapping(value = "/add")
@@ -104,10 +104,10 @@ public class CategoryInfoController {
 	 */
 	@Caching(evict = {
 			@CacheEvict(value = "category",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data"),
 			@CacheEvict(value = "userCategory",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data")
 	})
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
@@ -130,10 +130,10 @@ public class CategoryInfoController {
 	 */
 	@Caching(evict = {
 			@CacheEvict(value = "category",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data"),
 			@CacheEvict(value = "userCategory",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data")
 	})
 	@DeleteMapping(value = "/delete")
@@ -157,10 +157,10 @@ public class CategoryInfoController {
 	 */
 	@Caching(evict = {
 			@CacheEvict(value = "category",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data"),
 			@CacheEvict(value = "userCategory",
-					key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE",
+					key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE",
 					condition="#result.data")
 	})
 	@DeleteMapping(value = "/deleteBatch")

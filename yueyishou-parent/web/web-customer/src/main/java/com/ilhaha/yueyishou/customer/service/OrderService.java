@@ -2,7 +2,7 @@ package com.ilhaha.yueyishou.customer.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
-import com.ilhaha.yueyishou.model.vo.order.CustomerOrderDetailsVo;
+import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
 import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
@@ -39,7 +39,7 @@ public interface OrderService {
     /**
      * 根据订单ID获取订单详情
      */
-    Result<CustomerOrderDetailsVo> getOrderDetails(Long orderId);
+    Result<OrderDetailsVo> getOrderDetails(Long orderId);
 
     /**
      * 取消订单

@@ -21,7 +21,7 @@ public class PlaceOrderForm {
     private String customerLocation;
     /**客户地点经度*/
     private BigDecimal customerPointLongitude;
-    /**客户地点伟度*/
+    /**客户地点纬度*/
     private BigDecimal customerPointLatitude;
     /**订单回收分类父ID*/
     private Long parentCategoryId;

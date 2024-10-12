@@ -12,7 +12,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Data
-public class CustomerOrderDetailsVo {
+public class OrderDetailsVo {
 
 
     /**订单id*/
@@ -57,4 +57,8 @@ public class CustomerOrderDetailsVo {
     private BigDecimal estimatedTotalAmount;
     /**顾客预支付平台订单金额*/
     private BigDecimal expectCustomerPlatformAmount;
+    /**回收员预支付平台订单金额*/
+    private BigDecimal expectRecyclerPlatformAmount;
+    /**回收员相距顾客多远*/
+    private BigDecimal apart;
 }

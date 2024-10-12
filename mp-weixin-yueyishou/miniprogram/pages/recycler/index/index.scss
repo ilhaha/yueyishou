@@ -117,3 +117,26 @@
   text-align: center;
   margin: 20rpx;
 }
+
+.card-container {
+  background-color: #ffffff;
+  /* 白色背景 */
+  margin-bottom: 10px;
+  /* 卡片之间的间距 */
+  border-radius: 8px;
+  /* 圆角 */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  /* 阴影效果 */
+  padding: 10px;
+  /* 内边距 */
+}
+
+/* 自定义 desc 样式 */
+.custom-desc {
+  font-size: 12px;
+  /* 字体大小 */
+  color: #666;
+  /* 字体颜色 */
+  line-height: 1.5;
+  /* 行高 */
+}

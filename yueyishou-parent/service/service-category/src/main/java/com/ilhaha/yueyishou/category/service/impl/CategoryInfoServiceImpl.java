@@ -32,7 +32,7 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
      *
      * @return
      */
-    @Cacheable(value = "category", key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE")
+    @Cacheable(value = "category", key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE")
     @Override
     public List<CategoryInfo> queryPageList() {
         // 查处所有的废品品类父级
@@ -87,9 +87,9 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
      */
     @Caching(evict = {
             @CacheEvict(value = "category",
-                    key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE"),
+                    key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE"),
             @CacheEvict(value = "userCategory",
-                    key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE")
+                    key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE")
     })
     @Override
     public String switchStatus(UpdateCategoryStatusForm updateCategoryStatusForm) {
@@ -116,7 +116,7 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
      * 获取已启用的废品品类树
      * @return
      */
-    @Cacheable(value = "userCategory", key = "T(com.ilhaha.yueyishou.common.constant.RedisConstant).CATEGORY_TREE")
+    @Cacheable(value = "userCategory", key = "T(com.ilhaha.yueyishou.model.constant.RedisConstant).CATEGORY_TREE")
     @Override
     public List<CategoryInfo> getCategoryTree() {
         // 查处所有的废品品类父级

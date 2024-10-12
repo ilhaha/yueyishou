@@ -8,6 +8,7 @@ import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
+import com.ilhaha.yueyishou.model.vo.recycler.UpdateRecyclerLocationForm;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,4 +74,5 @@ public interface IRecyclerInfoService extends IService<RecyclerInfo> {
      * @return
      */
     Boolean replenishInfo(Long customerId, String token);
+
 }

@@ -21,6 +21,11 @@
     <dependencies>
         <dependency>
             <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-map-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
             <artifactId>service-order-client</artifactId>
             <version>1.0</version>
         </dependency>

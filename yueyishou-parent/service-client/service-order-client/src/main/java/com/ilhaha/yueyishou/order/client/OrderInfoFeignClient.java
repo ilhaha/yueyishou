@@ -2,12 +2,10 @@ package com.ilhaha.yueyishou.order.client;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.vo.order.CustomerOrderDetailsVo;
-import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
-import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
-import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
+import com.ilhaha.yueyishou.model.vo.order.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +20,25 @@ import java.util.List;
 public interface OrderInfoFeignClient {
 
     /**
+     * 回收员抢单
+     * @param recyclerId
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/orderInfo/grab/{recyclerId}/{orderId}")
+    Result<Boolean> grabOrder(@PathVariable("recyclerId") Long recyclerId,
+                                     @PathVariable("orderId") Long orderId);
+
+    /**
+     * 回收员获取符合接单的订单
+     * @param matchingOrderForm
+     * @return
+     */
+    @PostMapping("/orderInfo/matching")
+    Result<List<MatchingOrderVo>> retrieveMatchingOrders(@RequestBody MatchingOrderForm matchingOrderForm);
+
+
+    /**
      * 取消订单
      * @param orderId
      * @return
@@ -33,7 +50,7 @@ public interface OrderInfoFeignClient {
      * 根据订单ID获取订单详情
      */
     @GetMapping("/orderInfo/details/{orderId}")
-    Result<CustomerOrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId);
+    Result<OrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId);
 
     /**
      * 根据订单状态获取订单列表
