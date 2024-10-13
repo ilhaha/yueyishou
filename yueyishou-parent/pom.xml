@@ -26,6 +26,7 @@
         <module>service-client</module>
         <module>service/service-rules</module>
         <module>service-client/service-rules-client</module>
+        <module>xxl-job</module>
     </modules>
 
 

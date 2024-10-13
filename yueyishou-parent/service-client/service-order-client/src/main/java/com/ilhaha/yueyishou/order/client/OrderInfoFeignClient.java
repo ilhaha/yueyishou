@@ -20,6 +20,13 @@ import java.util.List;
 public interface OrderInfoFeignClient {
 
     /**
+     * 取消预约时间超时的订单
+     * @return
+     */
+    @PostMapping("/orderInfo/processTimeoutOrders")
+    Result<Boolean> processTimeoutOrders(@RequestBody List<Long> timeoutOrderIds);
+
+    /**
      * 回收员抢单
      * @param recyclerId
      * @param orderId

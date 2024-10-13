@@ -1,6 +1,7 @@
 package com.ilhaha.yueyishou.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -120,6 +121,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoLambdaUpdateWrapper.set(OrderInfo::getStatus, OrderStatus.CANCELED_ORDER)
                 .set(OrderInfo::getCancelMessage, OrderConstant.CANCEL_REMARK)
                 .eq(OrderInfo::getId, orderId);
+        // 删除redis中的订单
+        redisTemplate.delete(RedisConstant.WAITING_ORDER + orderId);
         return this.update(orderInfoLambdaUpdateWrapper);
     }
 
@@ -213,6 +216,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         }
         return orderDetailsVo;
+    }
+
+    /**
+     * 取消预约时间超时的订单
+     * @return
+     */
+    @Override
+    public Boolean processTimeoutOrders(List<Long> timeoutOrderIds) {
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateChainWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateChainWrapper.set(OrderInfo::getStatus,OrderStatus.CANCELED_ORDER)
+                .set(OrderInfo::getCancelMessage,OrderConstant.TIMEOUT_CANCEL_REMARK)
+                .in(OrderInfo::getId,timeoutOrderIds);
+        return this.update(orderInfoLambdaUpdateChainWrapper);
     }
 
     /**

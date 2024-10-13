@@ -16,4 +16,9 @@ public class OrderConstant {
      * 顾客取消订单备注
      */
     public static final String CANCEL_REMARK = "用户自行取消";
+
+    /**
+     * 预约时间超时取消订单备注
+     */
+    public static final String TIMEOUT_CANCEL_REMARK = "预约时间超时未接单";
 }

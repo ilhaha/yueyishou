@@ -2,6 +2,7 @@ package com.ilhaha.yueyishou.order.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
@@ -72,4 +73,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     OrderDetailsVo getOrderDetails(Long recyclerId, Long orderId);
+
+    /**
+     * 取消预约时间超时的订单
+     * @return
+     */
+    Boolean processTimeoutOrders(List<Long> timeoutOrderIds);
 }

@@ -24,6 +24,16 @@ public class OrderInfoController {
     private IOrderInfoService orderInfoService;
 
     /**
+     * 取消预约时间超时的订单
+     * @return
+     */
+    @PostMapping("/processTimeoutOrders")
+    public Result<Boolean> processTimeoutOrders(@RequestBody List<Long> timeoutOrderIds){
+        return Result.ok(orderInfoService.processTimeoutOrders(timeoutOrderIds));
+    }
+
+
+    /**
      * 回收员抢单
      * @param recyclerId
      * @param orderId
