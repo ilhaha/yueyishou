@@ -14,7 +14,7 @@
   <!-- 判断订单列表是否有订单 -->
   <view wx:elif="{{orderList.length > 0}}">
     <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
-      <view class="card-container" data-orderid="{{order.id}}" data-apart="{{order.apart}}" bind:tap="showDetails">
+      <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
         <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{item.title}}">
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}}前上门</view>

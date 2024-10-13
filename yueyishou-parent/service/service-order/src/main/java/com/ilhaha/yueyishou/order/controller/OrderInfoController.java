@@ -55,13 +55,28 @@ public class OrderInfoController {
         return Result.ok(orderInfoService.cancelOrder(orderId));
     }
 
-	/**
-	 * 根据订单ID获取订单详情
-	 */
+    /**
+     * 顾客根据订单ID获取订单详情
+     * @param orderId
+     * @return
+     */
     @GetMapping("/details/{orderId}")
     public Result<OrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId) {
 		return Result.ok(orderInfoService.getOrderDetails(orderId));
     }
+
+    /**
+     * 回收员根据订单ID获取订单详情
+     * @param recyclerId
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/details/{recyclerId}/{orderId}")
+    public Result<OrderDetailsVo> getOrderDetails(@PathVariable("recyclerId") Long recyclerId ,
+                                                  @PathVariable("orderId") Long orderId) {
+        return Result.ok(orderInfoService.getOrderDetails(recyclerId,orderId));
+    }
+
 
     /**
      * 根据订单状态获取订单列表

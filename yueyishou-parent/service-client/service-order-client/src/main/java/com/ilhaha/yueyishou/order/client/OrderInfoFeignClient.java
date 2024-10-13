@@ -47,10 +47,20 @@ public interface OrderInfoFeignClient {
     Result<Boolean> cancelOrder(@PathVariable("orderId") Long orderId);
 
     /**
-     * 根据订单ID获取订单详情
+     * 顾客根据订单ID获取订单详情
      */
     @GetMapping("/orderInfo/details/{orderId}")
     Result<OrderDetailsVo> getOrderDetails(@PathVariable("orderId") Long orderId);
+
+    /**
+     * 回收员根据订单ID获取订单详情
+     * @param recyclerId
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/orderInfo/details/{recyclerId}/{orderId}")
+    Result<OrderDetailsVo> getOrderDetails(@PathVariable("recyclerId") Long recyclerId ,
+                                                  @PathVariable("orderId") Long orderId);
 
     /**
      * 根据订单状态获取订单列表

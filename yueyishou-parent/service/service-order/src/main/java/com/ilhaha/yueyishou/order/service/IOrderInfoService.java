@@ -34,8 +34,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     List<CustomerOrderListVo> orderList(Integer status, Long customerId);
 
+
     /**
-     * 根据订单ID获取订单详情
+     * 顾客根据订单ID获取订单详情
+     * @param orderId
+     * @return
      */
     OrderDetailsVo getOrderDetails(Long orderId);
 
@@ -60,4 +63,13 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean grabOrder(Long recyclerId, Long orderId);
+
+
+    /**
+     * 回收员根据订单ID获取订单详情
+     * @param recyclerId
+     * @param orderId
+     * @return
+     */
+    OrderDetailsVo getOrderDetails(Long recyclerId, Long orderId);
 }

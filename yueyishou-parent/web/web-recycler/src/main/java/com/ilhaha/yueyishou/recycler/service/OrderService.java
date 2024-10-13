@@ -22,7 +22,7 @@ public interface OrderService {
     Result<List<MatchingOrderVo>> retrieveMatchingOrders(MatchingOrderForm matchingOrderForm);
 
     /**
-     * 根据订单ID获取订单详情
+     * 回收员根据订单ID获取订单详情
      */
     Result<OrderDetailsVo> getOrderDetails(Long orderId);
 

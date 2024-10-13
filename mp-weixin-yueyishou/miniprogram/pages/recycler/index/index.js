@@ -81,9 +81,8 @@ Page({
   // 查看订单详情
   showDetails(event) {
     const orderId = event.currentTarget.dataset.orderid;
-    const apart = event.currentTarget.dataset.apart;
     wx.navigateTo({
-      url: `/pages/recycler/order-details/order-details?orderId=${orderId}&apart=${apart}`,
+      url: `/pages/recycler/order-details/order-details?orderId=${orderId}`,
     })
   },
   // 获取符合回收员的接单的订单

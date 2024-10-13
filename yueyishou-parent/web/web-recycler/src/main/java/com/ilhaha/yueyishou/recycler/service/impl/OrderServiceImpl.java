@@ -36,11 +36,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 根据订单ID获取订单详情
+     * 回收员根据订单ID获取订单详情
      */
     @Override
     public Result<OrderDetailsVo> getOrderDetails(Long orderId) {
-        return orderInfoFeignClient.getOrderDetails(orderId);
+        return orderInfoFeignClient.getOrderDetails(AuthContextHolder.getRecyclerId(),orderId);
     }
 
     /**

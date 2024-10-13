@@ -19,6 +19,7 @@ import com.ilhaha.yueyishou.order.service.IOrderInfoService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.geo.Point;
+import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -90,7 +91,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
-     * 根据订单ID获取订单详情
+     * 顾客根据订单ID获取订单详情
+     * @param orderId
+     * @return
      */
     @Override
     public OrderDetailsVo getOrderDetails(Long orderId) {
@@ -137,7 +140,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         // 过滤掉是自己的订单，自己不能接自己的订单
         List<OrderInfo> filteredOrders = waitOrderInfoList.stream()
-                .filter(order -> !order.getCustomerId().equals(matchingOrderForm.getCustomerId()))
+                .filter(order -> !matchingOrderForm.getCustomerId().equals(order.getCustomerId()))
                 .collect(Collectors.toList());
 
         // 过滤出未过预约时间的订单
@@ -176,6 +179,40 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             this.updateById(orderInfo);
         }
         return hasOrder;
+    }
+
+    /**
+     * 回收员根据订单ID获取订单详情
+     * @param recyclerId
+     * @param orderId
+     * @return
+     */
+    @Override
+    public OrderDetailsVo getOrderDetails(Long recyclerId, Long orderId) {
+        OrderDetailsVo orderDetailsVo = new OrderDetailsVo();
+        OrderInfo orderInfoDB = this.getById(orderId);
+        BeanUtils.copyProperties(orderInfoDB, orderDetailsVo);
+        if (!ObjectUtils.isEmpty(orderInfoDB.getActualPhotos())) {
+            String[] actualPhotoArr = orderInfoDB.getActualPhotos().split(",");
+            orderDetailsVo.setActualPhoto(actualPhotoArr[0]);
+            orderDetailsVo.setActualPhotoList(Arrays.stream(actualPhotoArr).toList());
+        }
+        // 查询redis查看该订单距离回收员多远
+        // 获取回收员的位置
+        Point recyclerLocation = getRecyclerLocationFromRedis(recyclerId);
+        if (recyclerLocation != null && orderInfoDB.getCustomerPointLongitude() != null && orderInfoDB.getCustomerPointLatitude() != null) {
+            // 订单中的客户位置
+            Point customerLocation = new Point(orderInfoDB.getCustomerPointLongitude().doubleValue(),
+                    orderInfoDB.getCustomerPointLatitude().doubleValue());
+
+            // 使用 Haversine 公式计算距离（单位：公里）
+            double distance = calculateDistance(recyclerLocation, customerLocation);
+
+            // 将计算出的距离存储到 apart 字段
+            orderDetailsVo.setApart(BigDecimal.valueOf(distance).setScale(1, RoundingMode.CEILING));
+
+        }
+        return orderDetailsVo;
     }
 
     /**

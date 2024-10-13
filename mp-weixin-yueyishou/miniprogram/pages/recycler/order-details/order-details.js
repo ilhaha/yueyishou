@@ -9,14 +9,9 @@ import {
 Page({
   data: {
     orderInfo: {},
-    apart: 0
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
-    this.setData({
-      apart: options.apart
-    })
-    console.log(this.data.orderInfo);
   },
   // 抢单
   async grabOrder(event) {

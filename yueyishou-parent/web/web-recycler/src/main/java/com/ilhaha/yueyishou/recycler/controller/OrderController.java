@@ -35,7 +35,7 @@ public class OrderController {
     }
 
     /**
-     * 根据订单ID获取订单详情
+     * 回收员根据订单ID获取订单详情
      */
     @GetMapping("/details/{orderId}")
     @LoginVerification

@@ -61,6 +61,7 @@ public class OrderController {
      * @param placeOrderForm
      * @return
      */
+    @LoginVerification
     @PostMapping("/place")
     public Result<Boolean> placeOrder(@RequestBody PlaceOrderForm placeOrderForm) {
         return orderService.placeOrder(placeOrderForm);
