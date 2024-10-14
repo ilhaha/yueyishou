@@ -11,6 +11,19 @@
 
     <artifactId>service-order</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-recycler-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-map-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>

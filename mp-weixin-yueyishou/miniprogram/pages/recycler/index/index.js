@@ -20,7 +20,8 @@ import {
 } from '../../../behavior/permissionBehavior'
 import {
   reqRetrieveMatchingOrders,
-  reqGrabOrder
+  reqGrabOrder,
+  reqOrderListByStaus
 } from '../../../api/recycler/order'
 
 Page({
@@ -55,6 +56,7 @@ Page({
       }
     ],
     orderList: [],
+    orderListByStatus: [],
     popupShow: false,
     dialogShow: false,
     faceRecognitionList: [],
@@ -68,6 +70,14 @@ Page({
   // 初始化数据
   onLoad() {},
 
+  // 获取回收员订单
+  async getRecyclerOrderListByStatus(status) {
+    const res = await reqOrderListByStaus(status);
+    this.setData({
+      orderListByStatus: res.data
+    })
+  },
+
   // 抢单
   async grabOrder(event) {
     const res = await reqGrabOrder(event.currentTarget.dataset.orderid);
@@ -78,6 +88,7 @@ Page({
     })
     this.retrieveMatchingOrders();
   },
+
   // 查看订单详情
   showDetails(event) {
     const orderId = event.currentTarget.dataset.orderid;
@@ -85,6 +96,7 @@ Page({
       url: `/pages/recycler/order-details/order-details?orderId=${orderId}`,
     })
   },
+
   // 获取符合回收员的接单的订单
   async retrieveMatchingOrders() {
     const res = await reqRetrieveMatchingOrders(this.data.recyclerInfo);
@@ -135,6 +147,7 @@ Page({
       }
     });
   },
+
   // 跳转对应的菜单页
   gotoMenu(event) {
     wx.navigateTo({
@@ -394,11 +407,12 @@ Page({
   onTabChange(e) {
     const status = e.detail.status || 1;
     const index = e.detail.index;
-    console.log(status);
+    index == 0 ? (this.data.recyclerInfo.serviceStatus == 1 ? this.retrieveMatchingOrders() : '') : this.getRecyclerOrderListByStatus(status);
     this.setData({
       activeTab: index
     });
   },
+
   switchDialog() {
     this.setData({
       dialogShow: !this.data.dialogShow

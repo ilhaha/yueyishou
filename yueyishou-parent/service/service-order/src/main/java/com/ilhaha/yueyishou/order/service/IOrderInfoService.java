@@ -79,4 +79,13 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean processTimeoutOrders(List<Long> timeoutOrderIds);
+
+
+    /**
+     * 根据状态获取回收员订单列表
+     * @param recyclerId
+     * @param status
+     * @return
+     */
+    List<RecyclerOrderVo> getRecyclerOrderListByStatus(Long recyclerId, Integer status);
 }

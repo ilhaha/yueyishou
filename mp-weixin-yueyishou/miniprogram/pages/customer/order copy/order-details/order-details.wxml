@@ -58,7 +58,7 @@
 
 <!-- 带有地图订单详情 -->
 <view wx:else>
-  <view wx:if="{{orderInfo}}">
-    <map-plan orderInfo="{{orderInfo}}" freeCancellationTime="{{freeCancellationTime}}" bind:customerCanceOrder="customerCanceOrder"/>
+  <view wx:if="{{orderInfo && orderInfo.orderDetailsRecyclerInfoVo && orderInfo.customerPointLatitude}}">
+    <map-plan start-location="{{ {latitude: orderInfo.orderDetailsRecyclerInfoVo.recyclerPointLatitude, longitude: orderInfo.orderDetailsRecyclerInfoVo.recyclerPointLongitude} }}" end-location="{{ {latitude: orderInfo.customerPointLatitude, longitude: orderInfo.customerPointLongitude} }}" recyclerInfo="{{orderInfo.orderDetailsRecyclerInfoVo}}" />
   </view>
 </view>

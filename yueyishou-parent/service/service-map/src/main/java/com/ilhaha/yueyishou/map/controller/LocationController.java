@@ -19,6 +19,7 @@ public class LocationController {
     private LocationService locationService;
 
 
+
     /**
      * 删除回收员位置信息
      * @param recyclerId

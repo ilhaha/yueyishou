@@ -1,0 +1,50 @@
+<view class="container">
+  <!-- 地图部分 -->
+  <map id="map" latitude="{{latitude}}" longitude="{{longitude}}" scale="{{scale}}" markers="{{markers}}" polyline="{{polyline}}" show-location="{{false}}" style="width: 100%; height: 100vh;" wx:if="{{routeInfo}}"></map>
+
+  <map id="map" latitude="{{latitude}}" longitude="{{longitude}}" scale="{{scale}}" style="width: 100%; height: 100vh;" show-location="{{true}}" wx:else></map>
+
+  <van-action-sheet show="{{ true }}" overlay="{{false}}" style="padding: 0;">
+    <view class="sheet-container" wx:if="{{routeInfo}}">
+      <!-- 左边显示头像、名字和单数 -->
+      <view class="left">
+        <image class="driver-avatar" src="{{routeInfo.fullFaceUrl}}" />
+        <view class="driver-info">
+          <text class="driver-name">{{routeInfo.name}}</text>
+          <text class="driver-orders">{{routeInfo.orderCount}}单</text>
+          <van-rate readonly value="{{ routeInfo.score }}" size="15" gutter="1" />
+        </view>
+      </view>
+
+      <!-- 右边显示状态信息、距离和时间 -->
+      <view class="right">
+        <text class="status-text">回收小哥正在赶来</text>
+        <view class="info">
+          <text class="info-text">{{routeInfo.distance}}</text>公里
+          <text class="info-text">{{routeInfo.duration}}</text>分钟
+        </view>
+        <view class="phone">
+          <image src="../../assets/images/common/phone.png" class="phone-icon" />
+          <view class="phone-number">
+            <block wx:for="{{routeInfo.phone}}" wx:key="index">
+              <text class="phone-digit">{{item}}</text>
+            </block>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="sheet-container" wx:else>
+
+
+      <!-- 右边显示状态信息、距离和时间 -->
+      <view class="right">
+        <text class="status-text">等待回收小哥赶来回收点</text>
+      </view>
+    </view>
+
+    <!-- 取消订单部分 -->
+    <view class="cancel-container">
+      <view class="cancel-text">您可在{{freeCancellationTime}}前免费<span bind:tap="cancelOrder" class="cancel">取消</span></view>
+    </view>
+  </van-action-sheet>
+</view>

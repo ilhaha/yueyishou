@@ -20,6 +20,16 @@ import java.util.List;
 public interface OrderInfoFeignClient {
 
     /**
+     * 根据状态获取回收员订单列表
+     * @param recyclerId
+     * @param status
+     * @return
+     */
+    @GetMapping("/orderInfo/list/status/{recyclerId}/{status}")
+    Result<List<RecyclerOrderVo>> getRecyclerOrderListByStatus(@PathVariable("recyclerId") Long recyclerId,
+                                                                      @PathVariable("status") Integer status);
+
+    /**
      * 取消预约时间超时的订单
      * @return
      */

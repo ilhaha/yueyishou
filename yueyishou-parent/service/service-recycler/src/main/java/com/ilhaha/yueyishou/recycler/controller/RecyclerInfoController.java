@@ -160,7 +160,7 @@ public class RecyclerInfoController {
 	 * @return
 	 */
 	@GetMapping(value = "/queryById")
-	public Result<RecyclerInfo> queryById(@RequestParam(name="id",required=true) String id) {
+	public Result<RecyclerInfo> queryById(@RequestParam(name="id",required=true) Long id) {
 		RecyclerInfo recyclerInfo = recyclerInfoService.getById(id);
 		if(recyclerInfo==null) {
 			throw new YueYiShouException(ResultCodeEnum.DATA_ERROR);

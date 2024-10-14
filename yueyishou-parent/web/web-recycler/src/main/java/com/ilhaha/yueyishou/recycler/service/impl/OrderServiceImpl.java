@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
+import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
 import jakarta.annotation.Resource;
@@ -51,5 +52,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<Boolean> grabOrder(Long orderId) {
         return orderInfoFeignClient.grabOrder(AuthContextHolder.getRecyclerId(),orderId);
+    }
+
+    /**
+     * 根据状态获取回收员订单列表
+     * @param status
+     * @return
+     */
+    @Override
+    public Result<List<RecyclerOrderVo>> getRecyclerOrderListByStatus(Integer status) {
+        return orderInfoFeignClient.getRecyclerOrderListByStatus(AuthContextHolder.getRecyclerId(),status);
     }
 }

@@ -5,6 +5,9 @@ import {
 } from '../../../../api/customer/address'
 import QQMapWX from '../../../../libs/qqmap-wx-jssdk'
 import Schema from 'async-validator'
+import {
+  QqMapkey
+} from '../../../../config/mapConfig'
 Page({
   // 页面的初始数据
   data: {
@@ -230,7 +233,7 @@ Page({
   onLoad: function (options) {
     // 实例化API核心类
     this.qqmapsdk = new QQMapWX({
-      key: 'RK6BZ-7VE67-QGMXL-PB44A-DJ2AQ-L5BJU'
+      key: QqMapkey
     })
     this.getAddressInfoById(options.id)
   }

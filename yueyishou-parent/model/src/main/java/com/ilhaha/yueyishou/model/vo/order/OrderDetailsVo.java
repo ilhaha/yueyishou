@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 public class OrderDetailsVo {
 
-
     /**订单id*/
     private Long id;
     /**订单创建时间*/
@@ -25,6 +24,10 @@ public class OrderDetailsVo {
     private String orderNo;
     /**客户地点*/
     private String customerLocation;
+    /**客户地点经度*/
+    private BigDecimal customerPointLongitude;
+    /**客户地点伟度*/
+    private BigDecimal customerPointLatitude;
     /**订单回收分类父名称*/
     private String parentCategoryName;
     /**订单回收分类子名称*/
@@ -61,4 +64,6 @@ public class OrderDetailsVo {
     private BigDecimal expectRecyclerPlatformAmount;
     /**回收员相距顾客多远*/
     private BigDecimal apart;
+    /**回收员ID*/
+    private Long recyclerId;
 }

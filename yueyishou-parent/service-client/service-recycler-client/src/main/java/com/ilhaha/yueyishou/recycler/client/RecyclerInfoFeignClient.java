@@ -18,6 +18,16 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-recycler")
 public interface RecyclerInfoFeignClient {
+
+    /**
+     * 通过id查询
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/recyclerInfo/queryById")
+    Result<RecyclerInfo> queryById(@RequestParam(name="id",required=true) Long id);
+
     /**
      * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题
      * 也就是redis中无该回收员Id

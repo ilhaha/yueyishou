@@ -23,3 +23,10 @@ export const reqOrderDetails = (orderId) => {
 export const reqGrabOrder = (orderId) => {
   return http.post(urlPrefix + `/order/grab/${orderId}`)
 }
+
+/**
+ * 根据订单状体啊获取订单列表
+ */
+export const reqOrderListByStaus = (status) => {
+  return http.get(urlPrefix + `/order/list/${status}`)
+}

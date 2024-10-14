@@ -1,26 +1,28 @@
 package com.ilhaha.yueyishou.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ilhaha.yueyishou.client.MapFeignClient;
 import com.ilhaha.yueyishou.model.constant.PublicConstant;
 import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.common.util.OrderUtil;
 import com.ilhaha.yueyishou.model.constant.OrderConstant;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.enums.OrderStatus;
+import com.ilhaha.yueyishou.model.form.map.CalculateLineForm;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.vo.map.DrivingLineVo;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.mapper.OrderInfoMapper;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
+import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import jakarta.annotation.Resource;
+import net.sf.jsqlparser.statement.select.Offset;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.geo.Point;
-import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -38,6 +40,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private MapFeignClient mapFeignClient;
 
 
     /**
@@ -229,6 +234,42 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .set(OrderInfo::getCancelMessage,OrderConstant.TIMEOUT_CANCEL_REMARK)
                 .in(OrderInfo::getId,timeoutOrderIds);
         return this.update(orderInfoLambdaUpdateChainWrapper);
+    }
+
+    /**
+     * 根据状态获取回收员订单列表
+     * @param recyclerId
+     * @param status
+     * @return
+     */
+    @Override
+    public List<RecyclerOrderVo> getRecyclerOrderListByStatus(Long recyclerId, Integer status) {
+        List<RecyclerOrderVo> result = new ArrayList<>();
+        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        orderInfoLambdaQueryWrapper.eq(OrderInfo::getRecyclerId,recyclerId)
+                .eq(OrderInfo::getStatus,status);
+        List<OrderInfo> orderInfoListDB = this.list(orderInfoLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(orderInfoListDB)) {
+            return result;
+        }
+        // 获取回收员位置
+        Point recyclerLocationFromRedis = getRecyclerLocationFromRedis(recyclerId);
+        result = orderInfoListDB.stream().map(order -> {
+            RecyclerOrderVo recyclerOrderVo = new RecyclerOrderVo();
+            BeanUtils.copyProperties(order,recyclerOrderVo);
+            recyclerOrderVo.setActualPhoto(order.getActualPhotos().split(",")[0]);
+            if (OrderStatus.RECYCLER_ACCEPTED.getStatus().equals(status)) {
+                // 计算回收员距离订单多远
+                CalculateLineForm calculateLineForm = new CalculateLineForm();
+                calculateLineForm.setRecyclerId(recyclerId);
+                calculateLineForm.setEndPointLatitude(order.getCustomerPointLatitude());
+                calculateLineForm.setEndPointLongitude(order.getCustomerPointLongitude());
+                DrivingLineVo drivingLineVo = mapFeignClient.calculateDrivingLine(calculateLineForm).getData();
+                recyclerOrderVo.setApart(drivingLineVo.getDistance());
+            }
+            return recyclerOrderVo;
+        }).collect(Collectors.toList());
+        return result;
     }
 
     /**

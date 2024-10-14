@@ -6,6 +6,7 @@ import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
+import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -22,6 +23,19 @@ import java.util.List;
 public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
+
+
+    /**
+     * 根据状态获取回收员订单列表
+     * @param recyclerId
+     * @param status
+     * @return
+     */
+    @GetMapping("/list/status/{recyclerId}/{status}")
+    public Result<List<RecyclerOrderVo>> getRecyclerOrderListByStatus(@PathVariable("recyclerId") Long recyclerId,
+                                                                @PathVariable("status") Integer status){
+        return Result.ok(orderInfoService.getRecyclerOrderListByStatus(recyclerId,status));
+    }
 
     /**
      * 取消预约时间超时的订单

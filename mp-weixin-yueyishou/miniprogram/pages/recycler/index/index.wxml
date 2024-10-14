@@ -3,7 +3,7 @@
 
 <view class="content">
   <!-- 判断接单状态 -->
-  <view wx:if="{{recyclerInfo.serviceStatus == 0}}">
+  <view wx:if="{{recyclerInfo.serviceStatus == 0 && activeTab == 0}}">
     <van-empty image="/assets/images/common/start_take_orders.png" description="请点击下方的按钮，开始接单～">
       <van-button round type="danger" class="bottom-button" bindtap="takeOrders">
         点击开始接单
@@ -12,7 +12,7 @@
   </view>
 
   <!-- 判断订单列表是否有订单 -->
-  <view wx:elif="{{orderList.length > 0}}">
+  <view wx:elif="{{orderList.length > 0 && activeTab == 0}}">
     <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
       <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
         <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{item.title}}">
@@ -27,6 +27,19 @@
       </view>
     </block>
   </view>
+  <view wx:elif="{{orderListByStatus.length > 0 && activeTab > 0}}">
+    <block wx:for="{{orderListByStatus}}" wx:key="orderNo" wx:for-item="order">
+      <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{item.title}}">
+          <view slot="desc" class="custom-desc">
+            <view>{{order.appointmentTime}}前上门</view>
+            <view>距离 {{order.apart}} 公里</view>
+          </view>
+        </van-card>
+      </view>
+    </block>
+  </view>
+
 
   <!-- 如果都没有订单 -->
   <van-empty wx:else description="订单空空如也" />

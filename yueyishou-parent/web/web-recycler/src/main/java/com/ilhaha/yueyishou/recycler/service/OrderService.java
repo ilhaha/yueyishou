@@ -4,6 +4,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
+import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
 
 import java.util.List;
 
@@ -32,4 +33,11 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> grabOrder(Long orderId);
+
+    /**
+     * 根据状态获取回收员订单列表
+     * @param status
+     * @return
+     */
+    Result<List<RecyclerOrderVo>> getRecyclerOrderListByStatus(Integer status);
 }
