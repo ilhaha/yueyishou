@@ -32,19 +32,13 @@ Page({
       return;
     }
     const diffMin = this.calculateTimeDifference(this.data.orderInfo.acceptTime);
-    console.log(
-      diffMin
-    );
     if (diffMin > 5) {
       toast({
         title: "大于五分钟，付费取消"
       })
     } else {
-      toast({
-        title: "小于五分钟，免费取消"
-      })
       // 取消订单
-      // this.cancelOrder();
+      this.cancelOrder();
     }
   },
 
@@ -61,8 +55,13 @@ Page({
     const res = await reqOrderDetails(orderId);
     this.setData({
       orderInfo: res.data,
-      freeCancellationTime: this.calculateFutureTime(res.data.acceptTime, 5)
+
     })
+    if (this.data.orderStatus == 2) {
+      this.setData({
+        freeCancellationTime: this.calculateFutureTime(res.data.acceptTime, 5)
+      })
+    }
 
   },
 })

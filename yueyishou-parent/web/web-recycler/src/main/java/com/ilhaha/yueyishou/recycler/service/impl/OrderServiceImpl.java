@@ -63,4 +63,14 @@ public class OrderServiceImpl implements OrderService {
     public Result<List<RecyclerOrderVo>> getRecyclerOrderListByStatus(Integer status) {
         return orderInfoFeignClient.getRecyclerOrderListByStatus(AuthContextHolder.getRecyclerId(),status);
     }
+
+    /**
+     * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Result<Boolean> repost(Long orderId) {
+        return orderInfoFeignClient.repost(orderId);
+    }
 }

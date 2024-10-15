@@ -27,6 +27,7 @@ ComponentWithStore({
     latitude: null, // 地图中心点纬度
     longitude: null, // 地图中心经度
     timerId: null, // 定时器ID
+    isCancelOrderShow: false
   },
   properties: {
     orderInfo: {
@@ -71,8 +72,6 @@ ComponentWithStore({
       this.setData({
         timerId
       });
-
-
     },
 
     // 清除定时器，防止内存泄漏
@@ -84,6 +83,13 @@ ComponentWithStore({
   },
 
   methods: {
+    // 切换取消订单提示框状态
+    switchCancelOrderShow(event) {
+      this.setData({
+        isCancelOrderShow: !this.data.isCancelOrderShow
+      })
+    },
+
     // 取消订单
     cancelOrder() {
       this.triggerEvent('canceOrder');

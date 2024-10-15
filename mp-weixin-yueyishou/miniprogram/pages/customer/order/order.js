@@ -32,16 +32,25 @@ Page({
       status: 7
     }],
     orderList: [], // 订单列表
-    isLoading: false // 是否在加载数据
+    isLoading: false, // 是否在加载数据
+    isCancelOrderShow: false,
+    needCancelOrderId: null
   },
   // 初始化数据
   onShow() {
     this.getOrderList(this.data.tabList[this.data.active].status);
   },
+  // 切换取消订单提示框状态
+  switchCancelOrderShow(event) {
+    this.setData({
+      isCancelOrderShow: !this.data.isCancelOrderShow,
+      needCancelOrderId: event.currentTarget.dataset.orderid
+    })
+  },
   // 取消订单
-  async cancelOrder(event) {
-    await reqCancelOrder(event.currentTarget.dataset.orderid);
-    this.getOrderList(this.data.orderList[this.data.active].status)
+  async cancelOrder() {
+    await reqCancelOrder(this.data.needCancelOrderId);
+    this.getOrderList(this.data.orderList[this.data.active].status);
   },
   // 提醒上门
   remind() {

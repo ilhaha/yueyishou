@@ -30,3 +30,10 @@ export const reqGrabOrder = (orderId) => {
 export const reqOrderListByStaus = (status) => {
   return http.get(urlPrefix + `/order/list/${status}`)
 }
+
+/**
+ * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+ */
+export const reqRepostOrder = (orderId) => {
+  return http.post(urlPrefix + `/order/repost/${orderId}`)
+}

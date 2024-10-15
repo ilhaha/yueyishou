@@ -24,6 +24,16 @@ public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
 
+    /**
+     * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/repost/{orderId}")
+    public Result<Boolean> repost(@PathVariable("orderId") Long orderId){
+        return Result.ok(orderInfoService.repost(orderId));
+    }
+
 
     /**
      * 根据状态获取回收员订单列表

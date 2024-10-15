@@ -69,7 +69,8 @@
 
     <!-- 取消订单部分 -->
     <view class="cancel-container">
-      <view class="cancel-text">您可在{{freeCancellationTime}}前免费<span bind:tap="cancelOrder" class="cancel">取消</span></view>
+      <view class="cancel-text">您可在{{freeCancellationTime}}前免费<span bind:tap="switchCancelOrderShow" class="cancel">取消</span></view>
     </view>
   </van-action-sheet>
 </view>
+<van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否取消该订单" show-cancel-button bind:confirm="cancelOrder" />

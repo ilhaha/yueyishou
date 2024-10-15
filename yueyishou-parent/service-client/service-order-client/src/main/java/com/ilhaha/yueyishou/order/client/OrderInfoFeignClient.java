@@ -19,6 +19,15 @@ import java.util.List;
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
 
+
+    /**
+     * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/orderInfo/repost/{orderId}")
+    Result<Boolean> repost(@PathVariable("orderId") Long orderId);
+
     /**
      * 根据状态获取回收员订单列表
      * @param recyclerId

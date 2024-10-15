@@ -272,6 +272,29 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Boolean repost(Long orderId) {
+        // 更新订单信息
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.set(OrderInfo::getRecyclerId,null)
+                .set(OrderInfo::getStatus,OrderStatus.WAITING_ACCEPT)
+                .set(OrderInfo::getAcceptTime,null)
+                .eq(OrderInfo::getId,orderId);
+        Boolean flag = this.update(orderInfoLambdaUpdateWrapper);
+        if (flag) {
+            // 重新查出订单信息
+            OrderInfo orderInfoDB = this.getById(orderId);
+            // 重新存入redis
+            redisTemplate.opsForValue().set(RedisConstant.WAITING_ORDER + orderId,orderInfoDB);
+        }
+        return flag;
+    }
+
+    /**
      * 过滤出未过预约时间的订单
      *
      * @param orders 原始订单列表

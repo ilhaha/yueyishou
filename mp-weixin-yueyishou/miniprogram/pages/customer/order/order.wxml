@@ -6,7 +6,7 @@
           <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" desc="{{order.appointmentTime}}前上门" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}}" tag="{{item.title}}">
             <view slot="footer" class="button-group">
               <van-button size="mini" type="primary" class="action-button" catch:tap="remind" wx:if="{{order.status == 1}}">提醒接单</van-button>
-              <van-button size="mini" class="action-button" catch:tap="cancelOrder" data-orderid="{{order.id}}" wx:if="{{order.status == 1}}">取消订单</van-button>
+              <van-button size="mini" class="action-button" catch:tap="switchCancelOrderShow" data-orderid="{{order.id}}" wx:if="{{order.status == 1}}">取消订单</van-button>
             </view>
           </van-card>
         </view>
@@ -17,3 +17,5 @@
     </block>
   </van-tab>
 </van-tabs>
+
+<van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否删除该订单" show-cancel-button bind:confirm="cancelOrder" />

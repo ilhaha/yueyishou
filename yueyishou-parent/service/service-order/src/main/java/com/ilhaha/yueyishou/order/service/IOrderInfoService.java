@@ -88,4 +88,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     List<RecyclerOrderVo> getRecyclerOrderListByStatus(Long recyclerId, Integer status);
+
+    /**
+     * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+     * @param orderId
+     * @return
+     */
+    Boolean repost(Long orderId);
 }

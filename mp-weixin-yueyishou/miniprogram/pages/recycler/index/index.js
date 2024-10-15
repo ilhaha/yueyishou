@@ -56,6 +56,7 @@ Page({
       }
     ],
     orderList: [],
+    orderStatus: 1,
     orderListByStatus: [],
     popupShow: false,
     dialogShow: false,
@@ -68,7 +69,9 @@ Page({
     locationIntervals: [] // 用于保存所有定时器ID
   },
   // 初始化数据
-  onLoad() {},
+  onShow() {
+    this.getRecyclerOrderListByStatus(this.data.orderStatus);
+  },
 
   // 获取回收员订单
   async getRecyclerOrderListByStatus(status) {
@@ -417,7 +420,8 @@ Page({
     const index = e.detail.index;
     index == 0 ? (this.data.recyclerInfo.serviceStatus == 1 ? this.retrieveMatchingOrders() : '') : this.getRecyclerOrderListByStatus(status);
     this.setData({
-      activeTab: index
+      activeTab: index,
+      orderStatus: status
     });
   },
 
