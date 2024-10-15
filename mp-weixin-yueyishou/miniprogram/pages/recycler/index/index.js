@@ -65,7 +65,7 @@ Page({
     },
     beforeClose: null,
     currentLocation: null,
-    locationInterval: null // 用于保存定时器的ID
+    locationIntervals: [] // 用于保存所有定时器ID
   },
   // 初始化数据
   onLoad() {},
@@ -92,8 +92,9 @@ Page({
   // 查看订单详情
   showDetails(event) {
     const orderId = event.currentTarget.dataset.orderid;
+    const orderstatus = event.currentTarget.dataset.orderstatus
     wx.navigateTo({
-      url: `/pages/recycler/order-details/order-details?orderId=${orderId}`,
+      url: `/pages/recycler/order-details/order-details?orderId=${orderId}&orderStatus=${orderstatus}`,
     })
   },
 
@@ -372,21 +373,28 @@ Page({
 
   // 开始获取定位，每 30 秒获取一次
   startLocationUpdates() {
+    // 先清除所有现有的定时器，避免重复
+    this.stopLocationUpdates();
+
     this.getCurrentLocation(); // 立即获取一次
     const locationInterval = setInterval(() => {
       this.getCurrentLocation();
-    }, 30000); // 每隔 30 秒获取一次
-    this.setData({
-      locationInterval
-    });
+    }, 30000); // 每隔30秒获取一次
+
+    // 存储定时器ID
+    this.data.locationIntervals.push(locationInterval);
   },
 
   // 停止获取定位
   async stopLocationUpdates() {
-    if (this.data.locationInterval) {
-      clearInterval(this.data.locationInterval);
+    // 遍历数组，清除每一个定时器
+    if (this.data.locationIntervals.length > 0) {
+      this.data.locationIntervals.forEach(interval => {
+        clearInterval(interval);
+      });
+      // 清空定时器数组
       this.setData({
-        locationInterval: null
+        locationIntervals: []
       });
     }
     // 清空回收员的位置信息

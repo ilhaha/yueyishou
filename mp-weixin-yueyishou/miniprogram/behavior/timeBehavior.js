@@ -37,6 +37,23 @@ export const timeBehavior = Behavior({
     },
 
     /**
+     * 计算传入时间前几分钟的时间点
+     * @param {*} time 要计算的时间
+     * @param {*} min 要计算的时间前几分钟的时间点
+     */
+    calculatePastTime(time, min) {
+
+      // 将接受时间转为 Date 对象
+      let acceptDate = new Date(time.replace(/-/g, '/')); // iOS 不支持 YYYY-MM-DD 格式，需替换为 YYYY/MM/DD
+
+      // 减去 min 分钟
+      acceptDate.setMinutes(acceptDate.getMinutes() - min);
+
+      // 只保留时分，格式化为 HH:MM
+      return this.formatTimeToHM(acceptDate);
+    },
+
+    /**
      *  格式化时间为 HH:MM
      * @param {*} date 需要格式的时间
      */

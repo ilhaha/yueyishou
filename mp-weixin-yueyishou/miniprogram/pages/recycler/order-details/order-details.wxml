@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container" wx:if="{{orderStatus != 2}}">
   <view class="shipping-info">
     <text>{{orderInfo.customerLocation}}</text>
     <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
@@ -57,5 +57,12 @@
       </view>
     </view>
   </view>
+  <van-submit-bar price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}" />
 </view>
-<van-submit-bar price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}" />
+
+<!-- 带有地图订单详情 -->
+<view wx:else>
+  <view wx:if="{{orderInfo}}">
+    <map-plan orderInfo="{{orderInfo}}" operator="recycler" bind:canceOrder="recyclerCanceOrder" freeCancellationTime="{{freeCancellationTime}}" />
+  </view>
+</view>

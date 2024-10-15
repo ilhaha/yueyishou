@@ -70,4 +70,14 @@ public interface CustomerInfoFeignClient {
     Result<Page<CustomerInfo>> queryPageList(@RequestBody CustomerInfo customerInfo,
                                                     @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                                     @RequestParam(name="pageSize", defaultValue="10") Integer pageSize);
+
+
+    /**
+     * 通过id查询
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/customerInfo/queryById")
+    Result<CustomerInfo> queryById(@RequestParam(name="id",required=true) Long id);
 }

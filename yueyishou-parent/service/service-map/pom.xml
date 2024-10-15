@@ -17,6 +17,11 @@
             <artifactId>service-recycler-client</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-customer-client</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <properties>

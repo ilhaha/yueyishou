@@ -2,7 +2,8 @@ import {
   toast
 } from '../../utils/extendApi';
 import {
-  calculateDrivingLineURL
+  customerCalculateDrivingLineURL,
+  recyclerCalculateDrivingLineURL
 } from '../../api/customer/map'
 import {
   customerStore
@@ -35,6 +36,10 @@ ComponentWithStore({
     freeCancellationTime: {
       type: String,
       value: null
+    },
+    operator: {
+      type: String,
+      value: 'customer'
     }
   },
 
@@ -43,23 +48,23 @@ ComponentWithStore({
       const {
         customerPointLatitude,
         customerPointLongitude,
-        recyclerId
+        recyclerId,
+        customerId
       } = this.data.orderInfo;
 
-      // 初始获取路线
-      this.calculateDrivingLine({
+      let calculateLineForm = {
+        customerId: this.data.operator == 'customer' ? null : customerId,
         recyclerId: recyclerId,
         endPointLongitude: customerPointLongitude,
         endPointLatitude: customerPointLatitude
-      });
+      }
+
+      // 初始获取路线
+      this.calculateDrivingLine(calculateLineForm);
 
       // 开启定时器，每30秒获取一次路线
       const timerId = setInterval(() => {
-        this.calculateDrivingLine({
-          recyclerId: recyclerId,
-          endPointLongitude: customerPointLongitude,
-          endPointLatitude: customerPointLatitude
-        });
+        this.calculateDrivingLine(calculateLineForm);
       }, 30000); // 每30秒执行一次
 
       // 保存定时器ID
@@ -81,13 +86,13 @@ ComponentWithStore({
   methods: {
     // 取消订单
     cancelOrder() {
-      this.triggerEvent('customerCanceOrder');
+      this.triggerEvent('canceOrder');
     },
 
     // 获取回收员到回收点的路线
     async calculateDrivingLine(calculateLineForm) {
       wx.request({
-        url: calculateDrivingLineURL,
+        url: this.data.operator == 'customer' ? customerCalculateDrivingLineURL : recyclerCalculateDrivingLineURL,
         method: 'POST',
         data: calculateLineForm,
         header: {
@@ -161,6 +166,7 @@ ComponentWithStore({
             this.setData({
               latitude: customerPointLatitude,
               longitude: customerPointLongitude,
+              routeInfo: res.data.data,
             })
           }
         },

@@ -252,13 +252,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (ObjectUtils.isEmpty(orderInfoListDB)) {
             return result;
         }
-        // 获取回收员位置
         Point recyclerLocationFromRedis = getRecyclerLocationFromRedis(recyclerId);
         result = orderInfoListDB.stream().map(order -> {
             RecyclerOrderVo recyclerOrderVo = new RecyclerOrderVo();
             BeanUtils.copyProperties(order,recyclerOrderVo);
             recyclerOrderVo.setActualPhoto(order.getActualPhotos().split(",")[0]);
-            if (OrderStatus.RECYCLER_ACCEPTED.getStatus().equals(status)) {
+            if (OrderStatus.RECYCLER_ACCEPTED.getStatus().equals(status) && !ObjectUtils.isEmpty(recyclerLocationFromRedis)) {
                 // 计算回收员距离订单多远
                 CalculateLineForm calculateLineForm = new CalculateLineForm();
                 calculateLineForm.setRecyclerId(recyclerId);
@@ -318,6 +317,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         if (recyclerLocations != null && !recyclerLocations.isEmpty()) {
             Point location = recyclerLocations.get(0);  // 获取第一个位置点
+            if (ObjectUtils.isEmpty(location)) {
+                return null;
+            }
             return new Point(location.getX(), location.getY());  // 返回经纬度
         }
 

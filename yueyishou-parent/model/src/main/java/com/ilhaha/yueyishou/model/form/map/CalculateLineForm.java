@@ -18,6 +18,11 @@ public class CalculateLineForm {
     private Long recyclerId;
 
     /**
+     * 顾客Id
+     */
+    private Long customerId;
+
+    /**
      * 回收点地点经度
      */
     private BigDecimal endPointLongitude;

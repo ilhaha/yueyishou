@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "map-plan": "../../map-plan/map-plan"
+  }
 }

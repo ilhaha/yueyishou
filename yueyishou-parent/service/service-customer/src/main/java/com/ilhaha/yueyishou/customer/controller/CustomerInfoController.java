@@ -151,7 +151,7 @@ public class CustomerInfoController {
 	 * @return
 	 */
 	@GetMapping(value = "/queryById")
-	public Result<CustomerInfo> queryById(@RequestParam(name="id",required=true) String id) {
+	public Result<CustomerInfo> queryById(@RequestParam(name="id",required=true) Long id) {
 		CustomerInfo customerInfo = customerInfoService.getById(id);
 		if(customerInfo==null) {
 			throw new YueYiShouException(ResultCodeEnum.DATA_ERROR);

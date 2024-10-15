@@ -7,17 +7,32 @@
   <van-action-sheet show="{{ true }}" overlay="{{false}}" style="padding: 0;">
     <view class="sheet-container" wx:if="{{routeInfo}}">
       <!-- 左边显示头像、名字和单数 -->
-      <view class="left">
-        <image class="driver-avatar" src="{{routeInfo.fullFaceUrl}}" />
+      <view class="left" wx:if="{{routeInfo.drivingLineRecyclerInfoVo}}">
+        <image class="driver-avatar" src="{{routeInfo.drivingLineRecyclerInfoVo.fullFaceUrl}}" />
         <view class="driver-info">
-          <text class="driver-name">{{routeInfo.name}}</text>
-          <text class="driver-orders">{{routeInfo.orderCount}}单</text>
-          <van-rate readonly value="{{ routeInfo.score }}" size="15" gutter="1" />
+          <text class="driver-name">{{routeInfo.drivingLineRecyclerInfoVo.name}}</text>
+          <text class="driver-orders">{{routeInfo.drivingLineRecyclerInfoVo.orderCount}}单</text>
+          <van-rate readonly value="{{ routeInfo.drivingLineRecyclerInfoVo.score }}" size="15" gutter="1" />
+        </view>
+      </view>
+
+      <view class="left" wx:else>
+        <image class="driver-avatar" src="{{routeInfo.drivingLineCustomerInfoVo.avatarUrl}}" />
+        <view class="driver-info">
+          <text class="driver-name">{{orderInfo.orderContactPerson}}</text>
+          <view class="phone">
+            <image src="../../assets/images/common/phone.png" class="phone-icon" />
+            <view class="phone-number">
+              <block>
+                <text class="phone-digit">{{orderInfo.orderContactPhone}}</text>
+              </block>
+            </view>
+          </view>
         </view>
       </view>
 
       <!-- 右边显示状态信息、距离和时间 -->
-      <view class="right">
+      <view class="right" wx:if="{{routeInfo.drivingLineRecyclerInfoVo}}">
         <text class="status-text">回收小哥正在赶来</text>
         <view class="info">
           <text class="info-text">{{routeInfo.distance}}</text>公里
@@ -26,19 +41,29 @@
         <view class="phone">
           <image src="../../assets/images/common/phone.png" class="phone-icon" />
           <view class="phone-number">
-            <block wx:for="{{routeInfo.phone}}" wx:key="index">
+            <block wx:for="{{routeInfo.drivingLineRecyclerInfoVo.phone}}" wx:key="index">
               <text class="phone-digit">{{item}}</text>
             </block>
           </view>
         </view>
       </view>
+
+      <view class="right" wx:else>
+        <text class="status-text">距离目的地</text>
+        <view class="info">
+          <text class="info-text">{{routeInfo.distance}}</text>公里
+          <text class="info-text">{{routeInfo.duration}}</text>分钟
+        </view>
+      </view>
     </view>
+
     <view class="sheet-container" wx:else>
-
-
       <!-- 右边显示状态信息、距离和时间 -->
-      <view class="right">
+      <view class="right" wx:if="{{operator == 'customer'}}">
         <text class="status-text">等待回收小哥赶来回收点</text>
+      </view>
+      <view class="right" wx:else>
+        <text class="status-text">等待您赶往回收点</text>
       </view>
     </view>
 

@@ -11,7 +11,7 @@
     </van-empty>
   </view>
 
-  <!-- 判断订单列表是否有订单 -->
+  <!-- 待抢单订单 -->
   <view wx:elif="{{orderList.length > 0 && activeTab == 0}}">
     <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
       <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
@@ -27,13 +27,14 @@
       </view>
     </block>
   </view>
+  <!-- 待服务订单 -->
   <view wx:elif="{{orderListByStatus.length > 0 && activeTab > 0}}">
     <block wx:for="{{orderListByStatus}}" wx:key="orderNo" wx:for-item="order">
-      <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
+      <view class="card-container" data-orderid="{{order.id}}" data-orderstatus="{{order.status}}" bind:tap="showDetails">
         <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{item.title}}">
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}}前上门</view>
-            <view>距离 {{order.apart}} 公里</view>
+            <view wx:if="{{order.apart != null}}">距离 {{order.apart}} 公里</view>
           </view>
         </van-card>
       </view>

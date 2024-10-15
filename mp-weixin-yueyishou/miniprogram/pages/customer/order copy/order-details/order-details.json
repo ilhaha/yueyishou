@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-    "map-plan": "/pages/map-plan/map-plan"
-  },
-  "navigationBarTitleText": "订单详情"
-}

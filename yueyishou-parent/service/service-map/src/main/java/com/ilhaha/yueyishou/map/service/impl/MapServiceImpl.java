@@ -3,10 +3,14 @@ package com.ilhaha.yueyishou.map.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.customer.client.CustomerInfoFeignClient;
 import com.ilhaha.yueyishou.map.service.MapService;
 import com.ilhaha.yueyishou.model.constant.RedisConstant;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.form.map.CalculateLineForm;
+import com.ilhaha.yueyishou.model.vo.map.DrivingLineCustomerInfoVo;
+import com.ilhaha.yueyishou.model.vo.map.DrivingLineRecyclerInfoVo;
 import com.ilhaha.yueyishou.model.vo.map.DrivingLineVo;
 import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import jakarta.annotation.Resource;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -42,6 +47,9 @@ public class MapServiceImpl implements MapService {
     @Resource
     private RecyclerInfoFeignClient recyclerInfoFeignClient;
 
+    @Resource
+    private CustomerInfoFeignClient customerInfoFeignClient;
+
     /**
      * 计算回收员到回收点的线路
      * @param calculateLineForm
@@ -49,12 +57,16 @@ public class MapServiceImpl implements MapService {
      */
     @Override
     public DrivingLineVo calculateDrivingLine(CalculateLineForm calculateLineForm) {
+        // 获取回收员的地理位置
+        Point recyclerLocationFromRedis = getRecyclerLocationFromRedis(calculateLineForm.getRecyclerId());
+        // 回收员停止接单
+        if (ObjectUtils.isEmpty(recyclerLocationFromRedis)) {
+            return null;
+        }
         // 定义腾讯地图访问地址
         String url = "https://apis.map.qq.com/ws/direction/v1/driving/?from={from}&to={to}&key={key}";
         // 定义请求参数
         HashMap<String, String> map = new HashMap<>();
-        // 获取回收员的地理位置
-        Point recyclerLocationFromRedis = getRecyclerLocationFromRedis(calculateLineForm.getRecyclerId());
 
         map.put("from", recyclerLocationFromRedis.getY() + "," + recyclerLocationFromRedis.getX());
         map.put("to", calculateLineForm.getEndPointLatitude() + "," + calculateLineForm.getEndPointLongitude());
@@ -73,13 +85,29 @@ public class MapServiceImpl implements MapService {
         drivingLineVo.setDuration(route.getBigDecimal("duration"));
         drivingLineVo.setPolyline(route.getJSONArray("polyline"));
 
-        // 获取回收员信息
-        RecyclerInfo recyclerDB = recyclerInfoFeignClient.queryById(calculateLineForm.getRecyclerId()).getData();
-        BeanUtils.copyProperties(recyclerDB,drivingLineVo);
-        drivingLineVo.setRecyclerPointLatitude(BigDecimal.valueOf(recyclerLocationFromRedis.getY()));
-        drivingLineVo.setRecyclerPointLongitude(BigDecimal.valueOf(recyclerLocationFromRedis.getX()));
+        // 如果是顾客查询，那么填充回收员信息
+        if (ObjectUtils.isEmpty(calculateLineForm.getCustomerId())) {
+            // 获取回收员信息
+            RecyclerInfo recyclerDB = recyclerInfoFeignClient.queryById(calculateLineForm.getRecyclerId()).getData();
+            DrivingLineRecyclerInfoVo drivingLineRecyclerInfoVo = new DrivingLineRecyclerInfoVo();
+            BeanUtils.copyProperties(recyclerDB,drivingLineRecyclerInfoVo);
+            drivingLineRecyclerInfoVo.setRecyclerId(calculateLineForm.getRecyclerId());
+
+            drivingLineVo.setDrivingLineRecyclerInfoVo(drivingLineRecyclerInfoVo);
+
+        }else {
+            // 如果是回收员查询，那么填充顾客信息
+            CustomerInfo customerInfoDB = customerInfoFeignClient.queryById(calculateLineForm.getCustomerId()).getData();
+            DrivingLineCustomerInfoVo drivingLineCustomerInfoVo = new DrivingLineCustomerInfoVo();
+            BeanUtils.copyProperties(customerInfoDB,drivingLineCustomerInfoVo);
+            drivingLineVo.setDrivingLineCustomerInfoVo(drivingLineCustomerInfoVo);
+        }
+        // 订单位置
         drivingLineVo.setEndPointLatitude(calculateLineForm.getEndPointLatitude());
         drivingLineVo.setEndPointLongitude(calculateLineForm.getEndPointLongitude());
+        // 回收员位置
+        drivingLineVo.setRecyclerPointLatitude(BigDecimal.valueOf(recyclerLocationFromRedis.getY()));
+        drivingLineVo.setRecyclerPointLongitude(BigDecimal.valueOf(recyclerLocationFromRedis.getX()));
         return drivingLineVo;
     }
 
@@ -93,12 +121,13 @@ public class MapServiceImpl implements MapService {
     private Point getRecyclerLocationFromRedis(Long recyclerId) {
         List<Point> recyclerLocations = redisTemplate.opsForGeo()
                 .position(RedisConstant.RECYCLER_GEO_LOCATION, recyclerId.toString());
-
         if (recyclerLocations != null && !recyclerLocations.isEmpty()) {
             Point location = recyclerLocations.get(0);  // 获取第一个位置点
+            if (ObjectUtils.isEmpty(location)) {
+                return null;
+            }
             return new Point(location.getX(), location.getY());  // 返回经纬度
         }
-
         return null;  // 如果没有位置数据，则返回空
     }
 }

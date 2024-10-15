@@ -59,6 +59,6 @@
 <!-- 带有地图订单详情 -->
 <view wx:else>
   <view wx:if="{{orderInfo}}">
-    <map-plan orderInfo="{{orderInfo}}" freeCancellationTime="{{freeCancellationTime}}" bind:customerCanceOrder="customerCanceOrder"/>
+    <map-plan orderInfo="{{orderInfo}}" freeCancellationTime="{{freeCancellationTime}}" operator="customer" bind:canceOrder="customerCanceOrder" />
   </view>
 </view>
