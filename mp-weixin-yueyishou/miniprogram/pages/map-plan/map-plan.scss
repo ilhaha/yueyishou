@@ -20,6 +20,17 @@
   box-sizing: border-box;
 }
 
+.arrive-button-container {
+  text-align: center;
+}
+
+.arrive-button {
+  background-color: #07c160;
+  color: white;
+  border-radius: 5px;
+  // padding: 10px;
+}
+
 /* 左边头像和信息 */
 .left {
   display: flex;

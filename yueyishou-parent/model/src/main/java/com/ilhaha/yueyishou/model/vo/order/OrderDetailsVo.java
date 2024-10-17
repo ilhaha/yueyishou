@@ -46,7 +46,7 @@ public class OrderDetailsVo {
     private Date acceptTime;
     /**回收员到达时间*/
     private Date arriveTime;
-    /**订单状态：1等待接单，2回收员已接单，3待顾客确认，4回收员未付款，5回收员已付款待评价，6已完成，7订单已取消*/
+    /**订单状态：1等待接单，2回收员已接单，3待回收员确认，4待顾客确认，5回收员未付款，6回收员已付款待评价，7已完成，8订单已取消*/
     private Integer status;
     /**取消订单信息*/
     private String cancelMessage;
@@ -66,4 +66,6 @@ public class OrderDetailsVo {
     private BigDecimal apart;
     /**回收员ID*/
     private Long recyclerId;
+    /**回收员超时多少分钟*/
+    private Integer arriveTimoutMin;
 }

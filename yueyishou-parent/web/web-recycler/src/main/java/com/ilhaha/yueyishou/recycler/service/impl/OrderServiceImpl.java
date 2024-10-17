@@ -73,4 +73,14 @@ public class OrderServiceImpl implements OrderService {
     public Result<Boolean> repost(Long orderId) {
         return orderInfoFeignClient.repost(orderId);
     }
+
+    /**
+     * 回收员到达回收点
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Result<Boolean> arrive(Long orderId) {
+        return orderInfoFeignClient.arrive(orderId);
+    }
 }

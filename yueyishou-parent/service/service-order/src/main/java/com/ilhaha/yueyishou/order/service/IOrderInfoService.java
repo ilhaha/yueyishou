@@ -95,4 +95,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean repost(Long orderId);
+
+    /**
+     * 回收员到达回收点
+     * @param orderId
+     * @return
+     */
+    Boolean arrive(Long orderId);
 }

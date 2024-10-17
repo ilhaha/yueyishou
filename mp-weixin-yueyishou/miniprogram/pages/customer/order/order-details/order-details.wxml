@@ -1,4 +1,7 @@
-<view class="container" wx:if="{{orderStatus == 1}}">
+<van-notice-bar class="fixed-notice" left-icon="volume-o" text="回收员正在检查您的回收物，请稍候确认订单无误。" wx:if="{{orderStatus == 3}}" />
+<van-notice-bar class="fixed-notice" left-icon="volume-o" text="请您与回收员确认订单信息是否无误，并将回收码告知回收员，以确保顺利完成服务。" wx:if="{{orderStatus == 4}}" />
+
+<view class="container {{orderStatus == 3 || orderStatus == 4 ? 'container-top' : ''}} {{orderStatus < 3 ? 'container-padding-bottom' : ''}}" wx:if="{{orderStatus != 2}}">
   <!-- 普通的订单详情 -->
   <view class="shipping-info">
     <text>{{orderInfo.customerLocation}}</text>
@@ -19,6 +22,10 @@
       <view class="meta-item">
         <text class="label">预约时间</text>
         <text class="value">{{orderInfo.appointmentTime}}</text>
+      </view>
+      <view class="meta-item" wx:if="{{orderStatus >= 3}}">
+        <text class="label">回收员到达时间</text>
+        <text class="value">{{orderInfo.arriveTime}}</text>
       </view>
       <view class="meta-item">
         <text class="label">回收品类</text>
@@ -53,7 +60,7 @@
       </view>
     </view>
   </view>
-  <van-submit-bar price="{{ (orderInfo.estimatedTotalAmount - orderInfo.expectCustomerPlatformAmount) * 100}}" button-text="取消订单" bind:tap="cancelOrder" />
+  <van-submit-bar price="{{ (orderInfo.estimatedTotalAmount - orderInfo.expectCustomerPlatformAmount) * 100}}" button-text="取消订单" bind:tap="cancelOrder" wx:if="{{orderStatus < 3}}" />
 </view>
 
 <!-- 带有地图订单详情 -->

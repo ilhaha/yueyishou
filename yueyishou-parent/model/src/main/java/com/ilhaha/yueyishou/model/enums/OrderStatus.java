@@ -13,13 +13,15 @@ import lombok.Getter;
 @Getter
 public enum OrderStatus {
 
+    //订单状态：1等待接单，2回收员已接单，3待回收员确认，4待顾客确认，5回收员未付款，6回收员已付款待评价，7已完成，8订单已取消
     WAITING_ACCEPT(1, "等待接单"),
     RECYCLER_ACCEPTED(2, "回收员已接单"),
-    CUSTOMER_CONFIRM_ORDER(3, "顾客确定订单"),
-    RECYCLER_UNPAID(4,"回收员未付款"),
-    COMPLETED_ORDER(5,"待评价"),
-    AWAITING_EVALUATION(6,"已完成"),
-    CANCELED_ORDER(7,"订单已取消"),;
+    RECYCLER_CONFIRM_ORDER(3, "待回收员确认"),
+    CUSTOMER_CONFIRM_ORDER(4, "顾客确定订单"),
+    RECYCLER_UNPAID(5,"回收员未付款"),
+    COMPLETED_ORDER(6,"待评价"),
+    AWAITING_EVALUATION(7,"已完成"),
+    CANCELED_ORDER(8,"订单已取消"),;
 
 
     @EnumValue

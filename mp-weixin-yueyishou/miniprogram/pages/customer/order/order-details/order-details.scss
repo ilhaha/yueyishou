@@ -1,7 +1,23 @@
+.fixed-notice {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  /* 确保通知栏显示在最上层 */
+}
+
 .container {
   background-color: #f5f6fa; // 背景颜色为浅灰色，让内容更加突出
   min-height: 100vh; // 占据整个屏幕高度
   padding: 20rpx; // 页面内容留有一定间距
+}
+
+.container-top {
+  margin-top: 70rpx;
+}
+
+.container-padding-bottom {
   padding-bottom: 100rpx;
 }
 
@@ -102,4 +118,3 @@
     margin-left: 10rpx;
   }
 }
-

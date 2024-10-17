@@ -47,4 +47,11 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> repost(Long orderId);
+
+    /**
+     * 回收员到达回收点
+     * @param orderId
+     * @return
+     */
+    Result<Boolean> arrive(Long orderId);
 }

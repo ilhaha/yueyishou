@@ -4,21 +4,31 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.coupon.client.CouponInfoFeignClient;
+import com.ilhaha.yueyishou.coupon.client.RecyclerCouponFeignClient;
+import com.ilhaha.yueyishou.model.constant.CouponIssueConstant;
 import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerAccount;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
+import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
 import com.ilhaha.yueyishou.recycler.mapper.RecyclerInfoMapper;
+import com.ilhaha.yueyishou.recycler.service.IRecyclerAccountService;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerPersonalizationService;
 import com.ilhaha.yueyishou.tencentcloud.client.CosFeignClient;
 import com.ilhaha.yueyishou.model.vo.tencentcloud.CosUploadVo;
+import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,6 +37,9 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -40,6 +53,15 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private CouponInfoFeignClient couponInfoFeignClient;
+
+    @Resource
+    private RecyclerCouponFeignClient recyclerCouponFeignClient;
+
+    @Resource
+    private IRecyclerAccountService recyclerAccountService;
 
     /**
      * 回收员状态切换
@@ -60,6 +82,7 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
      * @param recyclerAuthForm
      * @return
      */
+    @GlobalTransactional(rollbackFor = Exception.class)
     @Override
     public String auth(RecyclerAuthForm recyclerAuthForm) {
         LambdaUpdateWrapper<RecyclerInfo> recyclerInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
@@ -67,7 +90,27 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
                 .set(RecyclerAuthStatus.CERTIFICATION_PASSED.getStatus().equals(recyclerAuthForm.getAuthStatus()),RecyclerInfo::getStatus, StartDisabledConstant.START_STATUS)
                 .set(RecyclerAuthStatus.UNDER_REVIEW.getStatus().equals(recyclerAuthForm.getAuthStatus()),RecyclerInfo::getStatus,StartDisabledConstant.DISABLED_STATUS)
                 .in(RecyclerInfo::getId,recyclerAuthForm.getRecyclerIds());
-        this.update(recyclerInfoLambdaUpdateWrapper);
+        // 给回收员创建账户
+        recyclerAccountService.createAccount(recyclerAuthForm.getRecyclerIds());
+        // 给审核通过的回收员发放服务抵扣劵
+        if (this.update(recyclerInfoLambdaUpdateWrapper)) {
+            List<CouponInfo> couponInfoListDB = couponInfoFeignClient.getListByIds(CouponIssueConstant.COUPON_FREE_ISSUE_ID).getData();
+            ArrayList<FreeIssueForm> freeIssueFormList = new ArrayList<>();
+            if (!ObjectUtils.isEmpty(couponInfoListDB)) {
+                for (CouponInfo item : couponInfoListDB) {
+                    for (Long recyclerId : recyclerAuthForm.getRecyclerIds()) {
+                        FreeIssueForm freeIssueForm = new FreeIssueForm();
+                        freeIssueForm.setRecyclerId(recyclerId);
+                        freeIssueForm.setCouponId(item.getId());
+                        freeIssueForm.setReceiveTime(new Date());
+                        BeanUtils.copyProperties(item,freeIssueForm);
+                        freeIssueFormList.add(freeIssueForm);
+                    }
+                }
+                recyclerCouponFeignClient.freeIssue(freeIssueFormList,recyclerAuthForm.getRecyclerIds().size());
+            }
+
+        }
         return "已审核";
     }
 
@@ -159,11 +202,16 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
         LambdaQueryWrapper<RecyclerInfo> recyclerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         recyclerInfoLambdaQueryWrapper.eq(RecyclerInfo::getCustomerId,customerId);
         RecyclerInfo recyclerInfoDB = this.getOne(recyclerInfoLambdaQueryWrapper);
+        System.out.println(recyclerInfoDB);
         if (ObjectUtils.isEmpty(recyclerInfoDB)) return false;
         String key = RedisConstant.RECYCLER_INFO_KEY_PREFIX + token;
         if (!redisTemplate.hasKey(key)) {
             redisTemplate.opsForValue().set(key, recyclerInfoDB.getId().toString(),
                     RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
+        }
+        // 判断回收员是否被禁用
+        if (StartDisabledConstant.DISABLED_STATUS.equals(recyclerInfoDB.getStatus())) {
+            throw new YueYiShouException(ResultCodeEnum.ACCOUNT_STOP);
         }
         return true;
     }

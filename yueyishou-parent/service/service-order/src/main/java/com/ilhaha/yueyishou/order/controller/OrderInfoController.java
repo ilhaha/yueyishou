@@ -25,6 +25,16 @@ public class OrderInfoController {
     private IOrderInfoService orderInfoService;
 
     /**
+     * 回收员到达回收点
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/arrive/{orderId}")
+    public Result<Boolean> arrive(@PathVariable("orderId") Long orderId){
+        return Result.ok(orderInfoService.arrive(orderId));
+    }
+
+    /**
      * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
      * @param orderId
      * @return

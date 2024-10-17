@@ -1,4 +1,5 @@
-<view class="container" wx:if="{{orderStatus != 2}}">
+<van-notice-bar class="fixed-notice" left-icon="volume-o" text="请您仔细检查回收物是否与订单信息一致，并确认无误。" wx:if="{{orderStatus == 3}}" />
+<view class="container container-padding-bottom-100 {{orderStatus == 3 || orderStatus == 4 ? 'container-top container-padding-bottom-160' : ''}}" wx:if="{{orderStatus != 2}}">
   <view class="shipping-info">
     <text>{{orderInfo.customerLocation}}</text>
     <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
@@ -8,7 +9,10 @@
     <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.estimatedTotalAmount}} + {{orderInfo.expectRecyclerPlatformAmount}}(服务费)" tag="待接单">
       <view slot="desc" class="custom-desc">
         <view>{{orderInfo.appointmentTime}}前上门</view>
-        <view>距离 {{orderInfo.apart}} 公里</view>
+        <view wx:if="{{orderInfo.arriveTime}}">{{orderInfo.arriveTime}}到达</view>
+        <view wx:if="{{orderInfo.status ==  1}}">距离 {{orderInfo.apart}} 公里</view>
+        <view wx:if="{{orderInfo.arriveTimoutMin && orderInfo.arriveTimoutMin != 0}}" style="color: red;">超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
+        <view wx:if="{{orderInfo.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
       </view>
     </van-card>
     <view class="order-meta">
@@ -23,6 +27,10 @@
       <view class="meta-item">
         <text class="label">预约时间</text>
         <text class="value">{{orderInfo.appointmentTime}}</text>
+      </view>
+      <view class="meta-item" wx:if="{{orderInfo.arriveTime}}">
+        <text class="label">到达时间</text>
+        <text class="value">{{orderInfo.arriveTime}}</text>
       </view>
       <view class="meta-item">
         <text class="label">回收品类</text>
@@ -57,12 +65,16 @@
       </view>
     </view>
   </view>
-  <van-submit-bar price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}" />
+  <van-submit-bar price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}">
+    <view slot="tip" wx:if="{{orderInfo.status == 3}}">
+      如发现订单信息与实际不符，可<text class="update-order" catch:tap="updateOrder">申请更改</text>
+    </view>
+  </van-submit-bar>
 </view>
 
 <!-- 带有地图订单详情 -->
 <view wx:else>
   <view wx:if="{{orderInfo}}">
-    <map-plan orderInfo="{{orderInfo}}" operator="recycler" bind:canceOrder="recyclerCanceOrder" freeCancellationTime="{{freeCancellationTime}}" />
+    <map-plan orderInfo="{{orderInfo}}" operator="recycler" bind:canceOrder="recyclerCanceOrder" bind:arriveOrder="recyclerArriveOrder" freeCancellationTime="{{freeCancellationTime}}" />
   </view>
 </view>

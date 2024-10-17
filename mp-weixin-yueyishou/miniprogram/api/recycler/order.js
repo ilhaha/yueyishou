@@ -37,3 +37,10 @@ export const reqOrderListByStaus = (status) => {
 export const reqRepostOrder = (orderId) => {
   return http.post(urlPrefix + `/order/repost/${orderId}`)
 }
+
+/**
+ * 回收员到达回收点
+ */
+export const reqRecyclerArrive = (orderId) => {
+  return http.post(urlPrefix + `/order/arrive/${orderId}`)
+}

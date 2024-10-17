@@ -9,12 +9,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ilhaha.yueyishou.category.client.CategoryInfoFeignClient;
 import com.ilhaha.yueyishou.common.util.RecyclerIDGenerator;
-import com.ilhaha.yueyishou.model.constant.CustomerConstant;
-import com.ilhaha.yueyishou.model.constant.RedisConstant;
-import com.ilhaha.yueyishou.model.constant.PersonalizationConstant;
-import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
+import com.ilhaha.yueyishou.coupon.client.CouponInfoFeignClient;
+import com.ilhaha.yueyishou.coupon.client.CustomerCouponFeignClient;
+import com.ilhaha.yueyishou.model.constant.*;
 import com.ilhaha.yueyishou.customer.service.ICustomerAccountService;
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerAccount;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.customer.mapper.CustomerInfoMapper;
@@ -23,6 +23,7 @@ import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
+import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -31,6 +32,7 @@ import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.client.RecyclerPersonalizationFeignClient;
 import com.ilhaha.yueyishou.common.util.PhoneNumberUtils;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +70,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     @Resource
     private CategoryInfoFeignClient categoryInfoFeignClient;
 
+    @Resource
+    private CouponInfoFeignClient couponInfoFeignClient;
+
+    @Resource
+    private CustomerCouponFeignClient customerCouponFeignClient;
+
 
     /**
      * 小程序授权登录
@@ -73,7 +83,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
      * @param code
      * @return
      */
-    @Transactional
+    @GlobalTransactional(rollbackFor = Exception.class)
     @Override
     public String login(String code) {
         String openid = null;
@@ -96,10 +106,24 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             customerInfo.setWxOpenId(openid);
             customerInfo.setPhone(PhoneNumberUtils.generateRandomPhoneNumber());
             this.save(customerInfo);
-            //  给新顾客创建账户
+            // 给新顾客创建账户
             CustomerAccount customerAccount = new CustomerAccount();
             customerAccount.setCustomerId(customerInfo.getId());
             customerAccountService.save(customerAccount);
+            // 给新顾客赠送服务抵扣劵
+            List<CouponInfo> couponInfoListDB = couponInfoFeignClient.getListByIds(CouponIssueConstant.COUPON_FREE_ISSUE_ID).getData();
+            if (!ObjectUtils.isEmpty(couponInfoListDB)) {
+                List<FreeIssueForm> freeIssueFormList = new ArrayList<>();
+                for (CouponInfo couponInfo : couponInfoListDB) {
+                    FreeIssueForm freeIssueForm = new FreeIssueForm();
+                    freeIssueForm.setCustomerId(customerInfo.getId());
+                    freeIssueForm.setCouponId(couponInfo.getId());
+                    freeIssueForm.setReceiveTime(new Date());
+                    BeanUtils.copyProperties(couponInfo, freeIssueForm);
+                    freeIssueFormList.add(freeIssueForm);
+                }
+                customerCouponFeignClient.freeIssue(freeIssueFormList);
+            }
         } else {
             // 判断顾客是否是禁用状态
             if (StartDisabledConstant.DISABLED_STATUS.equals(customerInfo.getStatus())) {

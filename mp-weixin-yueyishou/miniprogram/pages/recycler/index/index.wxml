@@ -15,10 +15,10 @@
   <view wx:elif="{{orderList.length > 0 && activeTab == 0}}">
     <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
       <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
-        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{item.title}}">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="待抢单">
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}}前上门</view>
-            <view>距离 {{order.apart}} 公里</view>
+            <view wx:if="{{order.apart}}">距离 {{order.apart}} 公里</view>
           </view>
           <view slot="footer" class="button-group">
             <van-button size="mini" type="primary" class="action-button" catch:tap="grabOrder" data-orderid="{{order.id}}">抢单</van-button>
@@ -27,14 +27,17 @@
       </view>
     </block>
   </view>
-  <!-- 待服务订单 -->
+  <!-- 待服务、待确认、待顾客确认订单 -->
   <view wx:elif="{{orderListByStatus.length > 0 && activeTab > 0}}">
     <block wx:for="{{orderListByStatus}}" wx:key="orderNo" wx:for-item="order">
       <view class="card-container" data-orderid="{{order.id}}" data-orderstatus="{{order.status}}" bind:tap="showDetails">
-        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{item.title}}">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}} + {{order.expectRecyclerPlatformAmount}}(服务费)" tag="{{order.status == 2 ? '待服务' : (order.status == 3 ? '待确认' : '待顾客确认')}}">
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}}前上门</view>
-            <view wx:if="{{order.apart != null}}">距离 {{order.apart}} 公里</view>
+            <view wx:if="{{order.arriveTime}}">{{order.arriveTime}}到达</view>
+            <view wx:if="{{order.apart}}">距离 {{order.apart}} 公里</view>
+            <view wx:if="{{order.arriveTimoutMin && order.arriveTimoutMin != 0}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
+            <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
           </view>
         </van-card>
       </view>

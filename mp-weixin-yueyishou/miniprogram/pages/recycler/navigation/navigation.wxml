@@ -11,4 +11,5 @@
   <view class="tab-item {{activeTab === 0 ? 'active' : ''}}" bindtap="onTabTap" data-index="0" data-status="1">待抢单</view>
   <view class="tab-item {{activeTab === 1 ? 'active' : ''}}" bindtap="onTabTap" data-index="1" data-status="2">待服务</view>
   <view class="tab-item {{activeTab === 2 ? 'active' : ''}}" bindtap="onTabTap" data-index="2" data-status="3">待确认</view>
+  <view class="tab-item {{activeTab === 3 ? 'active' : ''}}" bindtap="onTabTap" data-index="3" data-status="4">待顾客确认</view>
 </view>

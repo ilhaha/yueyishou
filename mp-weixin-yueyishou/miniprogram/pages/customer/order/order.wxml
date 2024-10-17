@@ -3,7 +3,11 @@
     <block wx:if="{{orderList.length > 0}}">
       <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
         <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails" data-orderstatus="{{order.status}}">
-          <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" desc="{{order.appointmentTime}}前上门" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}}" tag="{{item.title}}">
+          <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}}" tag="{{item.title}}">
+            <view slot="desc" class="custom-desc">
+              <view>{{order.appointmentTime}}前上门</view>
+              <view wx:if="{{tabList[active].status >= 3}}">{{order.arriveTime}}到达</view>
+            </view>
             <view slot="footer" class="button-group">
               <van-button size="mini" type="primary" class="action-button" catch:tap="remind" wx:if="{{order.status == 1}}">提醒接单</van-button>
               <van-button size="mini" class="action-button" catch:tap="switchCancelOrderShow" data-orderid="{{order.id}}" wx:if="{{order.status == 1}}">取消订单</van-button>

@@ -40,7 +40,7 @@ public class PlaceOrderForm {
     private String actualPhotos;
     /**回收重量*/
     private BigDecimal recycleWeigh;
-    /**订单状态：1等待接单，2回收员已接单，3回收员前往回收点，4待顾客确认，5回收员未付款，6回收员已付款订单完成，7待评价，8订单已取消*/
+    /**订单状态：1等待接单，2回收员已接单，3待回收员确认，4待顾客确认，5回收员未付款，6回收员已付款待评价，7已完成，8订单已取消*/
     private Integer status;
     /**订单备注信息*/
     private String remark;

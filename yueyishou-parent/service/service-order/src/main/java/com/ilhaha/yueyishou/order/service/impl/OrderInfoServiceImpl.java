@@ -1,5 +1,6 @@
 package com.ilhaha.yueyishou.order.service.impl;
 
+import com.alibaba.fastjson2.util.DateUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,6 +30,10 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -220,6 +225,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderDetailsVo.setApart(BigDecimal.valueOf(distance).setScale(1, RoundingMode.CEILING));
 
         }
+        if (!ObjectUtils.isEmpty(orderDetailsVo.getArriveTime())) {
+            // 计算回收员是否超时，并计算超时多少分钟
+            Integer timoutMin = calculateTimeoutMinutes(orderDetailsVo.getAppointmentTime(),orderDetailsVo.getArriveTime());
+            orderDetailsVo.setArriveTimoutMin(timoutMin);
+        }
         return orderDetailsVo;
     }
 
@@ -266,10 +276,39 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 DrivingLineVo drivingLineVo = mapFeignClient.calculateDrivingLine(calculateLineForm).getData();
                 recyclerOrderVo.setApart(drivingLineVo.getDistance());
             }
+            if (!ObjectUtils.isEmpty(recyclerOrderVo.getArriveTime())) {
+                // 计算回收员是否超时，并计算超时多少分钟
+                Integer timoutMin = calculateTimeoutMinutes(recyclerOrderVo.getAppointmentTime(),recyclerOrderVo.getArriveTime());
+                recyclerOrderVo.setArriveTimoutMin(timoutMin);
+            }
             return recyclerOrderVo;
         }).collect(Collectors.toList());
         return result;
     }
+
+    /**
+     * 计算回收员是否超时，并返回超时分钟数
+     * @param appointmentTime 预约时间，格式为 yyyy-MM-dd HH:mm:ss
+     * @param arriveTime 到达时间，格式为 yyyy-MM-dd HH:mm:ss
+     * @return 超时的分钟数，未超时返回 0
+     */
+    private static int calculateTimeoutMinutes(Date appointmentTime, Date arriveTime) {
+        // 获取两个时间的毫秒值
+        long appointmentMillis = appointmentTime.getTime();
+        long arriveMillis = arriveTime.getTime();
+
+        // 计算时间差（毫秒级）
+        long differenceInMillis = arriveMillis - appointmentMillis;
+
+        // 如果到达时间早于或等于预约时间，则未超时，返回 0
+        if (differenceInMillis <= 0) {
+            return 0;
+        }
+
+        // 将毫秒差转换为分钟
+        return (int) (differenceInMillis / (1000 * 60));
+    }
+
 
     /**
      * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
@@ -292,6 +331,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             redisTemplate.opsForValue().set(RedisConstant.WAITING_ORDER + orderId,orderInfoDB);
         }
         return flag;
+    }
+
+    /**
+     * 回收员到达回收点
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Boolean arrive(Long orderId) {
+        //TODO 之后要完善不能超过100米就点击已到达
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.set(OrderInfo::getStatus,OrderStatus.RECYCLER_CONFIRM_ORDER)
+                .set(OrderInfo::getArriveTime,new Date())
+                .eq(OrderInfo::getId,orderId);
+        return this.update(orderInfoLambdaUpdateWrapper);
     }
 
     /**

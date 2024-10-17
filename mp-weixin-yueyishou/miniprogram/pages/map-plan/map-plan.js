@@ -5,6 +5,7 @@ import {
   customerCalculateDrivingLineURL,
   recyclerCalculateDrivingLineURL
 } from '../../api/customer/map'
+
 import {
   customerStore
 } from '../../stores/customerStore'
@@ -27,7 +28,8 @@ ComponentWithStore({
     latitude: null, // 地图中心点纬度
     longitude: null, // 地图中心经度
     timerId: null, // 定时器ID
-    isCancelOrderShow: false
+    isCancelOrderShow: false,
+    isArriveShow: false
   },
   properties: {
     orderInfo: {
@@ -83,6 +85,18 @@ ComponentWithStore({
   },
 
   methods: {
+    // 确认也到达
+    handleArrive() {
+      this.triggerEvent('arriveOrder');
+    },
+
+    // 切换确认已到达回收点提示框状态
+    switchArriveShow(event) {
+      this.setData({
+        isArriveShow: !this.data.isArriveShow
+      })
+    },
+
     // 切换取消订单提示框状态
     switchCancelOrderShow(event) {
       this.setData({

@@ -67,10 +67,17 @@
       </view>
     </view>
 
+    <view class="arrive-button-container" wx:if="{{operator == 'recycler'}}">
+      <button class="arrive-button" type="primary" bindtap="switchArriveShow">已到达</button>
+    </view>
+
     <!-- 取消订单部分 -->
     <view class="cancel-container">
       <view class="cancel-text">您可在{{freeCancellationTime}}前免费<span bind:tap="switchCancelOrderShow" class="cancel">取消</span></view>
     </view>
+
   </van-action-sheet>
 </view>
 <van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否取消该订单" show-cancel-button bind:confirm="cancelOrder" />
+
+<van-dialog id="van-dialog" show="{{ isArriveShow }}" title="确认是否已到达回收点" show-cancel-button bind:confirm="handleArrive" />

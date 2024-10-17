@@ -1,7 +1,8 @@
 import {
   reqOrderDetails,
   reqGrabOrder,
-  reqRepostOrder
+  reqRepostOrder,
+  reqRecyclerArrive
 } from '../../../api/recycler/order'
 import {
   toast
@@ -22,6 +23,22 @@ Page({
     this.setData({
       orderStatus: options.orderStatus
     })
+  },
+  updateOrder() {
+    console.log(this.data.orderInfo.id);
+  },
+  // 回收员到达回收点
+  async recyclerArriveOrder() {
+    const res = await reqRecyclerArrive(this.data.orderInfo.id);
+    if (res.data) {
+      this.goBack();
+    } else {
+      toast({
+        title: '未成功',
+        icon: 'error'
+      })
+    }
+
   },
   // 接单之后回收员取消订单
   async recyclerCanceOrder() {
@@ -47,19 +64,23 @@ Page({
         icon: 'success'
       })
       setTimeout(() => {
-        wx.navigateBack({
-          delta: 1, // 返回到上一个页面
-          success: function () {
-            const pages = getCurrentPages(); // 获取当前页面栈
-            const prevPage = pages[pages.length - 2]; // 上一个页面
-            if (prevPage) {
-              // 可以手动调用 prevPage 的方法，或重新设置数据
-              prevPage.onShow(); // 手动调用上一个页面的 onShow 方法
-            }
-          }
-        });
+        this.goBack()
       }, 1000);
     }
+  },
+  // 返回上个页面，并且调用onShow方法
+  goBack() {
+    wx.navigateBack({
+      delta: 1, // 返回到上一个页面
+      success: function () {
+        const pages = getCurrentPages(); // 获取当前页面栈
+        const prevPage = pages[pages.length - 2]; // 上一个页面
+        if (prevPage) {
+          // 可以手动调用 prevPage 的方法，或重新设置数据
+          prevPage.onShow(); // 手动调用上一个页面的 onShow 方法
+        }
+      }
+    });
   },
   // 抢单
   async grabOrder(event) {

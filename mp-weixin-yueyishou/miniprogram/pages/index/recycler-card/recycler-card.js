@@ -36,9 +36,18 @@ ComponentWithStore({
     // 注册成为回收员
     async registerRecycler() {
       if (this.data.token) {
-        this.switchCertificationShow();
         // 以防如果用户还未退出登录就已经审核成功出现信息不全问题
-        await reqReplenishInfo();
+        const res = await reqReplenishInfo();
+        if (res.code != 200) {
+          toast({
+            title: res.message,
+            icon: 'error',
+            duration: 1000
+          })
+          return;
+        } else {
+          this.switchCertificationShow();
+        }
 
       } else {
         toast({

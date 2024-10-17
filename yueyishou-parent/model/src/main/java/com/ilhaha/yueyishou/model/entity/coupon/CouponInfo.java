@@ -20,7 +20,7 @@ public class CouponInfo extends BaseEntity {
     private Integer couponType;
 	/**服务费抵扣券名字*/
     private String name;
-	/**折扣：取值[1 到 10]*/
+	/**折扣：取值[0 到 10]*/
     private BigDecimal discount;
 	/**使用门槛 0->没门槛*/
     private BigDecimal conditionAmount;

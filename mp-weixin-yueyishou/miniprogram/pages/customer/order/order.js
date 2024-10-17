@@ -16,20 +16,23 @@ Page({
       title: '待服务',
       status: 2
     }, {
-      title: '待确认',
+      title: '服务中',
       status: 3
     }, {
-      title: '待收款',
+      title: '待确认',
       status: 4
     }, {
-      title: '待评价',
+      title: '待收款',
       status: 5
     }, {
-      title: '已完成',
+      title: '待评价',
       status: 6
     }, {
-      title: '已取消',
+      title: '已完成',
       status: 7
+    }, {
+      title: '已取消',
+      status: 8
     }],
     orderList: [], // 订单列表
     isLoading: false, // 是否在加载数据

@@ -6,6 +6,8 @@ import com.ilhaha.yueyishou.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 /**
  * @Author ilhaha
@@ -14,6 +16,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-coupon")
 public interface CouponInfoFeignClient {
+
+    /**
+     * 通过id集合获取服务抵扣劵集合
+     * @param couponIds
+     * @return
+     */
+    @PostMapping("/couponInfo/list/byIds")
+    Result<List<CouponInfo>> getListByIds(@RequestBody List<Long> couponIds);
 
     /**
      * 服务抵扣劵分页查询

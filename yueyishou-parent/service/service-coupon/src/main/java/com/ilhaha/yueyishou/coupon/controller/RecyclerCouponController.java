@@ -8,12 +8,14 @@ import com.ilhaha.yueyishou.model.entity.coupon.RecyclerCoupon;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/recyclerCoupon")
@@ -21,7 +23,20 @@ import java.util.Arrays;
 public class RecyclerCouponController  {
 	@Resource
 	private IRecyclerCouponService recyclerCouponService;
-	
+
+	/**
+	 *  免费发放服务抵扣劵
+	 * @param freeIssueFormList
+	 * @param recyclerCount
+	 * @return
+	 */
+	@PostMapping("/free/issue/{recyclerCount}")
+	public Result<Boolean> freeIssue(@RequestBody List<FreeIssueForm> freeIssueFormList,
+									 @PathVariable("recyclerCount") Integer recyclerCount){
+		return Result.ok(recyclerCouponService.freeIssue(freeIssueFormList,recyclerCount));
+	}
+
+
 	/**
 	 * 分页列表查询
 	 *

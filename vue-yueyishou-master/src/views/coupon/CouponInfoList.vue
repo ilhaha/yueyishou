@@ -5,16 +5,17 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-          <a-form-item label="服务费抵扣券名字">
-            <a-input placeholder="请输入服务费抵扣券名字" v-model="queryParam.name"></a-input>
-          </a-form-item>
-        </a-col>
-        <a-col :xl="6" :lg="7" :md="8" :sm="24">
-          <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
-            <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-            <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-          </span>
-        </a-col> </a-row>
+            <a-form-item label="服务费抵扣券名字">
+              <a-input placeholder="请输入服务费抵扣券名字" v-model="queryParam.name"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+            </span>
+          </a-col>
+        </a-row>
       </a-form>
     </div>
     <!-- 查询区域-END -->
@@ -126,7 +127,7 @@ export default {
             return parseInt(index) + 1
           },
         },
-         {
+        {
           title: '服务费抵扣券名字',
           align: 'center',
           dataIndex: 'name',
@@ -144,7 +145,7 @@ export default {
           align: 'center',
           dataIndex: 'discount',
           customRender: function (t, r, index) {
-            return t * 100
+            return t == 0 ? '免单' : t + '折'
           },
         },
         {

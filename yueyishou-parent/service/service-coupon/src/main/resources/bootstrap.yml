@@ -15,3 +15,16 @@ spring:
         file-extension: yaml
         shared-configs:
           - data-id: common-account.yaml
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 172.16.179.139:8848
+      namespace: ""
+      group: SEATA_GROUP
+      application: seata-server
+  tx-service-group: yueyishou_tx_group # 事务组，由它获得TC服务的集群名称
+  service:
+    vgroup-mapping: # 点击源码分析
+      yueyishou_tx_group: default # 事务组与TC服务集群的映射关系
+  data-source-proxy-mode: AT

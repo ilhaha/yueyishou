@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 @RestController
@@ -20,6 +21,16 @@ import java.util.Arrays;
 public class CouponInfoController {
 	@Resource
 	private ICouponInfoService couponInfoService;
+
+	/**
+	 * 通过id集合获取服务抵扣劵集合
+	 * @param couponIds
+	 * @return
+	 */
+	@PostMapping("/list/byIds")
+	public Result<List<CouponInfo>> getListByIds(@RequestBody List<Long> couponIds){
+		return Result.ok(couponInfoService.getListByIds(couponIds));
+	}
 	
 	/**
 	 * 服务抵扣劵分页查询

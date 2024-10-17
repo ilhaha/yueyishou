@@ -8,12 +8,14 @@ import com.ilhaha.yueyishou.model.entity.coupon.CustomerCoupon;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/customerCoupon")
@@ -21,6 +23,16 @@ import java.util.Arrays;
 public class CustomerCouponController  {
 	@Resource
 	private ICustomerCouponService customerCouponService;
+
+	/**
+	 *  免费发放服务抵扣劵
+	 * @param freeIssueFormList
+	 * @return
+	 */
+	@PostMapping("/free/issue")
+	public Result<Boolean> freeIssue(@RequestBody List<FreeIssueForm> freeIssueFormList){
+		return Result.ok(customerCouponService.freeIssue(freeIssueFormList));
+	}
 	
 	/**
 	 * 分页列表查询
