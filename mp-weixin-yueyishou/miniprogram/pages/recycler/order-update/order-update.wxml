@@ -1,0 +1,59 @@
+<van-notice-bar class="fixed-notice" left-icon="volume-o" text="确保顾客知情并避免冲突，修改订单时需与实际情况保持一致。" />
+
+<view class="container">
+  <view class="main">
+    <van-field value="{{ chooseCategoryValue }}" is-link readonly label="回收品类" placeholder="请选择回收品类" bind:tap="switchChooseCategoryShow" />
+    <van-popup show="{{ chooseCategoryShow }}" round position="bottom">
+      <van-cascader wx:if="{{ chooseCategoryShow }}" value="{{ cascaderCategoryValue }}" title="请选择回收品类" options="{{ categoryTree }}" field-names="{{ chooseCategoryFieldNames }}" bind:close="switchChooseCategoryShow" bind:change="onCategoryChange" />
+    </van-popup>
+    <view class="price-card">
+      <text class="price-name">{{updateOrderForm.sonCategoryName}}</text>
+      <text class="price-value">{{updateOrderForm.unitPrice}} 元 / 公斤</text>
+    </view>
+    <van-cell-group>
+      <van-field label="回收重量" value="{{ updateOrderForm.recycleWeigh }}" placeholder="请输入回收重量" bind:change="changeWeight" type="digit" required>
+        <view slot="right-icon" style="margin-left: 8rpx; color: #666;font-size: 30rpx;">公斤</view>
+      </van-field>
+      <view class="photo-section">
+        <text class="photo-title">实物照片</text>
+        <view class="photo-grid">
+          <van-uploader file-list="{{ actualPhotos }}" max-count="4" bind:after-read="reqCosUpload" bind:delete="onDelete" />
+        </view>
+      </view>
+    </van-cell-group>
+    <view style="margin: 25rpx;">
+      <van-button type="primary" block bind:tap="estimatedAmount" round>
+        提交
+      </van-button>
+    </view>
+  </view>
+</view>
+
+<van-dialog use-slot title="核对订单信息" show="{{ dialogShow }}" show-cancel-button bind:close="switchDialogStatus" bind:confirm="onSubmit">
+
+  <view class="dialog-content">
+    <view class="dialog-item">
+      <text>回收品类:</text>
+      <text class="dialog-value">{{ updateOrderForm.parentCategoryName }}/{{updateOrderForm.sonCategoryName}}</text>
+    </view>
+    <view class="dialog-item">
+      <text>单价:</text>
+      <text class="dialog-value">{{ updateOrderForm.unitPrice }}/公斤</text>
+    </view>
+    <view class="dialog-item">
+      <text>重量:</text>
+      <text class="dialog-value">{{ updateOrderForm.recycleWeigh }}公斤</text>
+    </view>
+    <view class="dialog-item">
+      <text>回收总金额:</text>
+      <text class="dialog-value">{{ updateOrderForm.estimatedTotalAmount }}元</text>
+    </view>
+    <view class="dialog-item">
+      <text>顾客服务手续费:</text>
+      <text class="dialog-value">{{ updateOrderForm.expectCustomerPlatformAmount }}元</text>
+    </view>
+  </view>
+  <view class="dialog-tip">
+    <text>顾客确认无误后，即可修改订单信息。</text>
+  </view>
+</van-dialog>

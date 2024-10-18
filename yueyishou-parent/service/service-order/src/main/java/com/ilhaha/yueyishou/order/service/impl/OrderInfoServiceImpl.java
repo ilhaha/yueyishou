@@ -15,6 +15,7 @@ import com.ilhaha.yueyishou.model.enums.OrderStatus;
 import com.ilhaha.yueyishou.model.form.map.CalculateLineForm;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
 import com.ilhaha.yueyishou.model.vo.map.DrivingLineVo;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.mapper.OrderInfoMapper;
@@ -346,6 +347,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .set(OrderInfo::getArriveTime,new Date())
                 .eq(OrderInfo::getId,orderId);
         return this.update(orderInfoLambdaUpdateWrapper);
+    }
+
+    /**
+     * 更新订单信息
+     * @param updateOrderFrom
+     * @return
+     */
+    @Override
+    public Boolean updateOrder(UpdateOrderFrom updateOrderFrom) {
+        OrderInfo orderInfo = new OrderInfo();
+        BeanUtils.copyProperties(updateOrderFrom,orderInfo);
+        return this.updateById(orderInfo);
     }
 
     /**

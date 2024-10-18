@@ -44,3 +44,17 @@ export const reqRepostOrder = (orderId) => {
 export const reqRecyclerArrive = (orderId) => {
   return http.post(urlPrefix + `/order/arrive/${orderId}`)
 }
+
+/**
+ * 预估订单费用
+ */
+export const reqCalculateOrderFee = (params) => {
+  return http.post(urlPrefix + `/order/calculateOrderFee`, params)
+}
+
+/**
+ * 预估订单费用
+ */
+export const reqUpdateOrder = (params) => {
+  return http.post(urlPrefix + `/order/update`, params)
+}

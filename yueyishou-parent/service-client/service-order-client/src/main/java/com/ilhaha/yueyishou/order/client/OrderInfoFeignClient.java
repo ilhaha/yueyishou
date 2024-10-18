@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,14 @@ import java.util.List;
  */
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
+
+    /**
+     * 更新订单信息
+     * @param updateOrderFrom
+     * @return
+     */
+    @PostMapping("/orderInfo/update")
+    Result<Boolean> updateOrder(@RequestBody UpdateOrderFrom updateOrderFrom);
 
     /**
      * 回收员到达回收点

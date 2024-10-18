@@ -30,8 +30,12 @@ public class OrderDetailsVo {
     private BigDecimal customerPointLatitude;
     /**订单回收分类父名称*/
     private String parentCategoryName;
+    /**订单回收分类父ID*/
+    private Long parentCategoryId;
     /**订单回收分类子名称*/
     private String sonCategoryName;
+    /**订单回收分类子ID*/
+    private Long sonCategoryId;
     /**单价*/
     private BigDecimal unitPrice;
     /**预约时间*/

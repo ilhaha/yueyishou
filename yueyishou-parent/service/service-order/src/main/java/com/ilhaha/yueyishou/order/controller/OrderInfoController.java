@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
@@ -23,6 +24,16 @@ import java.util.List;
 public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
+
+    /**
+     * 更新订单信息
+     * @param updateOrderFrom
+     * @return
+     */
+    @PostMapping("/update")
+    public Result<Boolean> updateOrder(@RequestBody UpdateOrderFrom updateOrderFrom){
+        return Result.ok(orderInfoService.updateOrder(updateOrderFrom));
+    }
 
     /**
      * 回收员到达回收点

@@ -3,11 +3,15 @@ package com.ilhaha.yueyishou.recycler.service.impl;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
+import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
 import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
+import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
+import com.ilhaha.yueyishou.reles.client.ServiceFeeRuleFeignClient;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OrderInfoFeignClient orderInfoFeignClient;
+
+    @Resource
+    private ServiceFeeRuleFeignClient serviceFeeRuleFeignClient;
+
 
     /**
      * 回收员获取符合接单的订单
@@ -82,5 +90,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<Boolean> arrive(Long orderId) {
         return orderInfoFeignClient.arrive(orderId);
+    }
+
+    /**
+     * 预估订单费用
+     * @param calculateOrderFeeForm
+     * @return
+     */
+    @Override
+    public Result<ServiceFeeRuleResponseVo> calculateOrderFee(ServiceFeeRuleRequestForm calculateOrderFeeForm) {
+        return serviceFeeRuleFeignClient.calculateOrderFee(calculateOrderFeeForm);
+    }
+
+    /**
+     * 更新订单信息
+     * @param updateOrderFrom
+     * @return
+     */
+    @Override
+    public Result<Boolean> updateOrder(UpdateOrderFrom updateOrderFrom) {
+        return orderInfoFeignClient.updateOrder(updateOrderFrom);
     }
 }

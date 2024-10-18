@@ -28,4 +28,13 @@ public class CategoryServiceImpl implements CategoryService {
     public Result<List<CategoryInfo>> parentList() {
         return categoryInfoFeignClient.parentList();
     }
+
+    /**
+     * 获取已启用的废品品类树
+     * @return
+     */
+    @Override
+    public Result<List<CategoryInfo>> getCategoryTree() {
+        return categoryInfoFeignClient.getCategoryTree();
+    }
 }

@@ -2,9 +2,12 @@ package com.ilhaha.yueyishou.recycler.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
+import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
 import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
+import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 
 import java.util.List;
 
@@ -54,4 +57,18 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> arrive(Long orderId);
+
+    /**
+     * 预估订单费用
+     * @param calculateOrderFeeForm
+     * @return
+     */
+    Result<ServiceFeeRuleResponseVo> calculateOrderFee(ServiceFeeRuleRequestForm calculateOrderFeeForm);
+
+    /**
+     * 更新订单信息
+     * @param updateOrderFrom
+     * @return
+     */
+    Result<Boolean> updateOrder(UpdateOrderFrom updateOrderFrom);
 }

@@ -3,9 +3,12 @@ package com.ilhaha.yueyishou.recycler.controller;
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
+import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
 import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
+import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,28 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /**
+     * 更新订单信息
+     * @param updateOrderFrom
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/update")
+    public Result<Boolean> updateOrder(@RequestBody UpdateOrderFrom updateOrderFrom){
+        return orderService.updateOrder(updateOrderFrom);
+    }
+
+    /**
+     * 预估订单费用
+     * @param calculateOrderFeeForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/calculateOrderFee")
+    public Result<ServiceFeeRuleResponseVo> calculateOrderFee(@RequestBody ServiceFeeRuleRequestForm calculateOrderFeeForm) {
+        return orderService.calculateOrderFee(calculateOrderFeeForm);
+    }
 
     /**
      * 回收员到达回收点

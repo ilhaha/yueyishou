@@ -18,4 +18,10 @@ public interface CategoryService {
      */
     Result<List<CategoryInfo>> parentList();
 
+    /**
+     * 获取已启用的废品品类树
+     * @return
+     */
+    Result<List<CategoryInfo>> getCategoryTree();
+
 }

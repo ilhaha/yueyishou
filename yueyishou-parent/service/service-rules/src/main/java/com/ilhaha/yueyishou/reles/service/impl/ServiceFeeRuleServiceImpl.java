@@ -8,6 +8,8 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.stereotype.Service;
 
+import java.math.RoundingMode;
+
 /**
  * @Author ilhaha
  * @Create 2024/9/28 20:12
@@ -43,7 +45,11 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
             kieSession.dispose();
         }
         // 订单预计回收总金额
-        response.setEstimatedTotalAmount(serviceFeeRuleRequestForm.getUnitPrice().multiply(serviceFeeRuleRequestForm.getRecycleWeigh()));
+        response.setEstimatedTotalAmount(
+                serviceFeeRuleRequestForm.getUnitPrice()
+                        .multiply(serviceFeeRuleRequestForm.getRecycleWeigh())
+                        .setScale(2, RoundingMode.HALF_UP)
+        );
         return response;
     }
 }

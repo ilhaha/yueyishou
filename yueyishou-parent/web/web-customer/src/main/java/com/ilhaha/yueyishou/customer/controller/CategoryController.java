@@ -1,5 +1,6 @@
 package com.ilhaha.yueyishou.customer.controller;
 
+import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.model.entity.category.CategoryInfo;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.CategoryService;
@@ -29,6 +30,7 @@ public class CategoryController {
      * @param parentId
      * @return
      */
+    @LoginVerification
     @GetMapping("/sub/{parentId}")
     public Result<List<SubCategoryVo>> getSubCategories(@PathVariable("parentId") Long parentId){
         return categoryService.getSubCategories(parentId);
@@ -38,6 +40,7 @@ public class CategoryController {
      * 获取已启用的废品品类树
      * @return
      */
+    @LoginVerification
     @GetMapping("/tree")
     public Result<List<CategoryInfo>> getCategoryTree(){
         return categoryService.getCategoryTree();
@@ -47,6 +50,7 @@ public class CategoryController {
      * 获取所有已启用的父废品品类
      * @return
      */
+    @LoginVerification
     @GetMapping("/parent/list")
     public Result<List<CategoryInfo>> parentList(){
         return Result.ok(categoryService.parentList());

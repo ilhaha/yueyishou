@@ -25,7 +25,9 @@ Page({
     })
   },
   updateOrder() {
-    console.log(this.data.orderInfo.id);
+    wx.navigateTo({
+      url: `/pages/recycler/order-update/order-update?orderInfo=${encodeURIComponent(JSON.stringify(this.data.orderInfo))}`
+    });
   },
   // 回收员到达回收点
   async recyclerArriveOrder() {
