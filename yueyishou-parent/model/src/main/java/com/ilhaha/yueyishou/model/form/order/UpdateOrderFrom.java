@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.model.form.order;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @Author ilhaha
@@ -37,4 +38,5 @@ public class UpdateOrderFrom {
     private BigDecimal expectCustomerPlatformAmount;
     /**回收员预支付平台订单金额*/
     private BigDecimal expectRecyclerPlatformAmount;
+
 }

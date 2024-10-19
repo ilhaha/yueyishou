@@ -8,7 +8,10 @@ import com.ilhaha.yueyishou.model.entity.coupon.CustomerCoupon;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
+import com.ilhaha.yueyishou.model.vo.order.CalculateActualOrderVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,16 @@ import java.util.List;
 public class CustomerCouponController  {
 	@Resource
 	private ICustomerCouponService customerCouponService;
+
+	/**
+	 * 获取顾客在订单中可使用的服务抵扣劵
+	 * @param availableCouponForm
+	 * @return
+	 */
+	@PostMapping("/available")
+	public Result<List<AvailableCouponVo>> getAvailableCustomerServiceCoupons(@RequestBody AvailableCouponForm availableCouponForm) {
+		return Result.ok(customerCouponService.getAvailableCustomerServiceCoupons(availableCouponForm));
+	}
 
 	/**
 	 *  免费发放服务抵扣劵

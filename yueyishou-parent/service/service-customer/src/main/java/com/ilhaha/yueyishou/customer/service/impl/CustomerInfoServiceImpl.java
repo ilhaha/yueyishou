@@ -42,6 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -120,6 +122,16 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                     freeIssueForm.setCouponId(couponInfo.getId());
                     freeIssueForm.setReceiveTime(new Date());
                     BeanUtils.copyProperties(couponInfo, freeIssueForm);
+                    if (!CouponConstant.EXPIRES_DAYS_AFTER_COLLECTION.equals(couponInfo.getExpireTime())) {
+                        // 计算过期时间：当前日期 + 有效天数
+                        LocalDateTime expireTime = LocalDateTime.now().plusDays(couponInfo.getExpireTime());
+
+                        // 将 LocalDateTime 转换为 Date 类型
+                        Date expireDate = Date.from(expireTime.atZone(ZoneId.systemDefault()).toInstant());
+
+                        // 设置过期时间
+                        freeIssueForm.setExpireTime(expireDate);
+                    }
                     freeIssueFormList.add(freeIssueForm);
                 }
                 customerCouponFeignClient.freeIssue(freeIssueFormList);

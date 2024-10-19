@@ -1,14 +1,13 @@
-package com.ilhaha.yueyishou.reles.controller;
+package com.ilhaha.yueyishou.rules.controller;
 
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.form.order.OvertimeRequestForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
-import com.ilhaha.yueyishou.reles.service.ServiceFeeRuleService;
+import com.ilhaha.yueyishou.rules.service.ServiceFeeRuleService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author ilhaha
@@ -31,6 +30,17 @@ public class ServiceFeeRuleController {
     @PostMapping("/calculateOrderFee")
     public Result<ServiceFeeRuleResponseVo> calculateOrderFee(@RequestBody ServiceFeeRuleRequestForm serviceFeeRuleRequestForm) {
         return Result.ok(serviceFeeRuleService.calculateOrderFee(serviceFeeRuleRequestForm));
+    }
+
+
+    /**
+     * 计算回收员超时费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/calculateTimeoutFree")
+    public Result<OvertimeResponseVo> calculateTimeoutFree(@RequestBody OvertimeRequestForm overtimeRequestForm){
+        return Result.ok(serviceFeeRuleService.calculateTimeoutFree(overtimeRequestForm));
     }
 
 }

@@ -110,4 +110,19 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean updateOrder(UpdateOrderFrom updateOrderFrom);
+
+    /**
+     * 计算实际的订单信息
+     * @param orderId
+     * @return
+     */
+    CalculateActualOrderVo calculateActual(Long orderId);
+
+    /**
+     * 根据订单id和订单状态修改订单状态
+     * @param orderId
+     * @param status
+     * @return
+     */
+    Boolean updateOrderStatus(Long orderId, Integer status);
 }

@@ -18,5 +18,5 @@ public class CouponIssueConstant {
     /**
      * 注册免费发放的服务抵扣劵ID集合
      */
-    public static final List<Long> COUPON_FREE_ISSUE_ID = Arrays.asList(13L, 14L);
+    public static final List<Long> COUPON_FREE_ISSUE_ID = Arrays.asList(13L, 14L,24L);
 }

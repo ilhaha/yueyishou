@@ -1,28 +1,28 @@
 package com.ilhaha.yueyishou.order.service.impl;
 
-import com.alibaba.fastjson2.util.DateUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ilhaha.yueyishou.client.MapFeignClient;
+import com.ilhaha.yueyishou.coupon.client.CustomerCouponFeignClient;
+import com.ilhaha.yueyishou.coupon.client.RecyclerCouponFeignClient;
 import com.ilhaha.yueyishou.model.constant.PublicConstant;
 import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.common.util.OrderUtil;
 import com.ilhaha.yueyishou.model.constant.OrderConstant;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.enums.OrderStatus;
+import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.map.CalculateLineForm;
-import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
-import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
-import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
+import com.ilhaha.yueyishou.model.form.order.*;
+import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import com.ilhaha.yueyishou.model.vo.map.DrivingLineVo;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.mapper.OrderInfoMapper;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
-import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
+import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import jakarta.annotation.Resource;
-import net.sf.jsqlparser.statement.select.Offset;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,11 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +46,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Resource
     private MapFeignClient mapFeignClient;
+
+    @Resource
+    private ServiceFeeRuleFeignClient serviceFeeRuleFeignClient;
+
+    @Resource
+    private RecyclerCouponFeignClient recyclerCouponFeignClient;
+
+    @Resource
+    private CustomerCouponFeignClient customerCouponFeignClient;
 
 
     /**
@@ -358,7 +364,98 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public Boolean updateOrder(UpdateOrderFrom updateOrderFrom) {
         OrderInfo orderInfo = new OrderInfo();
         BeanUtils.copyProperties(updateOrderFrom,orderInfo);
+        orderInfo.setUpdateTime(new Date());
         return this.updateById(orderInfo);
+    }
+
+    /**
+     * 计算实际的订单信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public CalculateActualOrderVo calculateActual(Long orderId) {
+        CalculateActualOrderVo calculateActualOrderVo = new CalculateActualOrderVo();
+        // 计算回收员总共所需回收支出金额
+        BigDecimal totalAmount = new BigDecimal(BigInteger.ZERO);
+
+        OrderInfo orderInfoDB = this.getById(orderId);
+        calculateActualOrderVo.setOrderId(orderInfoDB.getId());
+
+        // 计算订单实际回收总金额、回收员实际所付款手续费、顾客实际所付款手续费
+        ServiceFeeRuleRequestForm serviceFeeRuleRequestForm = new ServiceFeeRuleRequestForm();
+        serviceFeeRuleRequestForm.setRecycleWeigh(orderInfoDB.getRecycleWeigh());
+        serviceFeeRuleRequestForm.setUnitPrice(orderInfoDB.getUnitPrice());
+        calculateOrderAndFees(calculateActualOrderVo,serviceFeeRuleRequestForm);
+        totalAmount = totalAmount.add(calculateActualOrderVo.getRealRecyclerAmount()).add(calculateActualOrderVo.getRealRecyclerPlatformAmount());
+
+        // 判断回收员是否超时
+        int timeOutMin = calculateTimeoutMinutes(orderInfoDB.getAppointmentTime(), orderInfoDB.getArriveTime());
+        // 已超时
+        if (OrderConstant.NOT_TIMED_OUT_MIN < timeOutMin) {
+            // 计算回收员需要付的超时费用
+            calculateTimeoutFree(calculateActualOrderVo,timeOutMin);
+            calculateActualOrderVo.setTimeOutMin(timeOutMin);
+            totalAmount = totalAmount.add(calculateActualOrderVo.getRecyclerOvertimeCharges());
+        }
+        // 获取回收员可使用的服务抵扣劵
+        AvailableCouponForm availableCouponForm = new AvailableCouponForm();
+        availableCouponForm.setRealRecyclerAmount(calculateActualOrderVo.getRealRecyclerAmount());
+        availableCouponForm.setRecyclerId(orderInfoDB.getRecyclerId());
+        getAvailableRecyclerServiceCoupons(calculateActualOrderVo,availableCouponForm);
+
+        calculateActualOrderVo.setTotalAmount(totalAmount);
+
+        return calculateActualOrderVo;
+    }
+
+    /**
+     * 根据订单id和订单状态修改订单状态
+     * @param orderId
+     * @param status
+     * @return
+     */
+    @Override
+    public Boolean updateOrderStatus(Long orderId, Integer status) {
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId,orderId)
+                .set(OrderInfo::getStatus,status)
+                .set(OrderInfo::getUpdateTime,new Date());
+        return this.update(orderInfoLambdaUpdateWrapper);
+    }
+
+    /**
+     * 计算回收员超时费用
+     * @param calculateActualOrderVo
+     * @param timeOutMin
+     */
+    private void calculateTimeoutFree(CalculateActualOrderVo calculateActualOrderVo,int timeOutMin){
+        OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
+        overtimeRequestForm.setOvertimeMinutes(timeOutMin);
+        OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.calculateTimeoutFree(overtimeRequestForm).getData();
+        calculateActualOrderVo.setRecyclerOvertimeCharges(overtimeResponseVo.getOvertimeFee());
+    }
+
+    /**
+     * 计算订单实际回收总金额、回收员实际所付款手续费、顾客实际所付款手续费
+     * @param calculateActualOrderVo
+     * @param serviceFeeRuleRequestForm
+     */
+    private void calculateOrderAndFees(CalculateActualOrderVo calculateActualOrderVo, ServiceFeeRuleRequestForm serviceFeeRuleRequestForm) {
+        ServiceFeeRuleResponseVo serviceFeeRuleResponseVo = serviceFeeRuleFeignClient.calculateOrderFee(serviceFeeRuleRequestForm).getData();
+        calculateActualOrderVo.setRealRecyclerAmount(serviceFeeRuleResponseVo.getEstimatedTotalAmount());
+        calculateActualOrderVo.setRealRecyclerPlatformAmount(serviceFeeRuleResponseVo.getExpectRecyclerPlatformAmount());
+        calculateActualOrderVo.setRealCustomerPlatformAmount(serviceFeeRuleResponseVo.getExpectCustomerPlatformAmount());
+    }
+
+    /**
+     * 获取在当前订单回收员可使用的服务抵扣劵
+     * @param calculateActualOrderVo
+     * @param availableCouponForm
+     */
+    private void getAvailableRecyclerServiceCoupons(CalculateActualOrderVo calculateActualOrderVo,
+                                                                       AvailableCouponForm availableCouponForm) {
+        calculateActualOrderVo.setRecyclerAvailableCouponList(recyclerCouponFeignClient.getAvailableCustomerServiceCoupons(availableCouponForm).getData());
     }
 
     /**

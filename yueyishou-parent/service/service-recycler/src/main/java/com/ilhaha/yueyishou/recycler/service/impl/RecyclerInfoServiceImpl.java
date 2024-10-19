@@ -8,6 +8,7 @@ import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.coupon.client.CouponInfoFeignClient;
 import com.ilhaha.yueyishou.coupon.client.RecyclerCouponFeignClient;
+import com.ilhaha.yueyishou.model.constant.CouponConstant;
 import com.ilhaha.yueyishou.model.constant.CouponIssueConstant;
 import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
@@ -37,6 +38,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -104,6 +107,16 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
                         freeIssueForm.setCouponId(item.getId());
                         freeIssueForm.setReceiveTime(new Date());
                         BeanUtils.copyProperties(item,freeIssueForm);
+                        if (!CouponConstant.EXPIRES_DAYS_AFTER_COLLECTION.equals(item.getExpireTime())) {
+                            // 计算过期时间：当前日期 + 有效天数
+                            LocalDateTime expireTime = LocalDateTime.now().plusDays(item.getExpireTime());
+
+                            // 将 LocalDateTime 转换为 Date 类型
+                            Date expireDate = Date.from(expireTime.atZone(ZoneId.systemDefault()).toInstant());
+
+                            // 设置过期时间
+                            freeIssueForm.setExpireTime(expireDate);
+                        }
                         freeIssueFormList.add(freeIssueForm);
                     }
                 }

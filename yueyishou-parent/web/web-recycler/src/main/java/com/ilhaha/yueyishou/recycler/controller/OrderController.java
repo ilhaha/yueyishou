@@ -5,10 +5,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
-import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
-import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
-import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
-import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
+import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +23,16 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /**
+     * 计算实际的订单信息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/calculate/actual/{orderId}")
+    public Result<CalculateActualOrderVo> calculateActual(@PathVariable("orderId") Long orderId){
+        return orderService.calculateActual(orderId);
+    }
 
     /**
      * 更新订单信息

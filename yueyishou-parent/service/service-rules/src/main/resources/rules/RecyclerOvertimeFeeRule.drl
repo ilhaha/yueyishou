@@ -1,0 +1,26 @@
+package com.ilhaha.yueyishou.rules;
+
+import com.ilhaha.yueyishou.model.form.order.OvertimeRequestForm;
+import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
+import java.math.BigDecimal;
+
+/**
+ * Drools规则文件：计算超时费用
+ * 每超10分钟收费5元，不足10分钟按10分钟计算。
+ */
+
+rule "Calculate Overtime Fee"
+when
+    $request: OvertimeRequestForm($overtimeMinutes : overtimeMinutes > 0)
+    $response: OvertimeResponseVo()
+then
+    // 计算向上取整后的10分钟周期数
+    int feePeriods = (int) Math.ceil($overtimeMinutes / 10.0);
+
+    // 每10分钟收费5元
+    BigDecimal overtimeFee = BigDecimal.valueOf(feePeriods * 5);
+
+    // 设置响应的超时费用
+    $response.setOvertimeFee(overtimeFee);
+
+end

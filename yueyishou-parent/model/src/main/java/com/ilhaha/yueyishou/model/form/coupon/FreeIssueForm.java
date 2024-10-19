@@ -21,4 +21,6 @@ public class FreeIssueForm {
     private Long recyclerId;
     /**领取时间*/
     private Date receiveTime;
+    /**过期时间*/
+    private Date expireTime;
 }

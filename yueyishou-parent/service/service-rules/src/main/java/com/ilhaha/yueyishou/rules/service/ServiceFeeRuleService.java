@@ -1,6 +1,8 @@
-package com.ilhaha.yueyishou.reles.service;
+package com.ilhaha.yueyishou.rules.service;
 
+import com.ilhaha.yueyishou.model.form.order.OvertimeRequestForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 
 /**
@@ -16,4 +18,11 @@ public interface ServiceFeeRuleService {
      * @return
      */
     ServiceFeeRuleResponseVo calculateOrderFee(ServiceFeeRuleRequestForm serviceFeeRuleRequestForm);
+
+    /**
+     * 计算回收员超时费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    OvertimeResponseVo calculateTimeoutFree(OvertimeRequestForm overtimeRequestForm);
 }

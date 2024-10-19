@@ -4,10 +4,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
-import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
-import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
-import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
-import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
+import com.ilhaha.yueyishou.model.vo.order.*;
 
 import java.util.List;
 
@@ -71,4 +68,11 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> updateOrder(UpdateOrderFrom updateOrderFrom);
+
+    /**
+     * 计算实际的订单信息
+     * @param orderId
+     * @return
+     */
+    Result<CalculateActualOrderVo> calculateActual(Long orderId);
 }

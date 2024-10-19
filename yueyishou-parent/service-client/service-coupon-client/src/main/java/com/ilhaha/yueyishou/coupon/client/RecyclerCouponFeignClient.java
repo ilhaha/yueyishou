@@ -2,7 +2,10 @@ package com.ilhaha.yueyishou.coupon.client;
 
 
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
+import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +20,24 @@ import java.util.List;
  */
 @FeignClient("service-coupon")
 public interface RecyclerCouponFeignClient {
+
+
+    /**
+     * 回收员使用服务抵扣劵
+     * @param useCouponFrom
+     * @return
+     */
+    @PostMapping("/recyclerCoupon/use")
+    Result<Boolean> useCoupon(@RequestBody UseCouponFrom useCouponFrom);
+
+    /**
+     * 获取回收员在订单中可使用的服务抵扣劵
+     * @param availableCouponForm
+     * @return
+     */
+    @PostMapping("/recyclerCoupon/available")
+    Result<List<AvailableCouponVo>> getAvailableCustomerServiceCoupons(@RequestBody AvailableCouponForm availableCouponForm);
+
 
     /**
      *  免费发放服务抵扣劵

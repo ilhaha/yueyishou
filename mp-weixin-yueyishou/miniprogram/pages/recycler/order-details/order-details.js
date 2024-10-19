@@ -2,7 +2,8 @@ import {
   reqOrderDetails,
   reqGrabOrder,
   reqRepostOrder,
-  reqRecyclerArrive
+  reqRecyclerArrive,
+  reqCalculateActual
 } from '../../../api/recycler/order'
 import {
   toast
@@ -10,13 +11,30 @@ import {
 import {
   timeBehavior
 } from '../../../behavior/timeBehavior'
+import {
+  reqGenerateBill
+} from '../../../api/recycler/bill'
 
 Page({
   behaviors: [timeBehavior],
   data: {
     orderInfo: null,
     orderStatus: 1,
-    freeCancellationTime: null
+    freeCancellationTime: null,
+    dialogShow: false,
+    actualOrderInfo: {},
+    selectedCoupon: null,
+    couponListWithNone: [],
+    initServiceFee: 0,
+    generateBillForm: {
+      orderId: null,
+      couponId: null,
+      realOrderRecycleAmount: 0.00,
+      realRecyclerAmount: 0.00,
+      realRecyclerPlatformAmount: 0.00,
+      recyclerOvertimeCharges: 0.00,
+      recyclerCouponAmount: 0.00
+    },
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
@@ -24,6 +42,121 @@ Page({
       orderStatus: options.orderStatus
     })
   },
+
+  // 回收员选择服务抵扣劵
+  onCouponChange(e) {
+    const index = e.detail.value;
+    const selectedCoupon = this.data.couponListWithNone[index];
+
+    // 初始化数据
+    let serviceFee = this.data.initServiceFee; // 使用初始服务费
+    let realRecyclerAmount = this.data.actualOrderInfo.realRecyclerAmount; // 回收总金额
+
+    if (selectedCoupon.id === 0) {
+      // 不使用优惠券，恢复原始总金额和服务费
+      const totalAmount = (serviceFee + realRecyclerAmount + (this.data.actualOrderInfo.recyclerOvertimeCharges ? this.data.actualOrderInfo.recyclerOvertimeCharges : 0)).toFixed(2); // 保留两位小数
+
+      this.setData({
+        generateBillForm: {
+          recyclerCouponAmount: 0
+        },
+        selectedCoupon: null,
+        actualOrderInfo: {
+          ...this.data.actualOrderInfo,
+          totalAmount: totalAmount,
+          realRecyclerPlatformAmount: serviceFee.toFixed(2) // 保留两位小数
+        }
+      });
+    } else {
+      // 使用打折抵扣券或免单抵扣券
+      if (selectedCoupon.couponType == 1) {
+        // 计算折扣后的服务费
+        serviceFee = (this.data.initServiceFee * (selectedCoupon.discount / 10)).toFixed(2);
+        this.setData({
+          generateBillForm: {
+            recyclerCouponAmount: (this.data.initServiceFee - serviceFee).toFixed(2)
+          }
+        })
+      } else {
+        this.setData({
+          generateBillForm: {
+            recyclerCouponAmount: serviceFee
+          }
+        })
+        serviceFee = (0).toFixed(2); // 免单服务券，服务费为0
+      }
+      // 计算最终总金额
+      const finalAmount = (parseFloat(realRecyclerAmount) + parseFloat(serviceFee) + parseFloat(this.data.actualOrderInfo.recyclerOvertimeCharges ? this.data.actualOrderInfo.recyclerOvertimeCharges : 0)).toFixed(2);
+
+      this.setData({
+        selectedCoupon: selectedCoupon,
+        actualOrderInfo: {
+          ...this.data.actualOrderInfo,
+          totalAmount: finalAmount,
+          realRecyclerPlatformAmount: serviceFee
+        }
+      });
+    }
+  },
+  // 切换Dialog框状态
+  switchDialogStatus() {
+    this.setData({
+      dialogShow: !this.data.dialogShow
+    })
+    if (!this.data.dialogShow) {
+      this.setData({
+        selectedCoupon: null
+      })
+    }
+  },
+  // 确认账单信息
+  async confirmBillInfo() {
+    const res = await reqCalculateActual(this.data.orderInfo.id);
+    const couponListWithNone = [{
+      id: 0,
+      name: "不选择优惠券",
+      discount: 1
+    }].concat(res.data.recyclerAvailableCouponList);
+    this.setData({
+      actualOrderInfo: res.data,
+      couponListWithNone,
+      initServiceFee: res.data.realRecyclerPlatformAmount,
+    })
+    this.switchDialogStatus();
+  },
+
+  // 确认回收 
+  async confirmRecycling() {
+    const {
+      realRecyclerAmount,
+      realRecyclerPlatformAmount,
+      recyclerOvertimeCharges,
+      totalAmount
+    } = this.data.actualOrderInfo;
+    this.setData({
+      generateBillForm: {
+        ...this.data.generateBillForm,
+        orderId: this.data.orderInfo.id,
+        couponId: this.data.selectedCoupon ? this.data.selectedCoupon.id : null,
+        realOrderRecycleAmount: realRecyclerAmount,
+        realRecyclerAmount: totalAmount,
+        realRecyclerPlatformAmount: realRecyclerPlatformAmount,
+        recyclerOvertimeCharges: recyclerOvertimeCharges
+      }
+    })
+    const res = await reqGenerateBill(this.data.generateBillForm);
+    if (res.data) {
+      toast({
+        title: '已确认',
+        icon: 'success',
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.goBack()
+      }, 1000);
+    }
+  },
+  // 跳转更新订单信息页面
   updateOrder() {
     wx.navigateTo({
       url: `/pages/recycler/order-update/order-update?orderInfo=${encodeURIComponent(JSON.stringify(this.data.orderInfo))}`

@@ -21,6 +21,14 @@ import java.util.List;
 public interface OrderInfoFeignClient {
 
     /**
+     * 计算实际的订单信息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/orderInfo/calculate/actual/{orderId}")
+    Result<CalculateActualOrderVo> calculateActual(@PathVariable("orderId") Long orderId);
+
+    /**
      * 更新订单信息
      * @param updateOrderFrom
      * @return

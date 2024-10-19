@@ -1,6 +1,7 @@
-package com.ilhaha.yueyishou.reles.config;
+package com.ilhaha.yueyishou.rules.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -16,8 +17,8 @@ public class DroolsConfig {
     // 制定规则文件的路径
     private static final String[] RULES_CUSTOMER_RULES_DRL = {
             "rules/CustomerServiceFeeRule.drl",
-            "rules/RecyclerServiceFeeRule.drl"
-            // 添加其他规则文件路径
+            "rules/RecyclerServiceFeeRule.drl",
+            "rules/RecyclerOvertimeFeeRule.drl"
     };
 
     @Bean

@@ -1,16 +1,29 @@
 package com.ilhaha.yueyishou.coupon.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ilhaha.yueyishou.coupon.mapper.RecyclerCouponMapper;
 import com.ilhaha.yueyishou.coupon.service.ICouponInfoService;
 import com.ilhaha.yueyishou.coupon.service.IRecyclerCouponService;
+import com.ilhaha.yueyishou.model.constant.CouponConstant;
+import com.ilhaha.yueyishou.model.entity.coupon.CouponInfo;
+import com.ilhaha.yueyishou.model.entity.coupon.CustomerCoupon;
 import com.ilhaha.yueyishou.model.entity.coupon.RecyclerCoupon;
+import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
+import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,5 +53,56 @@ public class RecyclerCouponServiceImpl extends ServiceImpl<RecyclerCouponMapper,
             }).collect(Collectors.toList()));
         }
         return this.saveBatch(inertRecyclerCouponList);
+    }
+
+    /**
+     * 获取回收员在订单中可使用的服务抵扣劵
+     * @param availableCouponForm
+     * @return
+     */
+    @Override
+    public List<AvailableCouponVo> getAvailableCustomerServiceCoupons(AvailableCouponForm availableCouponForm) {
+        List<AvailableCouponVo> result = new ArrayList<>();
+        // 查出回收员所有未使用的服务抵扣券
+        LambdaQueryWrapper<RecyclerCoupon> recyclerCouponLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        recyclerCouponLambdaQueryWrapper.eq(RecyclerCoupon::getStatus, CouponConstant.UNUSED_STATUS)
+                .eq(RecyclerCoupon::getRecyclerId, availableCouponForm.getRecyclerId())
+                .and(wrapper ->
+                        wrapper.isNull(RecyclerCoupon::getExpireTime)
+                                .or()
+                                .gt(RecyclerCoupon::getExpireTime, LocalDateTime.now()));
+        List<RecyclerCoupon> recyclerCouponListDB = this.list(recyclerCouponLambdaQueryWrapper);
+
+        if (!ObjectUtils.isEmpty(recyclerCouponListDB)) {
+            List<Long> couponIds = recyclerCouponListDB.stream()
+                    .map(RecyclerCoupon::getCouponId)
+                    .collect(Collectors.toList());
+
+            // 查出服务抵扣券信息
+            List<CouponInfo> couponInfoListDB = couponInfoService.getListByIds(couponIds);
+
+            // 筛选服务抵扣劵
+            result = couponInfoService.getAvailableCoupon(couponInfoListDB, availableCouponForm.getRealRecyclerAmount());
+        }
+        return result;
+    }
+
+    /**
+     * 回收员使用服务抵扣劵
+     * @param useCouponFrom
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean useCoupon(UseCouponFrom useCouponFrom) {
+        LambdaUpdateWrapper<RecyclerCoupon> recyclerCouponLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerCouponLambdaUpdateWrapper.eq(RecyclerCoupon::getRecyclerId,useCouponFrom.getRecyclerId())
+                .eq(RecyclerCoupon::getCouponId,useCouponFrom.getCouponId())
+                .set(RecyclerCoupon::getUsedTime,useCouponFrom.getUsedTime())
+                .set(RecyclerCoupon::getOrderId,useCouponFrom.getOrderId())
+                .set(RecyclerCoupon::getStatus,useCouponFrom.getStatus());
+        // 修改服务抵扣劵的使用数量
+        couponInfoService.updateUseCount(useCouponFrom.getCouponId());
+        return this.update(recyclerCouponLambdaUpdateWrapper);
     }
 }

@@ -9,7 +9,7 @@ import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
 import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
-import com.ilhaha.yueyishou.reles.client.ServiceFeeRuleFeignClient;
+import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

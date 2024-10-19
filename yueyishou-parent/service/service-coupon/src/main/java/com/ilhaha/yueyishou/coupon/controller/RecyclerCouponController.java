@@ -8,7 +8,10 @@ import com.ilhaha.yueyishou.model.entity.coupon.RecyclerCoupon;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
+import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,27 @@ import java.util.List;
 public class RecyclerCouponController  {
 	@Resource
 	private IRecyclerCouponService recyclerCouponService;
+
+
+	/**
+	 * 回收员使用服务抵扣劵
+	 * @param useCouponFrom
+	 * @return
+	 */
+	@PostMapping("/use")
+	public Result<Boolean> useCoupon(@RequestBody UseCouponFrom useCouponFrom){
+		return Result.ok(recyclerCouponService.useCoupon(useCouponFrom));
+	}
+
+	/**
+	 * 获取回收员在订单中可使用的服务抵扣劵
+	 * @param availableCouponForm
+	 * @return
+	 */
+	@PostMapping("/available")
+	public Result<List<AvailableCouponVo>> getAvailableCustomerServiceCoupons(@RequestBody AvailableCouponForm availableCouponForm) {
+		return Result.ok(recyclerCouponService.getAvailableCustomerServiceCoupons(availableCouponForm));
+	}
 
 	/**
 	 *  免费发放服务抵扣劵

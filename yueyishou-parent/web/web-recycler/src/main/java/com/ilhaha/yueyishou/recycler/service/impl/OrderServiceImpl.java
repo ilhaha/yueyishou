@@ -5,13 +5,10 @@ import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
-import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
-import com.ilhaha.yueyishou.model.vo.order.MatchingOrderVo;
-import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
-import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
+import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
-import com.ilhaha.yueyishou.reles.client.ServiceFeeRuleFeignClient;
+import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -110,5 +107,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<Boolean> updateOrder(UpdateOrderFrom updateOrderFrom) {
         return orderInfoFeignClient.updateOrder(updateOrderFrom);
+    }
+
+    /**
+     * 计算实际的订单信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Result<CalculateActualOrderVo> calculateActual(Long orderId) {
+        return orderInfoFeignClient.calculateActual(orderId);
     }
 }

@@ -26,6 +26,16 @@ public class OrderInfoController {
     private IOrderInfoService orderInfoService;
 
     /**
+     * 计算实际的订单信息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/calculate/actual/{orderId}")
+    public Result<CalculateActualOrderVo> calculateActual(@PathVariable("orderId") Long orderId){
+        return Result.ok(orderInfoService.calculateActual(orderId));
+    }
+
+    /**
      * 更新订单信息
      * @param updateOrderFrom
      * @return

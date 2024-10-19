@@ -21,4 +21,10 @@ public class OrderConstant {
      * 预约时间超时取消订单备注
      */
     public static final String TIMEOUT_CANCEL_REMARK = "预约时间超时未接单";
+
+    /**
+     * 回收员到达时间与预约时间相差多少分钟不算超时
+     * */
+    public static final Integer NOT_TIMED_OUT_MIN = 0;
+
 }

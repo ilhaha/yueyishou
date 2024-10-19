@@ -26,7 +26,7 @@ public class RecyclerCoupon extends BaseEntity {
 	/**使用时间*/
     private Date usedTime;
 	/**使用的订单id*/
-    private Integer orderId;
+    private Long orderId;
 	/**过期时间*/
     private Date expireTime;
 }

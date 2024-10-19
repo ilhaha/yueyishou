@@ -58,3 +58,10 @@ export const reqCalculateOrderFee = (params) => {
 export const reqUpdateOrder = (params) => {
   return http.post(urlPrefix + `/order/update`, params)
 }
+
+/**
+ * 预估订单费用
+ */
+export const reqCalculateActual = (orderId) => {
+  return http.get(urlPrefix + `/order/calculate/actual/${orderId}`)
+}

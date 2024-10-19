@@ -16,22 +16,37 @@ import java.util.Date;
 public class OrderBill extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-	/**订单ID*/
+    /** 订单ID */
     private Long orderId;
-	/**回收员实际支付订单金额*/
+
+    /** 订单实际回收总金额 */
+    private BigDecimal realOrderRecycleAmount;
+
+    /** 回收员实际支付订单金额 */
     private BigDecimal realRecyclerAmount;
-	/**回收员实际支付平台订单金额*/
+
+    /** 回收员实际支付平台订单金额 */
     private BigDecimal realRecyclerPlatformAmount;
-	/**顾客实际支付平台订单金额*/
-    private BigDecimal realCustomerPlatformAmount;
-	/**回收员优惠卷金额*/
-    private BigDecimal recyclerCoupon;
-	/**顾客优惠卷金额*/
-    private BigDecimal customerCoupon;
-	/**回收员开始服务超时费用*/
+
+    /** 回收员开始服务超时费用 */
     private BigDecimal recyclerOvertimeCharges;
-	/**支付订单号*/
+
+    /** 顾客实际回收订单金额 */
+    private BigDecimal realCustomerRecycleAmount;
+
+    /** 顾客实际支付平台订单金额 */
+    private BigDecimal realCustomerPlatformAmount;
+
+    /** 回收员服务抵扣券抵扣金额 */
+    private BigDecimal recyclerCouponAmount;
+
+    /** 顾客服务抵扣券抵扣金额 */
+    private BigDecimal customerCouponAmount;
+
+    /** 支付订单号 */
     private String transactionId;
-	/**回收员付款时间*/
+
+    /** 回收员付款时间 */
     private Date payTime;
+
 }
