@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
+import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
 import jakarta.annotation.Resource;
@@ -23,6 +24,17 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /**
+     * 回收员校验回收码
+     * @param validateRecycleCodeForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/validate/code")
+    public Result<Boolean> validateRecycleCode(@RequestBody ValidateRecycleCodeForm validateRecycleCodeForm){
+        return orderService.validateRecycleCode(validateRecycleCodeForm);
+    }
 
     /**
      * 计算实际的订单信息

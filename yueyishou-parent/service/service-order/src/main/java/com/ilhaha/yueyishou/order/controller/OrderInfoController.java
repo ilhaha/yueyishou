@@ -6,6 +6,7 @@ import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
+import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
@@ -24,6 +25,16 @@ import java.util.List;
 public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
+
+    /**
+     * 回收员校验回收码
+     * @param validateRecycleCodeForm
+     * @return
+     */
+    @PostMapping("/validate/code")
+    public Result<Boolean> validateRecycleCode(@RequestBody ValidateRecycleCodeForm validateRecycleCodeForm){
+        return Result.ok(orderInfoService.validateRecycleCode(validateRecycleCodeForm));
+    }
 
     /**
      * 计算实际的订单信息

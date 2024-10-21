@@ -4,6 +4,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
+import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 
 import java.util.List;
@@ -75,4 +76,12 @@ public interface OrderService {
      * @return
      */
     Result<CalculateActualOrderVo> calculateActual(Long orderId);
+
+    /**
+     * 回收员校验回收码
+     * @param validateRecycleCodeForm
+     * @return
+     */
+    Result<Boolean> validateRecycleCode(ValidateRecycleCodeForm validateRecycleCodeForm);
+
 }

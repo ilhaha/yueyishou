@@ -95,18 +95,9 @@ Page({
     // 发送请求获取订单列表
     const res = await reqOrderList(status);
 
-    // 格式化订单数据中的价格保留两位小数
-    const formattedOrderList = res.data.map(order => {
-      return {
-        ...order,
-        unitPrice: parseFloat(order.unitPrice).toFixed(2),
-        estimatedTotalAmount: parseFloat(order.estimatedTotalAmount).toFixed(2),
-        expectCustomerPlatformAmount: parseFloat(order.expectCustomerPlatformAmount).toFixed(2)
-      };
-    });
     // 设置订单数据
     this.setData({
-      orderList: formattedOrderList
+      orderList: res.data
     });
   }
 });

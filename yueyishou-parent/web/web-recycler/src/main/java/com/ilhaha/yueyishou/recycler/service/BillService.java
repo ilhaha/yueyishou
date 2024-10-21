@@ -2,6 +2,7 @@ package com.ilhaha.yueyishou.recycler.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.GenerateBillForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateBillForm;
 
 /**
  * @Author ilhaha

@@ -3,7 +3,8 @@ import {
   reqGrabOrder,
   reqRepostOrder,
   reqRecyclerArrive,
-  reqCalculateActual
+  reqCalculateActual,
+  reqValidateRecycleCode
 } from '../../../api/recycler/order'
 import {
   toast
@@ -33,14 +34,68 @@ Page({
       realRecyclerAmount: 0.00,
       realRecyclerPlatformAmount: 0.00,
       recyclerOvertimeCharges: 0.00,
-      recyclerCouponAmount: 0.00
+      recyclerCouponAmount: 0.00,
+      realCustomerPlatformAmount: 0.00,
     },
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
+    console.log(options);
     this.setData({
       orderStatus: options.orderStatus
     })
+  },
+
+  // 校验回收码
+  async validateRecycleCode() {
+    const {
+      inputRecycleCode
+    } = this.data;
+
+    // 正则表达式检查是否是6位数字
+    const isValidCode = /^[0-9]{6}$/.test(inputRecycleCode);
+
+    if (!isValidCode) {
+      wx.showToast({
+        title: '请输入6位数字的回收码',
+        icon: 'none'
+      });
+      return; // 不符合格式直接返回
+    }
+
+    inputRecycleCode
+    const res = await reqValidateRecycleCode({
+      orderId: this.data.orderInfo.id,
+      recycleCode: inputRecycleCode
+    })
+    // 校验回收码是否正确
+    if (res.data) {
+      wx.showToast({
+        title: '回收码校验成功！',
+        icon: 'success'
+      });
+      setTimeout(() => {
+        this.goBack()
+      }, 1000);
+    } else {
+      wx.showToast({
+        title: '回收码错误',
+        icon: 'error'
+      });
+    }
+  },
+
+  // 输入回收码
+  onRecycleCodeInput(e) {
+    this.setData({
+      inputRecycleCode: e.detail.value
+    });
+  },
+
+  // 阻止输入回收码时事件冒泡
+  stopTapPropagation(e) {
+    // 阻止 tap 事件冒泡到父元素
+    e.stopPropagation();
   },
 
   // 回收员选择服务抵扣劵
@@ -131,7 +186,8 @@ Page({
       realRecyclerAmount,
       realRecyclerPlatformAmount,
       recyclerOvertimeCharges,
-      totalAmount
+      totalAmount,
+      realCustomerPlatformAmount
     } = this.data.actualOrderInfo;
     this.setData({
       generateBillForm: {
@@ -141,7 +197,8 @@ Page({
         realOrderRecycleAmount: realRecyclerAmount,
         realRecyclerAmount: totalAmount,
         realRecyclerPlatformAmount: realRecyclerPlatformAmount,
-        recyclerOvertimeCharges: recyclerOvertimeCharges
+        recyclerOvertimeCharges: recyclerOvertimeCharges,
+        realCustomerPlatformAmount: realCustomerPlatformAmount,
       }
     })
     const res = await reqGenerateBill(this.data.generateBillForm);

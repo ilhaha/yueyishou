@@ -17,6 +17,15 @@
   margin-top: 70rpx;
 }
 
+.custom-desc {
+  font-size: 12px;
+  /* 字体大小 */
+  color: #666;
+  /* 字体颜色 */
+  line-height: 1.5;
+  /* 行高 */
+}
+
 .container-padding-bottom {
   padding-bottom: 100rpx;
 }
@@ -117,4 +126,62 @@
     width: 65px;
     margin-left: 10rpx;
   }
+}
+
+
+.dialog-content {
+  padding: 20px;
+  background-color: #f9f9f9;
+  /* 背景色 */
+  border-radius: 8px;
+  /* 圆角 */
+}
+
+.dialog-item {
+  display: flex;
+  /* 使用flex布局 */
+  justify-content: space-between;
+  /* 分隔内容 */
+  margin-top: 10px;
+  /* 底部间距 */
+}
+
+.dialog-item text {
+  font-size: 16px;
+  /* 字体大小 */
+  color: #333;
+  /* 字体颜色 */
+}
+
+.dialog-value {
+  font-weight: bold;
+  /* 值加粗 */
+  color: #007AFF;
+  /* 值颜色 */
+}
+
+.dialog-tip {
+  margin-top: 16px;
+  padding: 10px;
+  border-left: 4px solid #ffcc00;
+  /* 提示信息左侧的颜色 */
+  font-size: 14px;
+  color: #666;
+}
+
+.dialog-content {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.recycle-code {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #1989fa;
+}
+
+.code-tip {
+  font-size: 16px;
+  color: #666;
 }

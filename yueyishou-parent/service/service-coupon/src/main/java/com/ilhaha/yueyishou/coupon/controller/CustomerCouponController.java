@@ -10,6 +10,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import com.ilhaha.yueyishou.model.vo.order.CalculateActualOrderVo;
 import jakarta.annotation.Resource;
@@ -26,6 +27,16 @@ import java.util.List;
 public class CustomerCouponController  {
 	@Resource
 	private ICustomerCouponService customerCouponService;
+
+	/**
+	 * 顾客使用服务抵扣劵
+	 * @param useCouponFrom
+	 * @return
+	 */
+	@PostMapping("/use")
+	public Result<Boolean> useCoupon(@RequestBody UseCouponFrom useCouponFrom){
+		return Result.ok(customerCouponService.useCoupon(useCouponFrom));
+	}
 
 	/**
 	 * 获取顾客在订单中可使用的服务抵扣劵

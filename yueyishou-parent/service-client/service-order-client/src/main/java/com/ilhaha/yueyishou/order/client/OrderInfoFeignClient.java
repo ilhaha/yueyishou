@@ -6,6 +6,7 @@ import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
+import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,14 @@ import java.util.List;
  */
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
+
+    /**
+     * 回收员校验回收码
+     * @param validateRecycleCodeForm
+     * @return
+     */
+    @PostMapping("/orderInfo/validate/code")
+    Result<Boolean> validateRecycleCode(@RequestBody ValidateRecycleCodeForm validateRecycleCodeForm);
 
     /**
      * 计算实际的订单信息

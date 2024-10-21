@@ -40,4 +40,16 @@ public class RecyclerOrderVo {
     private BigDecimal apart;
     /**回收员到达超时时间*/
     private Integer arriveTimoutMin;
+
+    /** 订单实际回收总金额 */
+    private BigDecimal realOrderRecycleAmount;
+
+    /** 回收员实际支付平台订单金额 */
+    private BigDecimal realRecyclerPlatformAmount;
+
+    /** 回收员开始服务超时费用 */
+    private BigDecimal recyclerOvertimeCharges;
+
+    /** 回收员实际支付订单金额 */
+    private BigDecimal realRecyclerAmount;
 }

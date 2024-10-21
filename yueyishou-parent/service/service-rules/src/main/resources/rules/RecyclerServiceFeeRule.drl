@@ -8,46 +8,59 @@ import java.math.RoundingMode;
 /**
  * 根据订单金额估算回收员本次回收需要支出的费用
  *
- * 订单总金额 = 回收品类单价 * 用户选择的总量最大值
+ * 订单总金额 = 回收品类单价 * 用户选择的总量
  *
- * 回收员缴纳平台费用1 = 100 > 订单总金额  (订单总金额 * 0%)
- * 回收员缴纳平台费用2 = 100 <= 订单总金额 < 1000 (订单总金额 * 1%)
- * 回收员缴纳平台费用3 = 1000 <= 订单总金额 < 2000 (订单总金额 * 3%)
- * 回收员缴纳平台费用4 = 3000 <= 订单总金额 < 4000 (订单总金额 * 5%)
- * 回收员缴纳平台费用5 = 4000 <= 订单总金额 < 5000 (订单总金额 * 7%)
- * 回收员缴纳平台费用6 = 订单总金额 >= 5000 (订单总金额 * 10%)
+ * 回收员缴纳平台费用规则：
+ * - 总金额 < 100：0%
+ * - 100 <= 总金额 < 1000：1%
+ * - 1000 <= 总金额 < 2000：3%
+ * - 2000 <= 总金额 < 3000：4%（新增条件）
+ * - 3000 <= 总金额 < 4000：5%
+ * - 4000 <= 总金额 < 5000：7%
+ * - 总金额 >= 5000：10%
  */
 
 rule "Calculate Recycler Fees"
 when
+    // 从请求表单中提取回收单价和总重量
     $request : ServiceFeeRuleRequestForm($unitPrice : unitPrice, $recycleWeigh : recycleWeigh)
+    // 创建响应对象
     $response : ServiceFeeRuleResponseVo()
 then
-    // 计算订单总金额，并四舍五入保留两位小数
+    // 1. 计算订单总金额，并四舍五入保留两位小数
     BigDecimal totalAmount = $unitPrice.multiply($recycleWeigh)
                                        .setScale(2, RoundingMode.HALF_UP);
 
-    // 初始化回收员平台费用
+    // 2. 初始化回收员平台费用为 0
     BigDecimal recyclerFee = BigDecimal.ZERO;
 
-    // 根据订单总金额计算回收员的缴纳费用
+    // 3. 根据订单总金额区间计算回收员的缴纳费用
     if (totalAmount.compareTo(BigDecimal.valueOf(100)) < 0) {
-        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.00)); // 0%
+        // 总金额 < 100：0%
+        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.00));
     } else if (totalAmount.compareTo(BigDecimal.valueOf(100)) >= 0 && totalAmount.compareTo(BigDecimal.valueOf(1000)) < 0) {
-        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.01)); // 1%
+        // 100 <= 总金额 < 1000：1%
+        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.01));
     } else if (totalAmount.compareTo(BigDecimal.valueOf(1000)) >= 0 && totalAmount.compareTo(BigDecimal.valueOf(2000)) < 0) {
-        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.03)); // 3%
+        // 1000 <= 总金额 < 2000：3%
+        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.03));
+    } else if (totalAmount.compareTo(BigDecimal.valueOf(2000)) >= 0 && totalAmount.compareTo(BigDecimal.valueOf(3000)) < 0) {
+        // 2000 <= 总金额 < 3000：4%（新增）
+        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.04));
     } else if (totalAmount.compareTo(BigDecimal.valueOf(3000)) >= 0 && totalAmount.compareTo(BigDecimal.valueOf(4000)) < 0) {
-        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.05)); // 5%
+        // 3000 <= 总金额 < 4000：5%
+        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.05));
     } else if (totalAmount.compareTo(BigDecimal.valueOf(4000)) >= 0 && totalAmount.compareTo(BigDecimal.valueOf(5000)) < 0) {
-        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.07)); // 7%
+        // 4000 <= 总金额 < 5000：7%
+        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.07));
     } else if (totalAmount.compareTo(BigDecimal.valueOf(5000)) >= 0) {
-        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.10)); // 10%
+        // 总金额 >= 5000：10%
+        recyclerFee = totalAmount.multiply(BigDecimal.valueOf(0.10));
     }
 
-    // 四舍五入保留两位小数
+    // 4. 四舍五入回收员平台费用，保留两位小数
     recyclerFee = recyclerFee.setScale(2, RoundingMode.HALF_UP);
 
-    // 设置回收员预支付平台订单金额
+    // 5. 设置回收员预支付平台订单金额
     $response.setExpectRecyclerPlatformAmount(recyclerFee);
 end

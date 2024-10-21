@@ -37,4 +37,7 @@ public class GenerateBillForm {
 
     /** 回收员服务抵扣券抵扣金额 */
     private BigDecimal recyclerCouponAmount;
+
+    /**顾客实际支付平台订单金额*/
+    private BigDecimal realCustomerPlatformAmount;
 }

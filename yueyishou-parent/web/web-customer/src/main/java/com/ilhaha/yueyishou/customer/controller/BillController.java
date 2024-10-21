@@ -1,10 +1,9 @@
-package com.ilhaha.yueyishou.recycler.controller;
+package com.ilhaha.yueyishou.customer.controller;
 
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.form.order.GenerateBillForm;
+import com.ilhaha.yueyishou.customer.service.BillService;
 import com.ilhaha.yueyishou.model.form.order.UpdateBillForm;
-import com.ilhaha.yueyishou.recycler.service.BillService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Author ilhaha
- * @Create 2024/10/19 12:22
+ * @Create 2024/10/19 17:50
  * @Version 1.0
  */
 @RestController
@@ -23,16 +22,14 @@ public class BillController {
     @Resource
     private BillService billService;
 
-
     /**
-     * 生成订单账单
-     * @param generateBillForm
+     * 修改账单信息
+     * @param updateBillForm
      * @return
      */
     @LoginVerification
-    @PostMapping("/generate")
-    public Result<Boolean> generateOrder(@RequestBody GenerateBillForm generateBillForm){
-        return billService.generateOrder(generateBillForm);
+    @PostMapping("/update")
+    public Result<String> updateBill(@RequestBody UpdateBillForm updateBillForm){
+        return billService.updateBill(updateBillForm);
     }
-
 }

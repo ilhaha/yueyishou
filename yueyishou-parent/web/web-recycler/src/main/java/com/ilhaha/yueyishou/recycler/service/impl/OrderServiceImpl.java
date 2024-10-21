@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
+import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
@@ -117,5 +118,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<CalculateActualOrderVo> calculateActual(Long orderId) {
         return orderInfoFeignClient.calculateActual(orderId);
+    }
+
+    /**
+     * 回收员校验回收码
+     * @param validateRecycleCodeForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> validateRecycleCode(ValidateRecycleCodeForm validateRecycleCodeForm) {
+        return orderInfoFeignClient.validateRecycleCode(validateRecycleCodeForm);
     }
 }

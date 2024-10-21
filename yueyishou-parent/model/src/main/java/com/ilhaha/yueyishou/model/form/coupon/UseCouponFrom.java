@@ -16,6 +16,8 @@ public class UseCouponFrom {
 
     /**回收员ID*/
     private Long recyclerId;
+    /**顾客ID*/
+    private Long customerId;
     /**服务抵扣劵Id*/
     private Long couponId;
     /**优化券状态（1：未使用 2：已使用）*/

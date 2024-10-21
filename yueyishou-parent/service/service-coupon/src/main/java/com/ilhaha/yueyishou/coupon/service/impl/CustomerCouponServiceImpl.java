@@ -1,6 +1,7 @@
 package com.ilhaha.yueyishou.coupon.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ilhaha.yueyishou.coupon.mapper.CustomerCouponMapper;
 import com.ilhaha.yueyishou.coupon.service.ICouponInfoService;
@@ -12,6 +13,7 @@ import com.ilhaha.yueyishou.model.entity.coupon.CustomerCoupon;
 import com.ilhaha.yueyishou.model.entity.coupon.RecyclerCoupon;
 import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
@@ -89,5 +91,24 @@ public class CustomerCouponServiceImpl extends ServiceImpl<CustomerCouponMapper,
             System.out.println("availableCouponVo:" + availableCouponVo);
         }
         return result;
+    }
+
+    /**
+     * 顾客使用服务抵扣劵
+     * @param useCouponFrom
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean useCoupon(UseCouponFrom useCouponFrom) {
+        LambdaUpdateWrapper<CustomerCoupon> customerCouponLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        customerCouponLambdaUpdateWrapper.eq(CustomerCoupon::getCustomerId,useCouponFrom.getCustomerId())
+                .eq(CustomerCoupon::getCouponId,useCouponFrom.getCouponId())
+                .set(CustomerCoupon::getUsedTime,useCouponFrom.getUsedTime())
+                .set(CustomerCoupon::getOrderId,useCouponFrom.getOrderId())
+                .set(CustomerCoupon::getStatus,useCouponFrom.getStatus());
+        // 修改服务抵扣劵的使用数量
+        couponInfoService.updateUseCount(useCouponFrom.getCouponId());
+        return this.update(customerCouponLambdaUpdateWrapper);
     }
 }

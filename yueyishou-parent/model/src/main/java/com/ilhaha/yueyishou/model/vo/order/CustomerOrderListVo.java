@@ -35,4 +35,14 @@ public class CustomerOrderListVo {
     private Integer status;
     /**顾客预支付平台订单金额*/
     private BigDecimal expectCustomerPlatformAmount;
+    /** 订单实际回收总金额 */
+    private BigDecimal realOrderRecycleAmount;
+    /** 顾客实际支付平台订单金额 */
+    private BigDecimal realCustomerPlatformAmount;
+    /** 回收员开始服务超时费用 */
+    private BigDecimal recyclerOvertimeCharges;
+    /**回收员超时多少分钟*/
+    private Integer arriveTimoutMin;
+    /** 顾客实际回收订单金额 */
+    private BigDecimal realCustomerRecycleAmount;
 }

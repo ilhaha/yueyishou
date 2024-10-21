@@ -140,3 +140,30 @@
   line-height: 1.5;
   /* 行高 */
 }
+
+
+.price-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  font-size: 14px;
+}
+
+.price-amount {
+  font-weight: bold;
+  color: #333;
+  margin-right: 8px;
+}
+
+.price-service-fee {
+  color: #ff4d4f;
+  font-weight: bold;
+  /* 红色，表示扣费 */
+  margin-right: 8px;
+}
+
+.price-overtime-fee {
+  color: #52c41a;
+  /* 绿色，表示超时赔偿 */
+  font-weight: bold;
+}

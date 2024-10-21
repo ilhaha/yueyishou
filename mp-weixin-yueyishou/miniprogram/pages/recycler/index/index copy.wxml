@@ -11,11 +11,11 @@
     </van-empty>
   </view>
 
-  <!-- 待抢单 -->
+  <!-- 待抢单订单 -->
   <view wx:elif="{{orderList.length > 0 && activeTab == 0}}">
     <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
-      <view class="card-container" data-orderid="{{order.id}}" data-orderstatus="{{order.status}}" bind:tap="showDetails">
-        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount + order.expectRecyclerPlatformAmount}}" origin-price="{{order.estimatedTotalAmount}}" tag="待抢单">
+      <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}}" tag="待抢单">
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}}前上门</view>
             <view wx:if="{{order.apart}}">距离 {{order.apart}} 公里</view>
@@ -27,47 +27,25 @@
       </view>
     </block>
   </view>
-
-  <!-- 待服务 -->
-  <view wx:elif="{{orderListByStatus.length > 0 && activeTab == 1}}">
+  <!-- 待服务、待确认、待顾客确认订单 -->
+  <view wx:elif="{{orderListByStatus.length > 0 && activeTab > 0}}">
     <block wx:for="{{orderListByStatus}}" wx:key="orderNo" wx:for-item="order">
       <view class="card-container" data-orderid="{{order.id}}" data-orderstatus="{{order.status}}" bind:tap="showDetails">
-        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount + order.expectRecyclerPlatformAmount}}" origin-price="{{order.estimatedTotalAmount}}" tag="待服务">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount}}" tag="{{order.status == 2 ? '待服务' : (order.status == 3 ? '待确认' : '待顾客确认')}}" wx:if="{{!order.realOrderRecycleAmount && !order.realRecyclerPlatformAmount}}">
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}}前上门</view>
             <view wx:if="{{order.arriveTime}}">{{order.arriveTime}}到达</view>
-            <view>距离 {{order.apart}} 公里</view>
-          </view>
-        </van-card>
-      </view>
-    </block>
-  </view>
-
-  <!-- 待确认 -->
-  <view wx:elif="{{orderListByStatus.length > 0 && activeTab == 2}}">
-    <block wx:for="{{orderListByStatus}}" wx:key="orderNo" wx:for-item="order">
-      <view class="card-container" data-orderid="{{order.id}}" data-orderstatus="{{order.status}}" bind:tap="showDetails">
-        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{(order.estimatedTotalAmount + order.expectRecyclerPlatformAmount) + (order.recyclerOvertimeCharges || 0)}}" origin-price="{{order.estimatedTotalAmount}}" tag="待服务">
-          <view slot="desc" class="custom-desc">
-            <view>{{order.appointmentTime}}前上门</view>
-            <view wx:if="{{order.arriveTime}}">{{order.arriveTime}}到达</view>
-            <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
+            <view wx:if="{{order.apart}}">距离 {{order.apart}} 公里</view>
+            <view wx:if="{{order.arriveTimoutMin && order.arriveTimoutMin != 0}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
             <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
           </view>
         </van-card>
-      </view>
-    </block>
-  </view>
-
-  <!-- 待顾客确认 -->
-  <view wx:elif="{{orderListByStatus.length > 0 && activeTab == 3}}">
-    <block wx:for="{{orderListByStatus}}" wx:key="orderNo" wx:for-item="order">
-      <view class="card-container" data-orderid="{{order.id}}" data-orderstatus="{{order.status}}" bind:tap="showDetails">
-        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.realRecyclerAmount || (order.realOrderRecycleAmount + order.realRecyclerPlatformAmount) + (order.recyclerOvertimeCharges || 0)}}" origin-price="{{order.estimatedTotalAmount}}" tag="待顾客确认">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.realOrderRecycleAmount}}" tag="{{order.status == 2 ? '待服务' : (order.status == 3 ? '待确认' : '待顾客确认')}}" wx:else>
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}}前上门</view>
             <view wx:if="{{order.arriveTime}}">{{order.arriveTime}}到达</view>
-            <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
+            <view wx:if="{{order.apart}}">距离 {{order.apart}} 公里</view>
+            <view wx:if="{{order.arriveTimoutMin && order.arriveTimoutMin != 0}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
             <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
           </view>
         </van-card>

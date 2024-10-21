@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderBill;
 import com.ilhaha.yueyishou.model.form.order.GenerateBillForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateBillForm;
 import com.ilhaha.yueyishou.order.service.IOrderBillService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -23,6 +24,17 @@ import java.util.Arrays;
 public class OrderBillController {
 	@Resource
 	private IOrderBillService orderBillService;
+
+
+	/**
+	 * 修改账单信息
+	 * @param updateBillForm
+	 * @return
+	 */
+	@PostMapping("/update")
+	public Result<String> updateBill(@RequestBody UpdateBillForm updateBillForm){
+		return Result.ok(orderBillService.updateBill(updateBillForm));
+	}
 
 	/**
 	 * 生成订单账单

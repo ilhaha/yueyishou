@@ -2,6 +2,7 @@ package com.ilhaha.yueyishou.order.client;
 
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.order.GenerateBillForm;
+import com.ilhaha.yueyishou.model.form.order.UpdateBillForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,4 +23,12 @@ public interface OrderBillFeignClient {
      */
     @PostMapping("/orderBill/generate")
     Result<Boolean> generateOrder(@RequestBody GenerateBillForm generateBillForm);
+
+    /**
+     * 修改账单信息
+     * @param updateBillForm
+     * @return
+     */
+    @PostMapping("/orderBill/update")
+    Result<String> updateBill(@RequestBody UpdateBillForm updateBillForm);
 }

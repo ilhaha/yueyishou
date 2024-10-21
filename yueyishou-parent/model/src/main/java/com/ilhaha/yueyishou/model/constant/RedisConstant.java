@@ -22,4 +22,7 @@ public class RedisConstant {
 
     //查询所有待接单的订单key
     public static final String SELECT_WAITING_ORDER = "waiting:order:*";
+
+    // 回收码
+    public static final String RECYCLE_CODE = "recycle:code:";
 }

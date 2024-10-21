@@ -53,15 +53,22 @@ export const reqCalculateOrderFee = (params) => {
 }
 
 /**
- * 预估订单费用
+ * 更新订单信息
  */
 export const reqUpdateOrder = (params) => {
   return http.post(urlPrefix + `/order/update`, params)
 }
 
 /**
- * 预估订单费用
+ * 计算订单实际费用
  */
 export const reqCalculateActual = (orderId) => {
   return http.get(urlPrefix + `/order/calculate/actual/${orderId}`)
+}
+
+/**
+ * 校验回收码
+ */
+export const reqValidateRecycleCode = (data) => {
+  return http.post(urlPrefix + `/order/validate/code`, data)
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.ilhaha.yueyishou.model.entity.coupon.CustomerCoupon;
 import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 
 import java.util.List;
@@ -24,4 +25,10 @@ public interface ICustomerCouponService extends IService<CustomerCoupon> {
      */
     List<AvailableCouponVo> getAvailableCustomerServiceCoupons(AvailableCouponForm availableCouponForm);
 
+    /**
+     * 顾客使用服务抵扣劵
+     * @param useCouponFrom
+     * @return
+     */
+    Boolean useCoupon(UseCouponFrom useCouponFrom);
 }

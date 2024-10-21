@@ -95,7 +95,7 @@ Page({
   // 查看订单详情
   showDetails(event) {
     const orderId = event.currentTarget.dataset.orderid;
-    const orderstatus = event.currentTarget.dataset.orderstatus
+    const orderstatus = event.currentTarget.dataset.orderstatus;
     wx.navigateTo({
       url: `/pages/recycler/order-details/order-details?orderId=${orderId}&orderStatus=${orderstatus}`,
     })

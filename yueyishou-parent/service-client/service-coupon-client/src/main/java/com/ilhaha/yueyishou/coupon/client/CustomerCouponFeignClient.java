@@ -4,6 +4,7 @@ package com.ilhaha.yueyishou.coupon.client;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,14 @@ import java.util.List;
  */
 @FeignClient("service-coupon")
 public interface CustomerCouponFeignClient {
+
+    /**
+     * 顾客使用服务抵扣劵
+     * @param useCouponFrom
+     * @return
+     */
+    @PostMapping("/customerCoupon/use")
+    Result<Boolean> useCoupon(@RequestBody UseCouponFrom useCouponFrom);
 
     /**
      *  免费发放服务抵扣劵

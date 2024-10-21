@@ -1,5 +1,6 @@
 package com.ilhaha.yueyishou.model.vo.order;
 
+import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -72,4 +73,20 @@ public class OrderDetailsVo {
     private Long recyclerId;
     /**回收员超时多少分钟*/
     private Integer arriveTimoutMin;
+    /** 订单实际回收总金额 */
+    private BigDecimal realOrderRecycleAmount;
+    /** 顾客实际支付平台订单金额 */
+    private BigDecimal realCustomerPlatformAmount;
+    /** 回收员实际支付平台订单金额 */
+    private BigDecimal realRecyclerPlatformAmount;
+    /** 回收员开始服务超时费用 */
+    private BigDecimal recyclerOvertimeCharges;
+    /**顾客可使用的服务抵扣劵*/
+    private List<AvailableCouponVo> availableCouponVoList;
+    /**回收码*/
+    private String recycleCode;
+    /** 顾客实际回收订单金额 */
+    private BigDecimal realCustomerRecycleAmount;
+    /** 回收员实际支付订单金额 */
+    private BigDecimal realRecyclerAmount;
 }

@@ -7,6 +7,7 @@ import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
+import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 
 import java.util.List;
@@ -125,4 +126,12 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean updateOrderStatus(Long orderId, Integer status);
+
+
+    /**
+     * 回收员校验回收码
+     * @param validateRecycleCodeForm
+     * @return
+     */
+    Boolean validateRecycleCode(ValidateRecycleCodeForm validateRecycleCodeForm);
 }
