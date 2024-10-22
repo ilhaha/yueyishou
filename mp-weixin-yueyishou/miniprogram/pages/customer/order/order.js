@@ -39,6 +39,13 @@ Page({
     isCancelOrderShow: false,
     needCancelOrderId: null
   },
+  // 提醒付款
+  tipPay() {
+    toast({
+      title: '已提醒',
+      icon: 'success'
+    })
+  },
   // 初始化数据
   onShow() {
     this.getOrderList(this.data.tabList[this.data.active].status);

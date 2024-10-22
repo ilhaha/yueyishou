@@ -40,9 +40,9 @@ Page({
         url: 'goToOrders'
       },
       {
-        text: '收支明细',
+        text: '我的钱包',
         icon: '/assets/images/common/income_expenditure.png',
-        url: 'goToPayment'
+        url: '/pages/recycler/my-wallet/my-wallet'
       },
       {
         text: '我的评价',

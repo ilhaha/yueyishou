@@ -35,6 +35,17 @@
               </view>
             </view>
           </van-card>
+
+          <!-- 待收款、待评价、已完成 -->
+          <van-card wx:if="{{order.status >= 5}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.realCustomerRecycleAmount}}" origin-price="{{order.realOrderRecycleAmount}}" tag="{{item.title}}">
+            <view slot="desc" class="custom-desc">
+              <!-- <view>{{order.appointmentTime}}前上门</view> -->
+            </view>
+            <view slot="footer" class="button-group">
+              <van-button size="mini" type="primary" class="action-button" catch:tap="tipPay" wx:if="{{order.status == 5}}">提醒付款</van-button>
+            </view>
+          </van-card>
+
         </view>
       </block>
     </block>

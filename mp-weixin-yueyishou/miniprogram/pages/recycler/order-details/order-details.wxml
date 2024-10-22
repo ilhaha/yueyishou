@@ -7,7 +7,7 @@
     <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
   </view>
   <view class="order-details">
-    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.estimatedTotalAmount}}" tag="待抢单">
+    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.estimatedTotalAmount + orderInfo.expectRecyclerPlatformAmount}}" origin-price="{{orderInfo.estimatedTotalAmount}}" tag="待抢单">
       <view slot="desc" class="custom-desc">
         <view>{{orderInfo.appointmentTime}}前上门</view>
         <view>距离 {{orderInfo.apart}} 公里</view>
@@ -58,20 +58,7 @@
       </view>
     </view>
   </view>
-  <van-submit-bar wx:if="{{orderInfo.status == 1}}" price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}">
-  </van-submit-bar>
-
-  <van-submit-bar wx:if="{{orderInfo.status == 3}}" price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="确认回收" bind:tap="confirmBillInfo" data-orderid="{{orderInfo.id}}">
-    <view slot="tip">
-      如发现订单信息与实际不符，可<text class="update-order" catch:tap="updateOrder">申请更改</text>
-    </view>
-  </van-submit-bar>
-
-  <van-submit-bar wx:if="{{orderInfo.status == 4}}" price="{{ (orderInfo.realOrderRecycleAmount + orderInfo.realRecyclerPlatformAmount + (orderInfo.recyclerOvertimeCharges ? orderInfo.recyclerOvertimeCharges : 0)) * 100 }}" button-text="校验回收码" bind:tap="validateRecycleCode" data-orderid="{{orderInfo.id}}">
-    <view slot="tip">
-      <text>请输入顾客提供的回收码进行验证：</text>
-      <input type="number" placeholder="输入6位回收码" maxlength="6" catch:tap="stopTapPropagation" bindinput="onRecycleCodeInput" />
-    </view>
+  <van-submit-bar  price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}">
   </van-submit-bar>
 </view>
 
@@ -155,21 +142,13 @@
       </view>
     </view>
   </view>
-  <van-submit-bar wx:if="{{orderInfo.status == 1}}" price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}">
-  </van-submit-bar>
 
-  <van-submit-bar wx:if="{{orderInfo.status == 3}}" price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" bind:tap="confirmBillInfo" data-orderid="{{orderInfo.id}}">
+  <van-submit-bar price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" bind:tap="confirmBillInfo" data-orderid="{{orderInfo.id}}">
     <view slot="tip">
       如发现订单信息与实际不符，可<text class="update-order" catch:tap="updateOrder">申请更改</text>
     </view>
   </van-submit-bar>
 
-  <van-submit-bar wx:if="{{orderInfo.status == 4}}" price="{{ (orderInfo.realOrderRecycleAmount + orderInfo.realRecyclerPlatformAmount + (orderInfo.recyclerOvertimeCharges ? orderInfo.recyclerOvertimeCharges : 0)) * 100 }}" button-text="校验回收码" bind:tap="validateRecycleCode" data-orderid="{{orderInfo.id}}">
-    <view slot="tip">
-      <text>请输入顾客提供的回收码进行验证：</text>
-      <input type="number" placeholder="输入6位回收码" maxlength="6" catch:tap="stopTapPropagation" bindinput="onRecycleCodeInput" />
-    </view>
-  </van-submit-bar>
 </view>
 
 <!-- 待顾客确认 -->
@@ -253,16 +232,7 @@
       </view>
     </view>
   </view>
-  <van-submit-bar wx:if="{{orderInfo.status == 1}}" price="{{ (orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) * 100}}" button-text="立即抢单" bind:tap="grabOrder" data-orderid="{{orderInfo.id}}">
-  </van-submit-bar>
-
-  <van-submit-bar wx:if="{{orderInfo.status == 3}}" price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" bind:tap="confirmBillInfo" data-orderid="{{orderInfo.id}}">
-    <view slot="tip">
-      如发现订单信息与实际不符，可<text class="update-order" catch:tap="updateOrder">申请更改</text>
-    </view>
-  </van-submit-bar>
-
-  <van-submit-bar wx:if="{{orderInfo.status == 4}}" price="{{ (orderInfo.realOrderRecycleAmount + orderInfo.realRecyclerPlatformAmount + (orderInfo.recyclerOvertimeCharges ? orderInfo.recyclerOvertimeCharges : 0)) * 100 }}" button-text="校验回收码" bind:tap="validateRecycleCode" data-orderid="{{orderInfo.id}}">
+  <van-submit-bar price="{{ (orderInfo.realOrderRecycleAmount + orderInfo.realRecyclerPlatformAmount + (orderInfo.recyclerOvertimeCharges ? orderInfo.recyclerOvertimeCharges : 0)) * 100 }}" button-text="校验回收码" bind:tap="validateRecycleCode" data-orderid="{{orderInfo.id}}">
     <view slot="tip">
       <text>请输入顾客提供的回收码进行验证：</text>
       <input type="number" placeholder="输入6位回收码" maxlength="6" catch:tap="stopTapPropagation" bindinput="onRecycleCodeInput" />

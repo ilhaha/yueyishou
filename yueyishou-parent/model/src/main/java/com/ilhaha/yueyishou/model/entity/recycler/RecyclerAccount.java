@@ -21,8 +21,6 @@ public class RecyclerAccount extends BaseEntity {
     private Long recyclerId;
 	/**账户总金额*/
     private BigDecimal totalAmount;
-	/**上缴平台总支出*/
-    private BigDecimal totalPlatformPay;
 	/**回收总支出*/
     private BigDecimal totalRecyclePay;
 }

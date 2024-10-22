@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerAccount;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerAccountForm;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerWithdrawForm;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAccountVo;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerAccountService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -22,6 +25,36 @@ import java.util.Arrays;
 public class RecyclerAccountController {
 	@Resource
 	private IRecyclerAccountService recyclerAccountService;
+
+	/**
+	 * 回收员提现到微信零钱
+	 * @param recyclerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/onWithdraw")
+	public Result<Boolean> onWithdraw(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm){
+		return Result.ok(recyclerAccountService.onWithdraw(recyclerWithdrawForm));
+	}
+
+	/**
+	 * 回收员给账号充值
+	 * @param recyclerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/onRecharge")
+	public Result<Boolean> onRecharge(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm){
+		return Result.ok(recyclerAccountService.onRecharge(recyclerWithdrawForm));
+	}
+
+	/**
+	 * 获取回收员账户信息
+	 * @param recyclerAccountForm
+	 * @return
+	 */
+	@PostMapping("/info")
+	public Result<RecyclerAccountVo> getRecyclerAccountInfo(@RequestBody RecyclerAccountForm recyclerAccountForm){
+		return Result.ok(recyclerAccountService.getRecyclerAccountInfo(recyclerAccountForm));
+	}
 	
 	/**
 	 * 分页列表查询

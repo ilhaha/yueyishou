@@ -40,6 +40,13 @@ Page({
       orderStatus: options.orderstatus
     })
   },
+  // 提醒付款
+  tipPay() {
+    toast({
+      title: '已提醒',
+      icon: 'success'
+    })
+  },
   // 查看回收码
   showRecycleCode() {
     this.setData({
