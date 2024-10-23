@@ -39,8 +39,10 @@ public class RecyclerAccountDetailServiceImpl extends ServiceImpl<RecyclerAccoun
         if (!ObjectUtils.isEmpty(detailsTime)) {
             // 将 detailsTime 转换为该月的起始时间和结束时间
             LocalDate startOfMonth = LocalDate.parse(detailsTime + "-01");
-            LocalDateTime startDateTime = startOfMonth.atStartOfDay(); // 当月第一天 00:00:00
-            LocalDateTime endDateTime = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth()).atTime(23, 59, 59); // 当月最后一天 23:59:59
+            // 当月第一天 00:00:00
+            LocalDateTime startDateTime = startOfMonth.atStartOfDay();
+            // 当月最后一天 23:59:59
+            LocalDateTime endDateTime = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth()).atTime(23, 59, 59);
             recyclerAccountDetailLambdaQueryWrapper.between(RecyclerAccountDetail::getCreateTime, startDateTime, endDateTime);
         }
 

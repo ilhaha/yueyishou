@@ -38,7 +38,7 @@ ComponentWithStore({
         iconfont: 'icon-gerenshezhi'
       },
       {
-        url: '',
+        url: '/pages/customer/my-wallet/my-wallet',
         title: '环保金提现',
         iconfont: 'icon-tixian'
       },

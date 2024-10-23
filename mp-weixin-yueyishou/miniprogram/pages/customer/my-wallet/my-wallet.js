@@ -1,28 +1,22 @@
 import {
-  reqRecyclerAccountInfo
-} from '../../../api/recycler/account'
+  reqCustomerAccountInfo
+} from '../../../api/customer/account'
 Page({
   data: {
-    showPicker: false, // 控制时间选择器弹窗的显示
-    selectedDate: '', // 用户选择的日期
-    hasIncome: false, // 控制是否显示收益内容
+    showPicker: false, 
+    selectedDate: '',
+    hasIncome: false,
     currentDate: new Date().getTime(),
     maxDate: new Date().getTime(),
     accountInfo: {
       totalAmount: 0,
-      totalRecyclePay: 0,
-      recyclerAccountDetailVoList: []
+      totalRecycleIncome: 0,
+      customerAccountDetailVoList: []
     },
   },
 
   onShow() {
-    this.loadTransactions(); 
-  },
-  // 充值
-  onRecharge() {
-    wx.navigateTo({
-      url: `../wallet-options/wallet-options?totalAmount=${this.data.accountInfo.totalAmount}&flag=2`,
-    })
+    this.loadTransactions();
   },
   // 提现
   onWithdraw() {
@@ -34,13 +28,12 @@ Page({
   async loadTransactions(deatilsTime = {}) {
     const {
       data
-    } = await reqRecyclerAccountInfo(deatilsTime);
-    console.log(data);
+    } = await reqCustomerAccountInfo(deatilsTime);
     this.setData({
       accountInfo: {
         totalAmount: data.totalAmount.toFixed(2),
-        totalRecyclePay: data.totalRecyclePay.toFixed(2),
-        recyclerAccountDetailVoList: data.recyclerAccountDetailVoList
+        totalRecycleIncome: data.totalRecycleIncome.toFixed(2),
+        customerAccountDetailVoList: data.customerAccountDetailVoList
       },
     })
   },

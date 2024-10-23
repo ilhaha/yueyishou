@@ -9,6 +9,12 @@ import com.ilhaha.yueyishou.customer.service.ICustomerAccountService;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.model.form.customer.CustomerAccountForm;
+import com.ilhaha.yueyishou.model.form.customer.CustomerWithdrawForm;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerAccountForm;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerWithdrawForm;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerAccountVo;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAccountVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +26,39 @@ import java.util.Arrays;
 @RequestMapping("/customerAccount")
 @Slf4j
 public class CustomerAccountController  {
+
 	@Resource
 	private ICustomerAccountService customerAccountService;
+
+	/**
+	 * 顾客提现到微信零钱
+	 * @param customerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/onWithdraw")
+	public Result<Boolean> onWithdraw(@RequestBody CustomerWithdrawForm customerWithdrawForm){
+		return Result.ok(customerAccountService.onWithdraw(customerWithdrawForm));
+	}
+
+	/**
+	 * 获取顾客账户信息
+	 * @param customerAccountForm
+	 * @return
+	 */
+	@PostMapping("/info")
+	public Result<CustomerAccountVo> getCustomerAccountInfo(@RequestBody CustomerAccountForm customerAccountForm){
+		return Result.ok(customerAccountService.getCustomerAccountInfo(customerAccountForm));
+	}
+
+	/**
+	 * 结算顾客订单
+	 * @param customerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/settlement")
+	public Result<Boolean> settlement(@RequestBody CustomerWithdrawForm customerWithdrawForm){
+		return Result.ok(customerAccountService.settlement(customerWithdrawForm));
+	}
 	
 	/**
 	 * 分页列表查询

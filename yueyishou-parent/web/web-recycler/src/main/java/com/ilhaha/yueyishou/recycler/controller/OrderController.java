@@ -2,10 +2,7 @@ package com.ilhaha.yueyishou.recycler.controller;
 
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
-import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
-import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
-import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
+import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
 import jakarta.annotation.Resource;
@@ -24,6 +21,17 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /**
+     * 结算订单
+     * @param settlementForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/settlement")
+    public Result<Boolean> settlement(@RequestBody SettlementForm settlementForm){
+        return orderService.settlement(settlementForm);
+    }
 
     /**
      * 回收员校验回收码

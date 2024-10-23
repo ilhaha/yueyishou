@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.model.form.order;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @Author ilhaha
@@ -43,6 +44,16 @@ public class UpdateBillForm {
      * 顾客服务抵扣券抵扣金额
      */
     private BigDecimal customerCouponAmount;
+
+    /**
+     * 支付订单号
+     */
+    private String transactionId;
+
+    /**
+     * 回收员付款时间
+     */
+    private Date payTime;
 
 
 }

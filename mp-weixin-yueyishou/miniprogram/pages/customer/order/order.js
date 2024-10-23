@@ -8,7 +8,7 @@ import {
 
 Page({
   data: {
-    active: 0, // 当前选中的 tab
+    active: 0,
     tabList: [{
       title: '待接单',
       status: 1
@@ -34,10 +34,14 @@ Page({
       title: '已取消',
       status: 8
     }],
-    orderList: [], // 订单列表
-    isLoading: false, // 是否在加载数据
+    orderList: [],
     isCancelOrderShow: false,
     needCancelOrderId: null
+  },
+
+  // 初始化数据
+  onShow() {
+    this.getOrderList(this.data.tabList[this.data.active].status);
   },
   // 提醒付款
   tipPay() {
@@ -45,10 +49,6 @@ Page({
       title: '已提醒',
       icon: 'success'
     })
-  },
-  // 初始化数据
-  onShow() {
-    this.getOrderList(this.data.tabList[this.data.active].status);
   },
   // 切换取消订单提示框状态
   switchCancelOrderShow(event) {

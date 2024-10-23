@@ -1,0 +1,18 @@
+<view class="container">
+  <!-- 金额输入区域 -->
+  <view class="amount-input">
+    <text class="currency-symbol">¥</text>
+    <input class="input-field" type="number" placeholder="请输入金额" bindinput="onInputAmount" value="{{inputAmount}}" />
+    <text class="all-btn" bindtap="selectAll">全部</text>
+  </view>
+
+  <!-- 可提现金额提示 -->
+  <view class="available-amount">
+    当前可提现金额 <text class="highlight-text">{{totalAmount}} 元</text>
+  </view>
+
+  <!-- 提现按钮 -->
+  <button class="withdraw-button" bindtap="withdrawToWeChat">
+    <image src="/assets/images/common/weixin.png" class="wechat-icon" /> 提现到微信零钱
+  </button>
+</view>

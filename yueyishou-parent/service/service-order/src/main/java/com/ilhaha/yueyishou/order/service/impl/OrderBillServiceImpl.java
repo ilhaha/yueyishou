@@ -88,11 +88,13 @@ public class OrderBillServiceImpl extends ServiceImpl<OrderBillMapper, OrderBill
     public String updateBill(UpdateBillForm updateBillForm) {
         LambdaUpdateWrapper<OrderBill> orderBillLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         orderBillLambdaUpdateWrapper.eq(OrderBill::getOrderId,updateBillForm.getOrderId())
-                .set(OrderBill::getCustomerCouponAmount,updateBillForm.getCustomerCouponAmount())
-                .set(OrderBill::getRealCustomerPlatformAmount,updateBillForm.getRealCustomerPlatformAmount())
-                .set(OrderBill::getRealCustomerRecycleAmount,updateBillForm.getRealCustomerRecycleAmount())
-                .set(OrderBill::getUpdateTime,new Date());
-        this.update(orderBillLambdaUpdateWrapper);
+                .set(!ObjectUtils.isEmpty(updateBillForm.getCustomerCouponAmount()),OrderBill::getCustomerCouponAmount,updateBillForm.getCustomerCouponAmount())
+                .set(!ObjectUtils.isEmpty(updateBillForm.getRealCustomerPlatformAmount()),OrderBill::getRealCustomerPlatformAmount,updateBillForm.getRealCustomerPlatformAmount())
+                .set(!ObjectUtils.isEmpty(updateBillForm.getRealCustomerRecycleAmount()),OrderBill::getRealCustomerRecycleAmount,updateBillForm.getRealCustomerRecycleAmount())
+                .set(OrderBill::getUpdateTime,new Date())
+                .set(!ObjectUtils.isEmpty(updateBillForm.getPayTime()),OrderBill::getPayTime,updateBillForm.getPayTime())
+                .set(!ObjectUtils.isEmpty(updateBillForm.getTransactionId()),OrderBill::getTransactionId,updateBillForm.getTransactionId());
+
         // 如果顾客使用的服务抵扣劵，则修改服务抵扣劵信息
         if (!ObjectUtils.isEmpty(updateBillForm.getCouponId())) {
             UseCouponFrom useCouponFrom = new UseCouponFrom();

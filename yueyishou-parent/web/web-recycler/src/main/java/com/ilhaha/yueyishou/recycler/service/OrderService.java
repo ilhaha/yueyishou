@@ -1,10 +1,7 @@
 package com.ilhaha.yueyishou.recycler.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
-import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
-import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
-import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
+import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.order.*;
 
 import java.util.List;
@@ -84,4 +81,10 @@ public interface OrderService {
      */
     Result<Boolean> validateRecycleCode(ValidateRecycleCodeForm validateRecycleCodeForm);
 
+    /**
+     * 结算订单
+     * @param settlementForm
+     * @return
+     */
+    Result<Boolean> settlement(SettlementForm settlementForm);
 }

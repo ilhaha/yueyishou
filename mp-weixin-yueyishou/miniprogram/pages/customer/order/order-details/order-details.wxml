@@ -10,7 +10,7 @@
   <view class="order-details">
     <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.estimatedTotalAmount - orderInfo.expectCustomerPlatformAmount}}" origin-price="{{orderInfo.estimatedTotalAmount}}" tag="待接单">
       <view slot="desc" class="custom-desc">
-        <view>{{orderInfo.appointmentTime}}前上门</view>
+        <view>{{orderInfo.appointmentTime}} 前上门</view>
       </view>
     </van-card>
     <view class="order-meta">
@@ -78,8 +78,8 @@
   <view class="order-details">
     <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{(orderInfo.estimatedTotalAmount - orderInfo.expectCustomerPlatformAmount) + (orderInfo.recyclerOvertimeCharges || 0)}}" origin-price="{{orderInfo.estimatedTotalAmount}}" tag="服务中">
       <view slot="desc" class="custom-desc">
-        <view>{{orderInfo.appointmentTime}}前上门</view>
-        <view>{{orderInfo.arriveTime}}到达</view>
+        <view>{{orderInfo.appointmentTime}} 前上门</view>
+        <view>{{orderInfo.arriveTime}} 到达</view>
         <view style="color:red" wx:if="{{orderInfo.arriveTimoutMin}}">回收员超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
       </view>
     </van-card>
@@ -228,7 +228,6 @@
   <view class="order-details">
     <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.realCustomerRecycleAmount}}" origin-price="{{orderInfo.realOrderRecycleAmount}}" tag="待收款">
       <view slot="desc" class="custom-desc">
-        <view>{{orderInfo.appointmentTime}}前上门</view>
         <view>{{orderInfo.arriveTime}}到达</view>
         <view style="color:red" wx:if="{{orderInfo.arriveTimoutMin}}">回收员超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
       </view>

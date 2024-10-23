@@ -5,8 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ilhaha.yueyishou.client.MapFeignClient;
+import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
+import com.ilhaha.yueyishou.common.util.BillUtils;
 import com.ilhaha.yueyishou.coupon.client.CustomerCouponFeignClient;
 import com.ilhaha.yueyishou.coupon.client.RecyclerCouponFeignClient;
+import com.ilhaha.yueyishou.customer.client.CustomerAccountFeignClient;
 import com.ilhaha.yueyishou.model.constant.PublicConstant;
 import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.common.util.OrderUtil;
@@ -15,15 +19,21 @@ import com.ilhaha.yueyishou.model.entity.order.OrderBill;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.enums.OrderStatus;
 import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
+import com.ilhaha.yueyishou.model.form.customer.CustomerWithdrawForm;
 import com.ilhaha.yueyishou.model.form.map.CalculateLineForm;
 import com.ilhaha.yueyishou.model.form.order.*;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerAccountForm;
+import com.ilhaha.yueyishou.model.form.recycler.RecyclerWithdrawForm;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import com.ilhaha.yueyishou.model.vo.map.DrivingLineVo;
 import com.ilhaha.yueyishou.model.vo.order.*;
+import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAccountVo;
 import com.ilhaha.yueyishou.order.mapper.OrderInfoMapper;
 import com.ilhaha.yueyishou.order.service.IOrderBillService;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
+import com.ilhaha.yueyishou.recycler.client.RecyclerAccountFeignClient;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
+import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
@@ -62,6 +72,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Resource
     @Lazy
     private IOrderBillService orderBillService;
+
+    @Resource
+    private RecyclerAccountFeignClient recyclerAccountFeignClient;
+
+    @Resource
+    private CustomerAccountFeignClient customerAccountFeignClient;
 
 
     /**
@@ -533,6 +549,50 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 删除redis中的值
         redisTemplate.delete(key);
         return true;
+    }
+
+    /**
+     * 结算订单
+     * @param settlementForm
+     * @return
+     */
+    @GlobalTransactional
+    @Override
+    public Boolean settlement(SettlementForm settlementForm) {
+        // 查询订单信息
+        OrderInfo orderInfoDB = this.getById(settlementForm.getOrderId());
+        // 查询订单账单信息
+        OrderBill billDB = orderBillService.getBillInfoByOrderId(settlementForm.getOrderId());
+        // 查询回收员账户余额
+        RecyclerAccountForm recyclerAccountForm = new RecyclerAccountForm();
+        recyclerAccountForm.setRecyclerId(settlementForm.getRecyclerId());
+        RecyclerAccountVo recyclerAccountVoDB = recyclerAccountFeignClient.getRecyclerAccountInfo(recyclerAccountForm).getData();
+        // 如果回收员账户余额不够，则结算失败
+        if (billDB.getRealRecyclerAmount().compareTo(recyclerAccountVoDB.getTotalAmount()) > 0) {
+            return false;
+        }
+        // 减少回收员账户余额、增加账户明细
+        RecyclerWithdrawForm recyclerWithdrawForm = new RecyclerWithdrawForm();
+        recyclerWithdrawForm.setRecyclerId(settlementForm.getRecyclerId());
+        recyclerWithdrawForm.setAmount(billDB.getRealRecyclerAmount());
+        recyclerAccountFeignClient.settlement(recyclerWithdrawForm).getData();
+        // 增加顾客账户余额、增加账户明细
+        CustomerWithdrawForm customerWithdrawForm = new CustomerWithdrawForm();
+        customerWithdrawForm.setCustomerId(orderInfoDB.getCustomerId());
+        customerWithdrawForm.setAmount(billDB.getRealCustomerRecycleAmount());
+        customerAccountFeignClient.settlement(customerWithdrawForm);
+        // 更新账单信息
+        UpdateBillForm updateBillForm = new UpdateBillForm();
+        updateBillForm.setOrderId(settlementForm.getOrderId());
+        updateBillForm.setPayTime(new Date());
+        updateBillForm.setTransactionId(BillUtils.generateTransactionId());
+        orderBillService.updateBill(updateBillForm);
+        // 更新订单信息
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId,settlementForm.getOrderId())
+                .set(OrderInfo::getStatus,OrderStatus.COMPLETED_ORDER)
+                .set(OrderInfo::getUpdateTime,new Date());
+        return this.update(orderInfoLambdaUpdateWrapper);
     }
 
     /**

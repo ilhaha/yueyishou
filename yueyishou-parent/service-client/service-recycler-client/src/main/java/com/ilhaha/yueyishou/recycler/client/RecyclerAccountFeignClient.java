@@ -18,6 +18,14 @@ import org.springframework.web.bind.annotation.*;
 public interface RecyclerAccountFeignClient {
 
     /**
+     * 结算订单
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @PostMapping("/recyclerAccount/settlement")
+    Result<Boolean> settlement(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
      * 回收员提现到微信零钱
      * @param recyclerWithdrawForm
      * @return

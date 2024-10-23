@@ -4,7 +4,8 @@ import {
   reqRepostOrder,
   reqRecyclerArrive,
   reqCalculateActual,
-  reqValidateRecycleCode
+  reqValidateRecycleCode,
+  reqSettlement
 } from '../../../api/recycler/order'
 import {
   toast
@@ -37,12 +38,27 @@ Page({
       recyclerCouponAmount: 0.00,
       realCustomerPlatformAmount: 0.00,
     },
+    settlementShow: false
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
-    console.log(options);
     this.setData({
       orderStatus: options.orderStatus
+    })
+  },
+
+  // 结算付款
+  async settlement(event) {
+    const res = await reqSettlement({
+      orderId: this.data.orderInfo.id
+    });
+    console.log(res);
+  },
+
+  // 切换结算弹窗
+  switchSettlementShow() {
+    this.setData({
+      settlementShow: !this.data.settlementShow
     })
   },
 

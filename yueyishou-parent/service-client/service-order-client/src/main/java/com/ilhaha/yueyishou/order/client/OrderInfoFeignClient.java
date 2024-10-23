@@ -2,11 +2,8 @@ package com.ilhaha.yueyishou.order.client;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
-import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
-import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
-import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +17,14 @@ import java.util.List;
  */
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
+
+    /**
+     * 结算订单
+     * @param settlementForm
+     * @return
+     */
+    @PostMapping("/orderInfo/settlement")
+    Result<Boolean> settlement(@RequestBody SettlementForm settlementForm);
 
     /**
      * 回收员校验回收码

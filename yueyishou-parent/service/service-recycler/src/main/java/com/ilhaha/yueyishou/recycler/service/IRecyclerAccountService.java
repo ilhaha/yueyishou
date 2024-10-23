@@ -43,4 +43,12 @@ public interface IRecyclerAccountService extends IService<RecyclerAccount> {
      * @return
      */
     Boolean onWithdraw(RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
+     * 结算订单
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    Boolean settlement(RecyclerWithdrawForm recyclerWithdrawForm);
+
 }

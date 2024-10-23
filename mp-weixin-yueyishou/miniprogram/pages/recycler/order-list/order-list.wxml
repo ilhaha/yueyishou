@@ -1,0 +1,48 @@
+<van-tabs active="{{ active }}" bind:change="switchList">
+  <van-tab wx:for="{{tabList}}" wx:key="index" title="{{item.title}}" class="container" class="{{active != index ? 'none' : ''}}">
+    <block wx:if="{{orderList.length > 0}}">
+      <block wx:for="{{orderList}}" wx:key="orderNo" wx:for-item="order">
+        <view class="card-container" data-orderid="{{order.id}}" bind:tap="showDetails" data-orderstatus="{{order.status}}">
+          <!-- 待服务 -->
+          <van-card wx:if="{{order.status == 2}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount + order.expectRecyclerPlatformAmount}}" origin-price="{{order.estimatedTotalAmount}}" tag="{{item.title}}">
+            <view slot="desc" class="custom-desc">
+              <view>{{order.appointmentTime}} 前上门</view>
+              <view>距离 {{order.apart}} 公里</view>
+            </view>
+          </van-card>
+
+          <!-- 服务中 -->
+          <van-card wx:if="{{order.status == 3}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{order.actualPhoto}}" num="{{order.recycleWeigh}}" price="{{(order.estimatedTotalAmount + order.expectRecyclerPlatformAmount) + (order.recyclerOvertimeCharges || 0)}}" origin-price="{{order.estimatedTotalAmount}}" tag="{{item.title}}">
+            <view slot="desc" class="custom-desc">
+              <view>{{order.appointmentTime}} 前上门</view>
+              <view wx:if="{{order.arriveTime}}">{{order.arriveTime}} 到达</view>
+              <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
+              <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
+            </view>
+          </van-card>
+
+          <!-- 待确认 -->
+          <van-card wx:if="{{order.status == 4}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{order.actualPhoto}}" num="{{order.recycleWeigh}}" price="{{order.realRecyclerAmount}}" origin-price="{{order.realOrderRecycleAmount}}" tag="{{item.title}}">
+            <view slot="desc" class="custom-desc">
+              <view>{{order.appointmentTime}} 前上门</view>
+              <view wx:if="{{order.arriveTime}}">{{order.arriveTime}} 到达</view>
+              <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
+              <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
+            </view>
+          </van-card>
+          <!-- 待付款 -->
+          <van-card wx:if="{{order.status == 5}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{order.actualPhoto}}" num="{{order.recycleWeigh}}" price="{{order.realRecyclerAmount}}" origin-price="{{order.realOrderRecycleAmount}}" tag="{{item.title}}">
+            <view slot="desc" class="custom-desc">
+              <view wx:if="{{order.arriveTime}}">{{order.arriveTime}} 到达</view>
+              <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
+              <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
+            </view>
+          </van-card>
+        </view>
+      </block>
+    </block>
+    <block wx:else>
+      <van-empty description="订单空空如也" />
+    </block>
+  </van-tab>
+</van-tabs>

@@ -3,10 +3,7 @@ package com.ilhaha.yueyishou.order.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
-import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
-import com.ilhaha.yueyishou.model.form.order.MatchingOrderForm;
-import com.ilhaha.yueyishou.model.form.order.UpdateOrderFrom;
-import com.ilhaha.yueyishou.model.form.order.ValidateRecycleCodeForm;
+import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
@@ -25,6 +22,17 @@ import java.util.List;
 public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
+
+
+    /**
+     * 结算订单
+     * @param settlementForm
+     * @return
+     */
+    @PostMapping("/settlement")
+    public Result<Boolean> settlement(@RequestBody SettlementForm settlementForm){
+        return Result.ok(orderInfoService.settlement(settlementForm));
+    }
 
     /**
      * 回收员校验回收码

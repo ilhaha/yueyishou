@@ -1,0 +1,131 @@
+.container {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.income-card {
+  background-color: #34c759;
+  border-radius: 12px;
+  padding: 30rpx;
+  color: white;
+  position: relative;
+  /* 使其内部元素可以使用绝对定位 */
+  margin-bottom: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.income-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.margin-bottom-40 {
+  margin-bottom: 40rpx;
+}
+
+.income-title {
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.income-amount {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 8px 0;
+}
+
+.card-buttons {
+  position: absolute;
+  bottom: 16rpx;
+  right: 16rpx;
+  display: flex;
+  gap: 12rpx;
+  /* 按钮之间的间距 */
+}
+
+.btn {
+  width: 120rpx;
+  height: 48rpx;
+  background-color: #fff;
+  color: #34c759;
+  border: none;
+  border-radius: 24rpx;
+  font-size: 16px;
+  text-align: center;
+  line-height: 48rpx;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn.withdraw {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+.divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 8px 0;
+}
+
+.date-picker {
+  background-color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
+
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-text {
+  font-size: 16px;
+  color: #333;
+}
+
+.arrow {
+  font-size: 14px;
+  color: #888;
+}
+
+.transaction-list {
+  margin-top: 10px;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction-desc {
+  font-size: 16px;
+  color: #333;
+}
+
+.transaction-date {
+  font-size: 12px;
+  color: #888;
+}
+
+.transaction-amount {
+  font-size: 16px;
+  font-weight: bold;
+}

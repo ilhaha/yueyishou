@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerAccount;
+import com.ilhaha.yueyishou.model.form.order.SettlementForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAccountForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerWithdrawForm;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAccountVo;
@@ -25,6 +26,16 @@ import java.util.Arrays;
 public class RecyclerAccountController {
 	@Resource
 	private IRecyclerAccountService recyclerAccountService;
+
+	/**
+	 * 结算订单
+	 * @param recyclerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/settlement")
+	public Result<Boolean> settlement(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm){
+		return Result.ok(recyclerAccountService.settlement(recyclerWithdrawForm));
+	}
 
 	/**
 	 * 回收员提现到微信零钱

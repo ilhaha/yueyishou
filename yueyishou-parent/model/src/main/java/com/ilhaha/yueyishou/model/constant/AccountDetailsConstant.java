@@ -10,19 +10,34 @@ package com.ilhaha.yueyishou.model.constant;
 public class AccountDetailsConstant {
 
     /**
-     * 账户明细交易类型：1回收支付费用
+     * 回收员账户明细交易类型：1回收支付费用
      */
     public static final String RECYCLE_PAY_FEE = "1";
 
     /**
-     * 账户明细交易类型： 2提现
+     * 回收员账户明细交易类型： 2提现
      */
     public static final String ON_WITHDRAW = "2";
 
     /**
-     * 账户明细交易类型： 3充值
+     * 回收员账户明细交易类型： 3充值
      */
     public static final String ON_RECHARGE = "3";
+
+    /**
+     * 顾客账户明细交易类型：1回收收入
+     */
+    public static final String CUSTOMER_RECYCLE_PAY_FEE = "1";
+
+    /**
+     * 顾客账户明细交易类型： 2提现
+     */
+    public static final String CUSTOMER_ON_WITHDRAW = "2";
+
+    /**
+     * 回收支付内容
+     */
+    public static final String RECYCLE_PAY_FEE_CONTENT = "结算订单";
 
     /**
      * 提现内容

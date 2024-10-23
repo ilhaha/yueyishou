@@ -1,27 +1,20 @@
 import {
-  reqRecyclerAccountOnRecharge,
-  reqRecyclerAccountOnWithdraw
-} from '../../../api/recycler/account'
+  reqCustomerAccountOnWithdraw
+} from '../../../api/customer/customer'
+
 Page({
   data: {
     totalAmount: 0.00, // 可提现金额
     inputAmount: '', // 输入的金额
-    flag: 1,
   },
 
   // 初始化数据
   onLoad(options) {
     const {
-      totalAmount,
-      flag
+      totalAmount
     } = options;
     this.setData({
-      totalAmount,
-      flag
-    });
-    const title = flag === '1' ? '提现' : '充值';
-    wx.setNavigationBarTitle({
-      title
+      totalAmount
     });
   },
 
@@ -39,35 +32,6 @@ Page({
     });
   },
 
-  // 充值
-  async weChatToWithdraw() {
-    const {
-      inputAmount
-    } = this.data;
-    const amount = parseFloat(inputAmount);
-
-    if (amount < 1) {
-      wx.showToast({
-        title: '充值金额不能少于 1 元',
-        icon: 'none'
-      });
-      return;
-    }
-    const res = await reqRecyclerAccountOnRecharge({
-      amount
-    })
-    if (res.data) {
-      // 模拟提现成功提示
-      wx.showToast({
-        title: '充值申请成功',
-        icon: 'success'
-      });
-      setTimeout(() => {
-        this.goBack();
-      }, 1000);
-    }
-
-  },
 
   // 提现到微信
   async withdrawToWeChat() {
@@ -93,11 +57,10 @@ Page({
       return;
     }
 
-    const res = await reqRecyclerAccountOnWithdraw({
+    const res = await reqCustomerAccountOnWithdraw({
       amount
     })
     if (res.data) {
-      // 模拟提现成功提示
       wx.showToast({
         title: '提现申请成功',
         icon: 'success'

@@ -25,7 +25,7 @@ export const reqGrabOrder = (orderId) => {
 }
 
 /**
- * 根据订单状体啊获取订单列表
+ * 根据订单状态获取订单列表
  */
 export const reqOrderListByStaus = (status) => {
   return http.get(urlPrefix + `/order/list/${status}`)
@@ -71,4 +71,11 @@ export const reqCalculateActual = (orderId) => {
  */
 export const reqValidateRecycleCode = (data) => {
   return http.post(urlPrefix + `/order/validate/code`, data)
+}
+
+/**
+ * 订单结算
+ */
+export const reqSettlement = (data) => {
+  return http.post(urlPrefix + `/order/settlement`, data)
 }

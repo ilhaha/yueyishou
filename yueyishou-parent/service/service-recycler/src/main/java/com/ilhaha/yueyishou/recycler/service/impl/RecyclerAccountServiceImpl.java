@@ -48,7 +48,7 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
      * @return
      */
     @Override
-    public RecyclerAccountVo getRecyclerAccountInfo(RecyclerAccountForm recyclerAccountForm) {
+    public RecyclerAccountVo    getRecyclerAccountInfo(RecyclerAccountForm recyclerAccountForm) {
         RecyclerAccountVo recyclerAccountVo = new RecyclerAccountVo();
         RecyclerAccount recyclerAccountDB = this.getOne(new LambdaQueryWrapper<RecyclerAccount>().eq(RecyclerAccount::getRecyclerId, recyclerAccountForm.getRecyclerId()));
         BeanUtils.copyProperties(recyclerAccountDB,recyclerAccountVo);
@@ -123,6 +123,35 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
         addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
         addDetailsForm.setTradeType(AccountDetailsConstant.ON_WITHDRAW);
         addDetailsForm.setContent(AccountDetailsConstant.ON_WITHDRAW_CONTENT);
+        recyclerAccountDetailService.addDetails(addDetailsForm);
+        return this.update(recyclerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 结算订单
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @Override
+    public Boolean settlement(RecyclerWithdrawForm recyclerWithdrawForm) {
+        // 1. 查询当前账户余额
+        RecyclerAccount account = this.getOneByRecyclerId(recyclerWithdrawForm.getRecyclerId());
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = account.getTotalAmount().subtract(recyclerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<RecyclerAccount> recyclerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerAccountLambdaUpdateWrapper.eq(RecyclerAccount::getRecyclerId, recyclerWithdrawForm.getRecyclerId())
+                .set(RecyclerAccount::getTotalAmount, newTotalAmount)
+                .set(RecyclerAccount::getUpdateTime, new Date());
+
+        // 4.添加明细数据
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(account.getId());
+        addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.RECYCLE_PAY_FEE);
+        addDetailsForm.setContent(AccountDetailsConstant.RECYCLE_PAY_FEE_CONTENT);
         recyclerAccountDetailService.addDetails(addDetailsForm);
         return this.update(recyclerAccountLambdaUpdateWrapper);
     }

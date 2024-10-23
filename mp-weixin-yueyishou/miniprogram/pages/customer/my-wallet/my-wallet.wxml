@@ -1,0 +1,50 @@
+<view class="container">
+  <!-- 顶部收入展示卡片 -->
+  <view class="income-card">
+    <view class="income-item">
+      <view class="income-title">回收总收入</view>
+      <view class="income-amount">¥{{accountInfo.totalRecycleIncome}}</view>
+    </view>
+    <view class="divider"></view>
+    <view class="income-item margin-bottom-40">
+      <view class="income-title">账户余额</view>
+      <view class="income-amount">¥{{accountInfo.totalAmount}}</view>
+    </view>
+
+    <!-- 提现按钮 -->
+    <view class="card-buttons">
+      <button class="btn recharge" bindtap="onWithdraw">提现</button>
+    </view>
+  </view>
+
+  <!-- 时间选择触发按钮和交易明细展示 -->
+  <view class="date-picker" bindtap="openPicker">
+    <view class="date-header">
+      <text class="date-text">{{selectedDate || '全部时间'}}</text>
+      <text class="arrow">▼</text>
+    </view>
+
+    <!-- 收支明细列表 -->
+    <view class="transaction-list" wx:if="{{accountInfo.customerAccountDetailVoList.length > 0}}">
+      <block wx:for="{{accountInfo.customerAccountDetailVoList}}" wx:key="id">
+        <view class="transaction-item">
+          <view class="item-info">
+            <text class="transaction-desc">{{item.content}}</text>
+            <text class="transaction-date">{{item.createTime}}</text>
+          </view>
+          <text class="transaction-amount" style="color: {{item.tradeType < 3 ? '#ff4d4f':'#52c41a'}};">
+            {{item.tradeType < 3 ? '-' : '+'}}{{item.amount}} 元
+          </text>
+        </view>
+      </block>
+    </view>
+
+    <!-- 无收入占位 -->
+    <van-empty description="暂无收益" wx:else />
+  </view>
+
+  <!-- Popup 中的时间选择器 -->
+  <van-popup show="{{showPicker}}" position="bottom" bind:close="closePicker">
+    <van-datetime-picker type="year-month" value="{{currentDate}}" max-date="{{maxDate}}" bind:confirm="onInput" bind:cancel="onCancel" />
+  </van-popup>
+</view>

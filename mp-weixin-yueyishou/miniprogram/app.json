@@ -18,7 +18,10 @@
     "pages/recycler/order-details/order-details",
     "pages/recycler/order-update/order-update",
     "pages/recycler/my-wallet/my-wallet",
-    "pages/recycler/wallet-options/wallet-options"
+    "pages/recycler/wallet-options/wallet-options",
+    "pages/recycler/order-list/order-list",
+    "pages/customer/my-wallet/my-wallet",
+    "pages/customer/wallet-options/wallet-options"
   ],
   "window": {
     "backgroundTextStyle": "light",

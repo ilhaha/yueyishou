@@ -37,7 +37,7 @@ Page({
       {
         text: '我的订单',
         icon: '/assets/images/common/my_order.png',
-        url: 'goToOrders'
+        url: '/pages/recycler/order-list/order-list'
       },
       {
         text: '我的钱包',
