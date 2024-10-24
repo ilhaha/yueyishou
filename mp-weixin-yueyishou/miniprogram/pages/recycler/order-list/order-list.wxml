@@ -30,10 +30,12 @@
               <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
             </view>
           </van-card>
-          <!-- 待付款 -->
-          <van-card wx:if="{{order.status == 5}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{order.actualPhoto}}" num="{{order.recycleWeigh}}" price="{{order.realRecyclerAmount}}" origin-price="{{order.realOrderRecycleAmount}}" tag="{{item.title}}">
+          <!-- 待付款、待评价、已完成 -->
+          <van-card wx:if="{{order.status >= 5 && order.status != 8}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{order.actualPhoto}}" num="{{order.recycleWeigh}}" price="{{order.realRecyclerAmount}}" origin-price="{{order.realOrderRecycleAmount}}" tag="{{item.title}}">
             <view slot="desc" class="custom-desc">
-              <view wx:if="{{order.arriveTime}}">{{order.arriveTime}} 到达</view>
+              <view wx:if="{{order.status == 5}}">{{order.arriveTime}} 到达</view>
+              <view wx:if="{{order.status == 6}}">{{order.payTime}} 已付款</view>
+              <view wx:if="{{order.status == 7}}">{{order.reviewTime}} 已完成</view>
               <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
               <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
             </view>

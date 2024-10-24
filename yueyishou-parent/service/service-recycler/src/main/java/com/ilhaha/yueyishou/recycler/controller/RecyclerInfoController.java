@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
+import com.ilhaha.yueyishou.model.form.recycler.UpdateRateForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
@@ -24,6 +25,16 @@ import java.util.Arrays;
 public class RecyclerInfoController {
 	@Resource
 	private IRecyclerInfoService recyclerInfoService;
+
+	/**
+	 * 修改回收员评分
+	 * @param updateRateForm
+	 * @return
+	 */
+	@PostMapping("/update/rate")
+	public Result<Boolean> updateRate(@RequestBody UpdateRateForm updateRateForm){
+		return Result.ok(recyclerInfoService.updateRate(updateRateForm));
+	}
 
 	/**
 	 * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题

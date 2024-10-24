@@ -108,6 +108,10 @@
         <text class="label">超时赔偿</text>
         <text class="value">¥{{orderInfo.recyclerOvertimeCharges}}</text>
       </view>
+      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
+        <text class="label">超时时长</text>
+        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      </view>
       <view class="meta-item">
         <text class="label">订单编号</text>
         <text class="value">{{orderInfo.orderNo}}</text>
@@ -123,10 +127,6 @@
       <view class="meta-item">
         <text class="label">回收员到达时间</text>
         <text class="value">{{orderInfo.arriveTime}}</text>
-      </view>
-      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
-        <text class="label">超时时长</text>
-        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
       </view>
       <view class="meta-item" wx:if="{{orderInfo.remark}}">
         <text class="label">备注</text>
@@ -181,6 +181,10 @@
         <text class="label">超时赔偿</text>
         <text class="value">¥{{orderInfo.recyclerOvertimeCharges}}</text>
       </view>
+      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
+        <text class="label">超时时长</text>
+        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      </view>
       <view class="meta-item">
         <text class="label">订单编号</text>
         <text class="value">{{orderInfo.orderNo}}</text>
@@ -196,10 +200,6 @@
       <view class="meta-item">
         <text class="label">回收员到达时间</text>
         <text class="value">{{orderInfo.arriveTime}}</text>
-      </view>
-      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
-        <text class="label">超时时长</text>
-        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
       </view>
       <view class="meta-item" wx:if="{{orderInfo.remark}}">
         <text class="label">备注</text>
@@ -219,16 +219,18 @@
   <van-submit-bar price="{{ totalAmount }}" button-text="查看回收码" bind:tap="showRecycleCode" wx:else />
 </view>
 
-<!-- 待收款 -->
-<view class="container container-padding-bottom container-padding-bottom" wx:if="{{orderStatus == 5}}">
+<!-- 待收款、待评价、已完成-->
+<view class="container container-padding-bottom container-padding-bottom" wx:if="{{orderStatus >= 5 && orderStatus != 8}}">
   <view class="shipping-info">
     <text>{{orderInfo.customerLocation}}</text>
     <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
   </view>
   <view class="order-details">
-    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.realCustomerRecycleAmount}}" origin-price="{{orderInfo.realOrderRecycleAmount}}" tag="待收款">
+    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.realCustomerRecycleAmount}}" origin-price="{{orderInfo.realOrderRecycleAmount}}" tag="{{orderStatus == 5 ? '待收款' : (orderStatus == 6 ? '待评价' : '已完成') }}">
       <view slot="desc" class="custom-desc">
-        <view>{{orderInfo.arriveTime}}到达</view>
+        <view wx:if="{{orderStatus == 5}}">{{orderInfo.arriveTime}} 到达</view>
+        <view wx:if="{{orderStatus == 6}}">{{orderInfo.payTime}} 已付款</view>
+        <view wx:if="{{orderStatus == 7}}">{{orderInfo.reviewTime}} 已完成</view>
         <view style="color:red" wx:if="{{orderInfo.arriveTimoutMin}}">回收员超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
       </view>
     </van-card>
@@ -257,6 +259,10 @@
         <text class="label">超时赔偿</text>
         <text class="value">¥{{orderInfo.recyclerOvertimeCharges}}</text>
       </view>
+      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
+        <text class="label">超时时长</text>
+        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      </view>
       <view class="meta-item">
         <text class="label">订单编号</text>
         <text class="value">{{orderInfo.orderNo}}</text>
@@ -273,9 +279,13 @@
         <text class="label">回收员到达时间</text>
         <text class="value">{{orderInfo.arriveTime}}</text>
       </view>
-      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
-        <text class="label">超时时长</text>
-        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      <view class="meta-item" wx:if="{{orderInfo.payTime}}">
+        <text class="label">回收员付款时间</text>
+        <text class="value">{{orderInfo.payTime}}</text>
+      </view>
+      <view class="meta-item" wx:if="{{orderInfo.reviewContent}}">
+        <text class="label">评价内容</text>
+        <text class="value">{{orderInfo.reviewContent}}</text>
       </view>
       <view class="meta-item" wx:if="{{orderInfo.remark}}">
         <text class="label">备注</text>
@@ -289,8 +299,87 @@
       </view>
     </view>
   </view>
-  <van-submit-bar price="{{ orderInfo.realCustomerRecycleAmount * 100}}" button-text="提醒付款" bind:tap="tipPay" />
+  <van-submit-bar price="{{ orderInfo.realCustomerRecycleAmount * 100}}" button-text="提醒付款" bind:tap="tipPay" wx:if="{{orderStatus == 5}}" />
+
+  <van-submit-bar button-text="立即评价" bind:tap="swtichReviewDialog" wx:if="{{orderStatus == 6}}" />
 </view>
+
+<!-- 已取消 -->
+<view class="container container-padding-bottom" wx:if="{{orderStatus == 8}}">
+  <view class="shipping-info">
+    <text>{{orderInfo.customerLocation}}</text>
+    <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
+  </view>
+  <view class="order-details">
+    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.estimatedTotalAmount - orderInfo.expectCustomerPlatformAmount}}" origin-price="{{orderInfo.estimatedTotalAmount}}" tag="待接单">
+      <view slot="desc" class="custom-desc">
+        <view>{{orderInfo.updateTime}} 已取消</view>
+      </view>
+    </van-card>
+    <view class="order-meta">
+      <view class="meta-item">
+        <text class="label">回收品类</text>
+        <text class="value">{{orderInfo.sonCategoryName}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">回收重量(公斤)</text>
+        <text class="value">{{orderInfo.recycleWeigh}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">品类单价</text>
+        <text class="value">¥{{orderInfo.unitPrice}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">预收入回收款</text>
+        <text class="value">¥{{orderInfo.estimatedTotalAmount}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">预缴纳手续费</text>
+        <text class="value">¥{{orderInfo.expectCustomerPlatformAmount}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">订单编号</text>
+        <text class="value">{{orderInfo.orderNo}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">创建时间</text>
+        <text class="value">{{orderInfo.createTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">预约时间</text>
+        <text class="value">{{orderInfo.appointmentTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">取消备注</text>
+        <text class="value">{{orderInfo.cancelMessage}}</text>
+      </view>
+      <view class="meta-item" wx:if="{{orderInfo.remark}}">
+        <text class="label">备注</text>
+        <text class="value">{{orderInfo.remark}}</text>
+      </view>
+      <view class="meta-img">
+        <text class="label">实物照片</text>
+        <view class="photo-grid">
+          <image wx:for="{{orderInfo.actualPhotoList}}" src="{{item}}" wx:key="index" mode="aspectFill" class="img" alt="实物照片"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<van-dialog use-slot show="{{isReviewDialogShow}}" title="评价订单" before-close="{{beforeClose}}" show-cancel-button bind:cancel="swtichReviewDialog" bind:confirm="submitReview">
+
+  <view class="review-container">
+    <!-- 评分部分 -->
+    <view class="rating">
+      <text class="review-label">服务态度</text>
+      <van-rate model:value="{{rating}}" bind:change="onRatingChange" class="rate-stars" size="25" />
+    </view>
+
+    <!-- 评价输入部分 -->
+    <van-field label="评价内容" placeholder="请输入您的评价" value="{{reviewContent}}" bind:input="onReviewInput" type="textarea" class="review-input" autosize border="{{false}}" />
+  </view>
+</van-dialog>
 
 <van-dialog use-slot title="核对订单信息" show="{{ dialogShow }}" show-cancel-button bind:close="switchDialogStatus" bind:confirm="confirmRecycling">
   <view class="dialog-content">

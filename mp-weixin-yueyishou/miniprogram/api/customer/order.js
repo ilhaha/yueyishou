@@ -37,3 +37,10 @@ export const reqOrderDetails = (orderId) => {
 export const reqCancelOrder = (orderId) => {
   return http.post(urlPrefix + `/order/cancel/${orderId}`)
 }
+
+/**
+ * 顾客评论
+ */
+export const reqReview = (data) => {
+  return http.post(urlPrefix + `/order/review`, data)
+}

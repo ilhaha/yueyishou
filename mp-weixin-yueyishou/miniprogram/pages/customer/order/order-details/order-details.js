@@ -1,6 +1,7 @@
 import {
   reqOrderDetails,
-  reqCancelOrder
+  reqCancelOrder,
+  reqReview
 } from '../../../../api/customer/order'
 import {
   toast
@@ -32,14 +33,93 @@ Page({
       customerCouponAmount: 0.00
     },
     recycleCodeShow: false,
-    recycleCode: ''
+    recycleCode: '',
+    isReviewDialogShow: false, // 控制评价对话框显示状态
+    reviewContent: "", // 用户的评价内容
+    rating: 0, // 用户评分
+    beforeClose: {},
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
     this.setData({
-      orderStatus: options.orderstatus
+      orderStatus: options.orderstatus,
+      beforeClose: (action) => new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // 拦截确认操作
+          resolve(false);
+        }, 0);
+      })
     })
   },
+
+  // 提交评价
+  async submitReview() {
+    const {
+      reviewContent,
+      rating,
+      orderInfo
+    } = this.data;
+    if (!reviewContent || rating === 0) {
+      wx.showToast({
+        title: '请填写完整评价内容',
+        icon: 'none'
+      });
+      return;
+    }
+    let data = {
+      orderId: orderInfo.id,
+      recyclerId: orderInfo.recyclerId,
+      customerId: orderInfo.customerId,
+      rate: rating,
+      reviewContent: reviewContent
+    }
+    const res = await reqReview(data);
+    if (res.data) {
+      toast({
+        title: '评价成功',
+        icon: 'success'
+      })
+      setTimeout(() => {
+        wx.navigateBack({
+          delta: 1, // 返回到上一个页面
+          success: function () {
+            const pages = getCurrentPages(); // 获取当前页面栈
+            const prevPage = pages[pages.length - 2]; // 上一个页面
+            if (prevPage) {
+              // 可以手动调用 prevPage 的方法，或重新设置数据
+              prevPage.onShow(); // 手动调用上一个页面的 onShow 方法
+            }
+          }
+        });
+      }, 1000);
+    }
+  },
+  // 输入评价内容
+  onReviewInput(e) {
+    this.setData({
+      reviewContent: e.detail
+    })
+  },
+  // 评分
+  onChange(event) {
+    this.setData({
+      rating: event.detail
+    });
+  },
+
+  // 切换评价对话框状态
+  swtichReviewDialog() {
+    this.setData({
+      isReviewDialogShow: !this.data.isReviewDialogShow
+    });
+    if (!this.data.isReviewDialogShow) {
+      this.setData({
+        reviewContent: '',
+        rating: 0
+      })
+    }
+  },
+
   // 提醒付款
   tipPay() {
     toast({
@@ -50,7 +130,8 @@ Page({
   // 查看回收码
   showRecycleCode() {
     this.setData({
-      recycleCodeShow: !this.data.recycleCodeShow
+      recycleCodeShow: !this.data.recycleCodeShow,
+
     })
   },
   // 顾客确认回收

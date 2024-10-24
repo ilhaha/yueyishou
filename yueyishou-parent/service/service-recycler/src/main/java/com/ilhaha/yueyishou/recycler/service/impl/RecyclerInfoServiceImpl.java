@@ -19,6 +19,7 @@ import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
+import com.ilhaha.yueyishou.model.form.recycler.UpdateRateForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
@@ -227,6 +228,33 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
             throw new YueYiShouException(ResultCodeEnum.ACCOUNT_STOP);
         }
         return true;
+    }
+
+    /**
+     * 增加回收员单量
+     * @param recyclerId
+     */
+    @Override
+    public void updateOrderCount(Long recyclerId) {
+        LambdaUpdateWrapper<RecyclerInfo> recyclerInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerInfoLambdaUpdateWrapper.eq(RecyclerInfo::getId,recyclerId)
+                .setSql("order_count = order_count + 1")
+                .set(RecyclerInfo::getUpdateTime,new Date());
+        this.update(recyclerInfoLambdaUpdateWrapper);
+    }
+
+    /**
+     * 修改回收员评分
+     * @param updateRateForm
+     * @return
+     */
+    @Override
+    public Boolean updateRate(UpdateRateForm updateRateForm) {
+        LambdaUpdateWrapper<RecyclerInfo> recyclerInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerInfoLambdaUpdateWrapper.eq(RecyclerInfo::getId,updateRateForm.getRecyclerId())
+                .set(RecyclerInfo::getScore,updateRateForm.getRate())
+                .set(RecyclerInfo::getUpdateTime,new Date());
+        return this.update(recyclerInfoLambdaUpdateWrapper);
     }
 
 }

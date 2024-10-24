@@ -35,7 +35,6 @@ Page({
     const {
       data
     } = await reqRecyclerAccountInfo(deatilsTime);
-    console.log(data);
     this.setData({
       accountInfo: {
         totalAmount: data.totalAmount.toFixed(2),

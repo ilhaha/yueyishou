@@ -19,11 +19,11 @@ public class BaseEntity implements Serializable {
     private Long id;
 
     @TableField("create_time")
-    private Date createTime;
+    private Date createTime = new Date();
 
     @JsonIgnore
     @TableField("update_time")
-    private Date updateTime;
+    private Date updateTime = new Date();
 
     @JsonIgnore
     @TableLogic

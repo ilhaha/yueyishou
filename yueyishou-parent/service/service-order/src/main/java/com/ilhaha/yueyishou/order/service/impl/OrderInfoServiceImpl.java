@@ -30,6 +30,7 @@ import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAccountVo;
 import com.ilhaha.yueyishou.order.mapper.OrderInfoMapper;
 import com.ilhaha.yueyishou.order.service.IOrderBillService;
+import com.ilhaha.yueyishou.order.service.IOrderCommentService;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
 import com.ilhaha.yueyishou.recycler.client.RecyclerAccountFeignClient;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
@@ -79,6 +80,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Resource
     private CustomerAccountFeignClient customerAccountFeignClient;
 
+    @Resource
+    @Lazy
+    private IOrderCommentService orderCommentService;
+
 
     /**
      * 订单分页列表查询
@@ -124,7 +129,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoLambdaQueryWrapper.eq(OrderInfo::getStatus, status)
                 .eq(OrderInfo::getCustomerId, customerId);
         List<OrderInfo> listDB = this.list(orderInfoLambdaQueryWrapper);
-        return listDB.stream().map(item -> {
+
+        return listDB
+                .stream()
+                .sorted(Comparator.comparing(OrderInfo::getCreateTime).reversed())
+                .map(item -> {
             CustomerOrderListVo customerOrderListVo = new CustomerOrderListVo();
             BeanUtils.copyProperties(item, customerOrderListVo);
             customerOrderListVo.setActualPhoto(item.getActualPhotos().split(",")[0]);
@@ -135,6 +144,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 customerOrderListVo.setRealCustomerPlatformAmount(orderBillDB.getRealCustomerPlatformAmount());
                 customerOrderListVo.setRecyclerOvertimeCharges(orderBillDB.getRecyclerOvertimeCharges());
                 customerOrderListVo.setRealCustomerRecycleAmount(orderBillDB.getRealCustomerRecycleAmount());
+                customerOrderListVo.setPayTime(orderBillDB.getPayTime());
             }
             // 查询回收员超时信息
             if (!ObjectUtils.isEmpty(item.getArriveTime())) {
@@ -148,7 +158,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     customerOrderListVo.setRecyclerOvertimeCharges(overtimeResponseVo.getOvertimeFee());
                 }
             }
-
+            // 查询订单列表评论信息
+            OrderCommentVo orderCommentVo = orderCommentService.getOrderComment(item.getId());
+            if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
+                customerOrderListVo.setReviewContent(orderCommentVo.getReviewContent());
+                customerOrderListVo.setReviewTime(orderCommentVo.getReviewTime());
+            }
             return customerOrderListVo;
         }).collect(Collectors.toList());
     }
@@ -187,6 +202,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             customerOrderDetailsVo.setRealCustomerPlatformAmount(orderBillDB.getRealCustomerPlatformAmount());
             customerOrderDetailsVo.setRecyclerOvertimeCharges(orderBillDB.getRecyclerOvertimeCharges());
             customerOrderDetailsVo.setRealCustomerRecycleAmount(orderBillDB.getRealCustomerRecycleAmount());
+            customerOrderDetailsVo.setPayTime(orderBillDB.getPayTime());
             // 顾客确认订单时，获取顾客可以使用服务抵扣劵
             if (OrderStatus.CUSTOMER_CONFIRM_ORDER.getStatus().equals(orderInfoDB.getStatus())) {
                 AvailableCouponForm availableCouponForm = new AvailableCouponForm();
@@ -196,6 +212,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 customerOrderDetailsVo.setAvailableCouponVoList(availableCouponVoList);
             }
         }
+        // 查询订单列表评论信息
+        OrderCommentVo orderCommentVo = orderCommentService.getOrderComment(orderId);
+        if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
+            customerOrderDetailsVo.setReviewContent(orderCommentVo.getReviewContent());
+            customerOrderDetailsVo.setReviewTime(orderCommentVo.getReviewTime());
+        }
+
         // 从redis中判断查询有没有该订单的回收码
         String recycleCode = (String) redisTemplate.opsForValue().get(RedisConstant.RECYCLE_CODE + orderId);
         customerOrderDetailsVo.setRecycleCode(recycleCode);
@@ -213,6 +236,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         orderInfoLambdaUpdateWrapper.set(OrderInfo::getStatus, OrderStatus.CANCELED_ORDER)
                 .set(OrderInfo::getCancelMessage, OrderConstant.CANCEL_REMARK)
+                .set(OrderInfo::getUpdateTime,new Date())
                 .eq(OrderInfo::getId, orderId);
         // 删除redis中的订单
         redisTemplate.delete(RedisConstant.WAITING_ORDER + orderId);
@@ -326,6 +350,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderDetailsVo.setRealOrderRecycleAmount(orderBillDB.getRealOrderRecycleAmount());
             orderDetailsVo.setRealRecyclerPlatformAmount(orderBillDB.getRealRecyclerPlatformAmount());
             orderDetailsVo.setRealRecyclerAmount(orderBillDB.getRealRecyclerAmount());
+            orderDetailsVo.setPayTime(orderBillDB.getPayTime());
+        }
+
+        // 查询订单列表评论信息
+        OrderCommentVo orderCommentVo = orderCommentService.getOrderComment(orderId);
+        if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
+            orderDetailsVo.setReviewContent(orderCommentVo.getReviewContent());
+            orderDetailsVo.setReviewTime(orderCommentVo.getReviewTime());
         }
 
         return orderDetailsVo;
@@ -392,7 +424,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 recyclerOrderVo.setRealOrderRecycleAmount(orderBillDB.getRealOrderRecycleAmount());
                 recyclerOrderVo.setRealRecyclerPlatformAmount(orderBillDB.getRealRecyclerPlatformAmount());
                 recyclerOrderVo.setRecyclerOvertimeCharges(orderBillDB.getRecyclerOvertimeCharges());
+                recyclerOrderVo.setPayTime(orderBillDB.getPayTime());
                 recyclerOrderVo.setRealRecyclerAmount(orderBillDB.getRealRecyclerAmount());
+            }
+
+
+            // 查询订单列表评论信息
+            OrderCommentVo orderCommentVo = orderCommentService.getOrderComment(order.getId());
+            if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
+                recyclerOrderVo.setReviewContent(orderCommentVo.getReviewContent());
+                recyclerOrderVo.setReviewTime(orderCommentVo.getReviewTime());
             }
             return recyclerOrderVo;
         }).collect(Collectors.toList());
@@ -569,9 +610,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         RecyclerAccountVo recyclerAccountVoDB = recyclerAccountFeignClient.getRecyclerAccountInfo(recyclerAccountForm).getData();
         // 如果回收员账户余额不够，则结算失败
         if (billDB.getRealRecyclerAmount().compareTo(recyclerAccountVoDB.getTotalAmount()) > 0) {
-            return false;
+            throw new YueYiShouException(ResultCodeEnum.INSUFFICIENT_BALANCE);
         }
-        // 减少回收员账户余额、增加账户明细
+        // 减少回收员账户余额、增加账户明细、增加回收员单量
         RecyclerWithdrawForm recyclerWithdrawForm = new RecyclerWithdrawForm();
         recyclerWithdrawForm.setRecyclerId(settlementForm.getRecyclerId());
         recyclerWithdrawForm.setAmount(billDB.getRealRecyclerAmount());

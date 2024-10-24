@@ -28,6 +28,7 @@ public enum ResultCodeEnum {
     ID_CARD_NOT_RECOGNIZED(240,"身份证无法识别"),
     FACE_MODEL_CREATION_FAILED(250,"人脸模型创建失败"),
     UNCERTIFIED_RECYCLER(260,"未认证回收员"),
+    INSUFFICIENT_BALANCE(261,"账户余额不足"),
     MAP_FAIL( 262, "地图服务调用失败"),
     XXL_JOB_ERROR(350,"任务调度失败"),
     SERVICE_ERROR(2012, "服务异常"),

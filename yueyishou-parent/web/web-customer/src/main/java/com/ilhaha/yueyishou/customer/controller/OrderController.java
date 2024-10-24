@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.customer.controller;
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.OrderService;
+import com.ilhaha.yueyishou.model.form.order.ReviewForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
@@ -24,6 +25,16 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /**
+     * 顾客评论
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/review")
+    public Result<Boolean> review(@RequestBody ReviewForm reviewForm){
+        return orderService.review(reviewForm);
+    }
 
     /**
      * 取消订单

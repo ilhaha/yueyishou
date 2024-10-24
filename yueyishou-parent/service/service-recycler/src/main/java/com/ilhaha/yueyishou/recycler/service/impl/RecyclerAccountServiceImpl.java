@@ -12,8 +12,10 @@ import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAccountVo;
 import com.ilhaha.yueyishou.recycler.mapper.RecyclerAccountMapper;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerAccountDetailService;
 import com.ilhaha.yueyishou.recycler.service.IRecyclerAccountService;
+import com.ilhaha.yueyishou.recycler.service.IRecyclerInfoService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,10 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
 
     @Resource
     private IRecyclerAccountDetailService recyclerAccountDetailService;
+
+    @Lazy
+    @Resource
+    private IRecyclerInfoService recyclerInfoService;
 
     /**
      * 批量给回收员创建账户
@@ -139,11 +145,13 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
 
         // 2. 计算新的余额
         BigDecimal newTotalAmount = account.getTotalAmount().subtract(recyclerWithdrawForm.getAmount());
+        BigDecimal newTotalRecyclePay = account.getTotalRecyclePay().add(recyclerWithdrawForm.getAmount());
 
         // 3. 更新账户余额
         LambdaUpdateWrapper<RecyclerAccount> recyclerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         recyclerAccountLambdaUpdateWrapper.eq(RecyclerAccount::getRecyclerId, recyclerWithdrawForm.getRecyclerId())
                 .set(RecyclerAccount::getTotalAmount, newTotalAmount)
+                .set(RecyclerAccount::getTotalRecyclePay,newTotalRecyclePay)
                 .set(RecyclerAccount::getUpdateTime, new Date());
 
         // 4.添加明细数据
@@ -153,6 +161,10 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
         addDetailsForm.setTradeType(AccountDetailsConstant.RECYCLE_PAY_FEE);
         addDetailsForm.setContent(AccountDetailsConstant.RECYCLE_PAY_FEE_CONTENT);
         recyclerAccountDetailService.addDetails(addDetailsForm);
+
+        // 5.增加回收员单量
+        recyclerInfoService.updateOrderCount(recyclerWithdrawForm.getRecyclerId());
+
         return this.update(recyclerAccountLambdaUpdateWrapper);
     }
 }

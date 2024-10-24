@@ -42,11 +42,13 @@ public class CustomerAccountServiceImpl extends ServiceImpl<CustomerAccountMappe
 
         // 2. 计算新的余额
         BigDecimal newTotalAmount = customerAccountDB.getTotalAmount().add(customerWithdrawForm.getAmount());
+        BigDecimal newTotalRecycleIncome = customerAccountDB.getTotalRecycleIncome().add(customerWithdrawForm.getAmount());
 
         // 3. 更新账户余额
         LambdaUpdateWrapper<CustomerAccount> customerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         customerAccountLambdaUpdateWrapper.eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId())
                 .set(CustomerAccount::getTotalAmount, newTotalAmount)
+                .set(CustomerAccount::getTotalRecycleIncome,newTotalRecycleIncome)
                 .set(CustomerAccount::getUpdateTime, new Date());
 
         // 4.增加明细

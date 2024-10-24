@@ -89,4 +89,13 @@ public class OrderDetailsVo {
     private BigDecimal realCustomerRecycleAmount;
     /** 回收员实际支付订单金额 */
     private BigDecimal realRecyclerAmount;
+    /** 回收员付款时间 */
+    private Date payTime;
+    /**评论内容*/
+    private String reviewContent;
+    /**评论时间*/
+    private Date reviewTime;
+    /**修改时间*/
+    private Date updateTime;
+
 }

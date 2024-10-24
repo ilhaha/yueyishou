@@ -22,7 +22,7 @@ public class OrderComment extends BaseEntity {
     private Long customerId;
 	/**评分，1星~5星*/
     private Integer rate;
-	/**备注*/
-    private String remark;
+	/**评论内容*/
+    private String reviewContent;
 
 }

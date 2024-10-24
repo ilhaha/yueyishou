@@ -1,6 +1,7 @@
 package com.ilhaha.yueyishou.customer.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
+import com.ilhaha.yueyishou.model.form.order.ReviewForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
@@ -47,4 +48,10 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> cancelOrder(Long orderId);
+
+    /**
+     * 顾客评论
+     * @return
+     */
+    Result<Boolean> review(ReviewForm reviewForm);
 }

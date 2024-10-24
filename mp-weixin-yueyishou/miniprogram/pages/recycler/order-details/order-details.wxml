@@ -109,6 +109,10 @@
         <text class="label">超时赔偿</text>
         <text class="value">¥{{orderInfo.recyclerOvertimeCharges}}</text>
       </view>
+      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
+        <text class="label">超时时长</text>
+        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      </view>
       <view class="meta-item">
         <text class="label">订单编号</text>
         <text class="value">{{orderInfo.orderNo}}</text>
@@ -124,10 +128,6 @@
       <view class="meta-item">
         <text class="label">到达时间</text>
         <text class="value">{{orderInfo.arriveTime}}</text>
-      </view>
-      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
-        <text class="label">超时时长</text>
-        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
       </view>
       <view class="meta-item" wx:if="{{orderInfo.remark}}">
         <text class="label">备注</text>
@@ -191,6 +191,10 @@
         <text class="label">超时赔偿</text>
         <text class="value">¥{{orderInfo.recyclerOvertimeCharges}}</text>
       </view>
+      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
+        <text class="label">超时时长</text>
+        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      </view>
       <view class="meta-item">
         <text class="label">订单编号</text>
         <text class="value">{{orderInfo.orderNo}}</text>
@@ -206,10 +210,6 @@
       <view class="meta-item">
         <text class="label">到达时间</text>
         <text class="value">{{orderInfo.arriveTime}}</text>
-      </view>
-      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
-        <text class="label">超时时长</text>
-        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
       </view>
       <view class="meta-item" wx:if="{{orderInfo.remark}}">
         <text class="label">备注</text>
@@ -232,16 +232,18 @@
   </van-submit-bar>
 </view>
 
-<!-- 待付款 -->
-<view class="container container-padding-bottom-100" wx:if="{{orderStatus == 5}}">
+<!-- 待付款、待评价、已完成-->
+<view class="container container-padding-bottom-100" wx:if="{{orderStatus >= 5 && orderStatus != 8}}">
   <view class="shipping-info">
     <text>{{orderInfo.customerLocation}}</text>
     <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
   </view>
   <view class="order-details">
-    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.realRecyclerAmount}}" origin-price="{{orderInfo.realOrderRecycleAmount}}" tag="待确认">
+    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.realRecyclerAmount}}" origin-price="{{orderInfo.realOrderRecycleAmount}}" tag="{{orderStatus == 5 ? '待收款' : (orderStatus == 6 ? '待评价' : '已完成') }}">
       <view slot="desc" class="custom-desc">
-        <view>{{orderInfo.arriveTime}} 到达</view>
+        <view wx:if="{{orderStatus == 5}}">{{orderInfo.arriveTime}} 到达</view>
+        <view wx:if="{{orderStatus == 6}}">{{orderInfo.payTime}} 已付款</view>
+        <view wx:if="{{orderStatus == 7}}">{{orderInfo.reviewTime}} 已完成</view>
         <view wx:if="{{orderInfo.arriveTimoutMin}}" style="color: red;">超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
         <view wx:if="{{orderInfo.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
       </view>
@@ -271,6 +273,10 @@
         <text class="label">超时赔偿</text>
         <text class="value">¥{{orderInfo.recyclerOvertimeCharges}}</text>
       </view>
+      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
+        <text class="label">超时时长</text>
+        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      </view>
       <view class="meta-item">
         <text class="label">订单编号</text>
         <text class="value">{{orderInfo.orderNo}}</text>
@@ -287,9 +293,13 @@
         <text class="label">到达时间</text>
         <text class="value">{{orderInfo.arriveTime}}</text>
       </view>
-      <view class="meta-item" wx:if="{{orderInfo.arriveTimoutMin}}">
-        <text class="label">超时时长</text>
-        <text class="value">{{orderInfo.arriveTimoutMin}}分钟</text>
+      <view class="meta-item" wx:if="{{orderInfo.payTime}}">
+        <text class="label">付款时间</text>
+        <text class="value">{{orderInfo.payTime}}</text>
+      </view>
+      <view class="meta-item" wx:if="{{orderInfo.reviewContent}}">
+        <text class="label">评价内容</text>
+        <text class="value">{{orderInfo.reviewContent}}</text>
       </view>
       <view class="meta-item" wx:if="{{orderInfo.remark}}">
         <text class="label">备注</text>
@@ -303,11 +313,11 @@
       </view>
     </view>
   </view>
-  <van-submit-bar price="{{ orderInfo.realRecyclerAmount * 100}}" button-text="结算" bind:tap="switchSettlementShow" data-orderid="{{orderInfo.id}}">
+  <van-submit-bar price="{{ orderInfo.realRecyclerAmount * 100}}" button-text="结算" bind:tap="switchSettlementShow" data-orderid="{{orderInfo.id}}" wx:if="{{orderStatus == 5}}">
   </van-submit-bar>
 
   <van-dialog use-slot title="确认是否结算订单" show="{{ settlementShow }}" show-cancel-button confirm-button-open-type="getUserInfo" bind:cancel="switchSettlementShow" bind:confirm="settlement">
-   
+
   </van-dialog>
 </view>
 

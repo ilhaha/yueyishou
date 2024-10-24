@@ -3,6 +3,7 @@ package com.ilhaha.yueyishou.recycler.client;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
+import com.ilhaha.yueyishou.model.form.recycler.UpdateRateForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
@@ -18,6 +19,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-recycler")
 public interface RecyclerInfoFeignClient {
+
+    /**
+     * 修改回收员评分
+     * @param updateRateForm
+     * @return
+     */
+    @PostMapping("/recyclerInfo/update/rate")
+    Result<Boolean> updateRate(@RequestBody UpdateRateForm updateRateForm);
 
     /**
      * 通过id查询

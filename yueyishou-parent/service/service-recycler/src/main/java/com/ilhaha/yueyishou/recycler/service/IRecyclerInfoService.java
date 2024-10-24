@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
+import com.ilhaha.yueyishou.model.form.recycler.UpdateRateForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
@@ -75,4 +76,16 @@ public interface IRecyclerInfoService extends IService<RecyclerInfo> {
      */
     Boolean replenishInfo(Long customerId, String token);
 
+    /**
+     * 增加回收员单量
+     * @param recyclerId
+     */
+    void updateOrderCount(Long recyclerId);
+
+    /**
+     * 修改回收员评分
+     * @param updateRateForm
+     * @return
+     */
+    Boolean updateRate(UpdateRateForm updateRateForm);
 }

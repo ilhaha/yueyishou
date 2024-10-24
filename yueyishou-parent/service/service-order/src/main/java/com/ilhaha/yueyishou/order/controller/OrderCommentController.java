@@ -3,8 +3,10 @@ package com.ilhaha.yueyishou.order.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderComment;
+import com.ilhaha.yueyishou.model.form.order.ReviewForm;
 import com.ilhaha.yueyishou.order.service.IOrderCommentService;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
@@ -21,6 +23,15 @@ import java.util.Arrays;
 public class OrderCommentController {
 	@Resource
 	private IOrderCommentService orderCommentService;
+
+	/**
+	 * 顾客评论
+	 * @return
+	 */
+	@PostMapping("/review")
+	public Result<Boolean> review(@RequestBody ReviewForm reviewForm){
+		return Result.ok(orderCommentService.review(reviewForm));
+	}
 	
 	/**
 	 * 分页列表查询
@@ -41,7 +52,7 @@ public class OrderCommentController {
 		IPage<OrderComment> pageList = orderCommentService.page(page, orderCommentLambdaQueryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
 	/**
 	 *   添加
 	 *

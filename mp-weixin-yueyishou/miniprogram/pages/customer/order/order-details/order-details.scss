@@ -185,3 +185,39 @@
   font-size: 16px;
   color: #666;
 }
+
+.review-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+.review-label {
+  font-size: 29rpx;
+  /* 与输入框字体大小一致 */
+  color: #333;
+  width: 180rpx;
+  /* 固定宽度，与输入框左对齐 */
+  text-align: center;
+}
+
+.rate-stars {
+  flex-grow: 1;
+  /* 占据剩余空间 */
+}
+
+.review-input {
+  font-size: 16px;
+  /* 与评分部分字体大小一致 */
+  width: 100%;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+}

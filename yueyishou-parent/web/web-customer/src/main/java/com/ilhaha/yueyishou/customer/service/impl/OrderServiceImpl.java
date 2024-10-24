@@ -3,11 +3,13 @@ package com.ilhaha.yueyishou.customer.service.impl;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.customer.service.OrderService;
+import com.ilhaha.yueyishou.model.form.order.ReviewForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
 import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
 import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
+import com.ilhaha.yueyishou.order.client.OrderCommentFeignClient;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import jakarta.annotation.Resource;
@@ -28,6 +30,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OrderInfoFeignClient orderInfoFeignClient;
+
+    @Resource
+    private OrderCommentFeignClient orderCommentFeignClient;
 
     /**
      * 预估订单费用
@@ -75,5 +80,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<Boolean> cancelOrder(Long orderId) {
         return orderInfoFeignClient.cancelOrder(orderId);
+    }
+
+    /**
+     * 顾客评论
+     * @return
+     */
+    @Override
+    public Result<Boolean> review(ReviewForm reviewForm) {
+        return orderCommentFeignClient.review(reviewForm);
     }
 }

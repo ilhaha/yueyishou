@@ -52,7 +52,15 @@ Page({
     const res = await reqSettlement({
       orderId: this.data.orderInfo.id
     });
-    console.log(res);
+    if (res.data) {
+      toast({
+        title: '结算成功',
+        icon: 'success'
+      })
+      setTimeout(() => {
+        this.goBack()
+      }, 1000);
+    }
   },
 
   // 切换结算弹窗

@@ -94,7 +94,7 @@ public class OrderBillServiceImpl extends ServiceImpl<OrderBillMapper, OrderBill
                 .set(OrderBill::getUpdateTime,new Date())
                 .set(!ObjectUtils.isEmpty(updateBillForm.getPayTime()),OrderBill::getPayTime,updateBillForm.getPayTime())
                 .set(!ObjectUtils.isEmpty(updateBillForm.getTransactionId()),OrderBill::getTransactionId,updateBillForm.getTransactionId());
-
+        this.update(orderBillLambdaUpdateWrapper);
         // 如果顾客使用的服务抵扣劵，则修改服务抵扣劵信息
         if (!ObjectUtils.isEmpty(updateBillForm.getCouponId())) {
             UseCouponFrom useCouponFrom = new UseCouponFrom();
