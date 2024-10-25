@@ -87,4 +87,11 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> settlement(SettlementForm settlementForm);
+
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    Result<CancelOrderVo> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
 }

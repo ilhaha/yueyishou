@@ -22,6 +22,17 @@ public class OrderController {
     @Resource
     private OrderService orderService;
 
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/cancelOrderAfterTaking")
+    public Result<CancelOrderVo> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm){
+        return orderService.cancelOrderAfterTaking(cancelOrderForm);
+    }
+
     /**
      * 结算订单
      * @param settlementForm

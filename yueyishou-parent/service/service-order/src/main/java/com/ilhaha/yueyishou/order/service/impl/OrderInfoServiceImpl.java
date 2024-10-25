@@ -36,6 +36,7 @@ import com.ilhaha.yueyishou.recycler.client.RecyclerAccountFeignClient;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.geo.Point;
@@ -46,6 +47,8 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -236,6 +239,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         orderInfoLambdaUpdateWrapper.set(OrderInfo::getStatus, OrderStatus.CANCELED_ORDER)
                 .set(OrderInfo::getCancelMessage, OrderConstant.CANCEL_REMARK)
+                .set(OrderInfo::getCancelTime,new Date())
                 .set(OrderInfo::getUpdateTime,new Date())
                 .eq(OrderInfo::getId, orderId);
         // 删除redis中的订单
@@ -634,6 +638,66 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .set(OrderInfo::getStatus,OrderStatus.COMPLETED_ORDER)
                 .set(OrderInfo::getUpdateTime,new Date());
         return this.update(orderInfoLambdaUpdateWrapper);
+    }
+
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    @Override
+    public CancelOrderVo cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
+        CancelOrderVo cancelOrderVo = new CancelOrderVo();
+        // 当前时间是否大于预约上门时间，如果大于则需要回收员支付取消
+        OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
+        long serviceOvertimeMin = calculateMinutesDifference(new Date(), cancelOrderForm.getAppointmentTime());
+        if (serviceOvertimeMin < 0) {
+            // 当前时间大于预约上门时间，需回收员付款取消
+            overtimeRequestForm.setOvertimeMinutes(Math.toIntExact(Math.abs(serviceOvertimeMin)));
+            OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.calculateTimeoutCancelFree(overtimeRequestForm).getData();
+            cancelOrderVo.setServiceOvertimePenalty(overtimeResponseVo.getOvertimeFee());
+            cancelOrderVo.setOvertimeMinutes(overtimeRequestForm.getOvertimeMinutes());
+            return cancelOrderVo;
+        }
+
+        // 顾客取消订单规则
+        if (OrderConstant.CUSTOMER_CANCELS_ORDER.equals(cancelOrderForm.getCancelOperator())) {
+            // 如果当前时间与回收员接单时间超过五分钟，需付费取消
+            long customerLateCancellationMin = calculateMinutesDifference(new Date(), cancelOrderForm.getAcceptTime());
+            if (customerLateCancellationMin < 0 &&
+                    OrderConstant.CUSTOMER_CANCELS_ORDER_FREE_MIN < Math.abs(customerLateCancellationMin)) {
+                overtimeRequestForm.setOvertimeMinutes(Math.toIntExact(Math.abs(customerLateCancellationMin) - OrderConstant.CUSTOMER_CANCELS_ORDER_FREE_MIN));
+                OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.customerLateCancellationFee(overtimeRequestForm).getData();
+                cancelOrderVo.setCustomerLateCancellationFee(overtimeResponseVo.getOvertimeFee());
+                cancelOrderVo.setOvertimeMinutes(overtimeRequestForm.getOvertimeMinutes());
+            }
+            return cancelOrderVo;
+        }
+        // 回收员取消规则
+        if (OrderConstant.RECYCLER_CANCELS_ORDER.equals(cancelOrderForm.getCancelOperator())) {
+            // 如果当前时间距离预约上门时间不足60分钟，需付费取消
+            long recyclerLateCancellationMin = calculateMinutesDifference(new Date(), cancelOrderForm.getAppointmentTime());
+            if (OrderConstant.RECYCLER_CANCELS_ORDER_FREE_MIN > recyclerLateCancellationMin) {
+                overtimeRequestForm.setOvertimeMinutes(Math.toIntExact(OrderConstant.RECYCLER_CANCELS_ORDER_FREE_MIN - recyclerLateCancellationMin));
+                OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.recyclerLateCancellationFee(overtimeRequestForm).getData();
+                cancelOrderVo.setRecyclerLateCancellationFee(overtimeResponseVo.getOvertimeFee());
+                cancelOrderVo.setOvertimeMinutes(overtimeRequestForm.getOvertimeMinutes());
+            }
+        }
+        return cancelOrderVo;
+    }
+
+    /**
+     * 计算两个 Date 类型时间的分钟差
+     *
+     * @param startDate 开始时间
+     * @param endDate   结束时间
+     * @return 两个时间之间的分钟差(开始时间 > 结束时间：返回负数)
+     */
+    private static long calculateMinutesDifference(Date startDate, Date endDate) {
+        Instant startInstant = startDate.toInstant();
+        Instant endInstant = endDate.toInstant();
+        return ChronoUnit.MINUTES.between(startInstant, endInstant);
     }
 
     /**

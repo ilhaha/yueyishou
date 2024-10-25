@@ -23,6 +23,16 @@ public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
 
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    @PostMapping("/cancelOrderAfterTaking")
+    public Result<CancelOrderVo> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm){
+        return Result.ok(orderInfoService.cancelOrderAfterTaking(cancelOrderForm));
+    }
+
 
     /**
      * 结算订单

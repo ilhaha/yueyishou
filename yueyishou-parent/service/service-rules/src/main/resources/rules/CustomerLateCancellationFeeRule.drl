@@ -1,0 +1,28 @@
+package com.ilhaha.yueyishou.rules;
+
+import com.ilhaha.yueyishou.model.form.order.OvertimeRequestForm;
+import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
+import java.math.BigDecimal;
+
+/**
+ * Drools规则文件：计算顾客超时取消订单（当前时间大于回收员接单时间超过五分钟）费用
+ * 每超1分钟收费2元。
+ */
+
+rule "Calculate Customer Late Cancellation Fee"
+when
+    // 匹配超时请求，并且超时时间大于0
+    $request: OvertimeRequestForm($overtimeMinutes : overtimeMinutes > 0)
+    $response: OvertimeResponseVo()
+then
+    // 计算 1 分钟周期数（不需要向上取整，因为是按分钟计算）
+    int feePeriods = $overtimeMinutes;
+
+    // 每分钟收费 2 元
+    BigDecimal overtimeFee = BigDecimal.valueOf(feePeriods * 2);
+
+    // 设置响应中的超时费用
+    $response.setOvertimeFee(overtimeFee);
+
+   System.out.println(5);
+end

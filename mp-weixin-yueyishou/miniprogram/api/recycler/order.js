@@ -79,3 +79,10 @@ export const reqValidateRecycleCode = (data) => {
 export const reqSettlement = (data) => {
   return http.post(urlPrefix + `/order/settlement`, data)
 }
+
+/**
+ * 接单后取消订单
+ */
+export const reqCancelOrderAfterTaking = (data) => {
+  return http.post(urlPrefix + `/order/cancelOrderAfterTaking`,data)
+}

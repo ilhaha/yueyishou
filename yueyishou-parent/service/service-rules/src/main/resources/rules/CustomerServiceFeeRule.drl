@@ -63,4 +63,6 @@ then
 
     // 5. 将计算出的平台费用设置到响应对象中
     $response.setExpectCustomerPlatformAmount(platformFee);
+
+    System.out.println(1);
 end

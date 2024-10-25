@@ -3,12 +3,10 @@ package com.ilhaha.yueyishou.customer.controller;
 import com.ilhaha.yueyishou.common.anno.LoginVerification;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.customer.service.OrderService;
+import com.ilhaha.yueyishou.model.form.order.CancelOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ReviewForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
-import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
-import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
-import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
-import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
+import com.ilhaha.yueyishou.model.vo.order.*;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +23,17 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/cancelOrderAfterTaking")
+    public Result<CancelOrderVo> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm){
+        return orderService.cancelOrderAfterTaking(cancelOrderForm);
+    }
 
     /**
      * 顾客评论

@@ -53,6 +53,8 @@ public class OrderInfo extends BaseEntity {
     private Integer status;
 	/**取消订单信息*/
     private String cancelMessage;
+    /**取消时间*/
+    private Date cancelTime;
 	/**订单备注信息*/
     private String remark;
     /**订单联系人*/
@@ -65,4 +67,11 @@ public class OrderInfo extends BaseEntity {
     private BigDecimal expectCustomerPlatformAmount;
     /**回收员预支付平台订单金额*/
     private BigDecimal expectRecyclerPlatformAmount;
+    /**接单后，回收员在预约时间未到达取消订单赔偿*/
+    private BigDecimal serviceOvertimePenalty;
+    /**接单后，顾客未在免费取消订单时间内取消赔偿*/
+    private BigDecimal customerLateCancellationFee;
+    /**接单后，回收员未在免费取消订单时间内取消赔偿*/
+    private BigDecimal recyclerLateCancellationFee;
+
 }

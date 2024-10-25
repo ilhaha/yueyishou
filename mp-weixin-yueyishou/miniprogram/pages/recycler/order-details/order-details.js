@@ -5,7 +5,8 @@ import {
   reqRecyclerArrive,
   reqCalculateActual,
   reqValidateRecycleCode,
-  reqSettlement
+  reqSettlement,
+  reqCancelOrderAfterTaking
 } from '../../../api/recycler/order'
 import {
   toast
@@ -258,31 +259,43 @@ Page({
   },
   // 接单之后回收员取消订单
   async recyclerCanceOrder() {
+    const {
+      orderInfo
+    } = this.data
+    const res = await reqCancelOrderAfterTaking({
+      orderId: orderInfo.id,
+      customerId: orderInfo.customerId,
+      recyclerId: orderInfo.recyclerId,
+      appointmentTime: orderInfo.appointmentTime,
+      acceptTime: orderInfo.acceptTime,
+      cancelOperator: 'recycler'
+    });
+    console.log(res);
     // 判断当前时间是否大于预约上门时间，如果大于则需要回收员支付
-    if (this.calculateTimeDifference(this.data.orderInfo.appointmentTime) > 0) {
-      toast({
-        title: "回收员迟到，后续处理"
-      })
-      return;
-    }
+    // if (this.calculateTimeDifference(this.data.orderInfo.appointmentTime) > 0) {
+    //   toast({
+    //     title: "回收员迟到，后续处理"
+    //   })
+    //   return;
+    // }
     // 如果当前时间距离预约上门时间还有60分钟，则免费取消
-    const diffMin = this.calculateTimeDifference(this.data.orderInfo.appointmentTime);
-    if (diffMin > -60) {
-      toast({
-        title: "回收员付费取消"
-      })
-    } else {
-      // 取消接单，把订单查询发给符合接单的回收员
-      await reqRepostOrder(this.data.orderInfo.id)
-      toast({
-        title: "取消成功",
-        duration: 1000,
-        icon: 'success'
-      })
-      setTimeout(() => {
-        this.goBack()
-      }, 1000);
-    }
+    // const diffMin = this.calculateTimeDifference(this.data.orderInfo.appointmentTime);
+    // if (diffMin > -60) {
+    //   toast({
+    //     title: "回收员付费取消"
+    //   })
+    // } else {
+    // 取消接单，把订单查询发给符合接单的回收员
+    //   await reqRepostOrder(this.data.orderInfo.id)
+    //   toast({
+    //     title: "取消成功",
+    //     duration: 1000,
+    //     icon: 'success'
+    //   })
+    //   setTimeout(() => {
+    //     this.goBack()
+    //   }, 1000);
+    // }
   },
   // 返回上个页面，并且调用onShow方法
   goBack() {

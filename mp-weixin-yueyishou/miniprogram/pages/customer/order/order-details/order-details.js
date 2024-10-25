@@ -1,7 +1,8 @@
 import {
   reqOrderDetails,
   reqCancelOrder,
-  reqReview
+  reqReview,
+  reqCancelOrderAfterTaking
 } from '../../../../api/customer/order'
 import {
   toast
@@ -244,23 +245,35 @@ Page({
   },
 
   // 回收员接单后，用户取消订单
-  customerCanceOrder(event) {
+  async customerCanceOrder(event) {
+    const {
+      orderInfo
+    } = this.data
+    const res = await reqCancelOrderAfterTaking({
+      orderId: orderInfo.id,
+      customerId: orderInfo.customerId,
+      recyclerId: orderInfo.recyclerId,
+      appointmentTime: orderInfo.appointmentTime,
+      acceptTime: orderInfo.acceptTime,
+      cancelOperator: 'customer'
+    });
+    console.log(res);
     // 判断当前时间是否大于预约上门时间，如果大于则需要回收员支付
-    if (this.calculateTimeDifference(this.data.orderInfo.appointmentTime) > 0) {
-      toast({
-        title: "回收员迟到，后续处理"
-      })
-      return;
-    }
-    const diffMin = this.calculateTimeDifference(this.data.orderInfo.acceptTime);
-    if (diffMin > 5) {
-      toast({
-        title: "大于五分钟，付费取消"
-      })
-    } else {
-      // 取消订单
-      this.cancelOrder();
-    }
+    // if (this.calculateTimeDifference(this.data.orderInfo.appointmentTime) > 0) {
+    //   toast({
+    //     title: "回收员迟到，后续处理"
+    //   })
+    //   return;
+    // }
+    // const diffMin = this.calculateTimeDifference(this.data.orderInfo.acceptTime);
+    // if (diffMin > 5) {
+    //   toast({
+    //     title: "大于五分钟，付费取消"
+    //   })
+    // } else {
+    //   // 取消订单
+    //   this.cancelOrder();
+    // }
   },
 
   // 取消订单

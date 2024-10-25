@@ -34,13 +34,45 @@ public class ServiceFeeRuleController {
 
 
     /**
-     * 计算回收员超时费用
+     * 计算回收员服务超时费用
      * @param overtimeRequestForm
      * @return
      */
     @PostMapping("/calculateTimeoutFree")
     public Result<OvertimeResponseVo> calculateTimeoutFree(@RequestBody OvertimeRequestForm overtimeRequestForm){
         return Result.ok(serviceFeeRuleService.calculateTimeoutFree(overtimeRequestForm));
+    }
+
+
+    /**
+     * 计算回收员服务超时取消（当前时间大于预约上门时间）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/calculateTimeoutCancelFree")
+    public Result<OvertimeResponseVo> calculateTimeoutCancelFree(@RequestBody OvertimeRequestForm overtimeRequestForm){
+        return Result.ok(serviceFeeRuleService.calculateTimeoutCancelFree(overtimeRequestForm));
+    }
+
+    /**
+     * 计算顾客超时取消（当前时间超过回收员接单时间五分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/customerLateCancellationFee")
+    public Result<OvertimeResponseVo> customerLateCancellationFee(@RequestBody OvertimeRequestForm overtimeRequestForm){
+        return Result.ok(serviceFeeRuleService.customerLateCancellationFee(overtimeRequestForm));
+    }
+
+
+    /**
+     * 计算回收员超时取消（当前时间距离预约时间不足60分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/recyclerLateCancellationFee")
+    public Result<OvertimeResponseVo> recyclerLateCancellationFee(@RequestBody OvertimeRequestForm overtimeRequestForm){
+        return Result.ok(serviceFeeRuleService.recyclerLateCancellationFee(overtimeRequestForm));
     }
 
 }

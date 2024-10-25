@@ -137,4 +137,14 @@ public class OrderServiceImpl implements OrderService {
         settlementForm.setRecyclerId(AuthContextHolder.getRecyclerId());
         return orderInfoFeignClient.settlement(settlementForm);
     }
+
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    @Override
+    public Result<CancelOrderVo> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
+        return orderInfoFeignClient.cancelOrderAfterTaking(cancelOrderForm);
+    }
 }

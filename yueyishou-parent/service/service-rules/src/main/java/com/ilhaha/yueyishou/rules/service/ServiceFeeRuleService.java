@@ -20,9 +20,30 @@ public interface ServiceFeeRuleService {
     ServiceFeeRuleResponseVo calculateOrderFee(ServiceFeeRuleRequestForm serviceFeeRuleRequestForm);
 
     /**
-     * 计算回收员超时费用
+     * 计算回收员服务超时费用
      * @param overtimeRequestForm
      * @return
      */
     OvertimeResponseVo calculateTimeoutFree(OvertimeRequestForm overtimeRequestForm);
+
+    /**
+     * 计算回收员服务超时取消（当前时间大于预约上门时间）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    OvertimeResponseVo calculateTimeoutCancelFree(OvertimeRequestForm overtimeRequestForm);
+
+    /**
+     * 计算顾客超时取消（当前时间超过回收员接单时间五分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    OvertimeResponseVo customerLateCancellationFee(OvertimeRequestForm overtimeRequestForm);
+
+    /**
+     * 计算回收员超时取消（当前时间距离预约时间不足60分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    OvertimeResponseVo recyclerLateCancellationFee(OvertimeRequestForm overtimeRequestForm);
 }

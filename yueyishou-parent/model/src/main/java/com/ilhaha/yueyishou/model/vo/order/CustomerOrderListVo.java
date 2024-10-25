@@ -51,6 +51,12 @@ public class CustomerOrderListVo {
     private String reviewContent;
     /**评论时间*/
     private Date reviewTime;
-    /**修改时间*/
-    private Date updateTime;
+    /**取消时间*/
+    private Date cancelTime;
+    /**接单后，回收员在预约时间未到达取消订单赔偿*/
+    private BigDecimal serviceOvertimePenalty;
+    /**接单后，顾客未在免费取消订单时间内取消赔偿*/
+    private BigDecimal customerLateCancellationFee;
+    /**接单后，回收员未在免费取消订单时间内取消赔偿*/
+    private BigDecimal recyclerLateCancellationFee;
 }

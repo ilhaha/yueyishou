@@ -63,4 +63,6 @@ then
 
     // 5. 设置回收员预支付平台订单金额
     $response.setExpectRecyclerPlatformAmount(recyclerFee);
+
+    System.out.println(2);
 end

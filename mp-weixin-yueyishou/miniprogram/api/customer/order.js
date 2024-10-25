@@ -44,3 +44,10 @@ export const reqCancelOrder = (orderId) => {
 export const reqReview = (data) => {
   return http.post(urlPrefix + `/order/review`, data)
 }
+
+/**
+ * 接单后取消订单
+ */
+export const reqCancelOrderAfterTaking = (data) => {
+  return http.post(urlPrefix + `/order/cancelOrderAfterTaking`,data)
+}

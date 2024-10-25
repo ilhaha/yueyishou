@@ -1,30 +1,48 @@
 package com.ilhaha.yueyishou.rules.service.impl;
+
 import com.ilhaha.yueyishou.model.form.order.OvertimeRequestForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
 import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
 import com.ilhaha.yueyishou.rules.service.ServiceFeeRuleService;
-import jakarta.annotation.Resource;
+import org.kie.api.KieBase;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.utils.KieHelper;
 import org.springframework.stereotype.Service;
 
 import java.math.RoundingMode;
 
 @Service
 public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
-    @Resource
-    private KieContainer kieContainer;
 
     /**
      * 预估订单费用
+     *
      * @param serviceFeeRuleRequestForm
      * @return
      */
     @Override
     public ServiceFeeRuleResponseVo calculateOrderFee(ServiceFeeRuleRequestForm serviceFeeRuleRequestForm) {
-        // 创建 KieSession
-        KieSession kieSession = kieContainer.newKieSession();
+
+        KieHelper kieHelper = new KieHelper();
+
+        // 加载第一个 DRL 文件
+        Resource resource1 = ResourceFactory.newClassPathResource(
+                "rules/CustomerServiceFeeRule.drl", "UTF-8");
+        kieHelper.addResource(resource1, ResourceType.DRL);
+
+        // 加载第二个 DRL 文件
+        Resource resource2 = ResourceFactory.newClassPathResource(
+                "rules/RecyclerServiceFeeRule.drl", "UTF-8");
+        kieHelper.addResource(resource2, ResourceType.DRL);
+
+        // 构建 KieBase 并创建 KieSession
+        KieBase kieBase = kieHelper.build();
+        KieSession kieSession = kieBase.newKieSession();
 
         // 创建输出对象
         ServiceFeeRuleResponseVo response = new ServiceFeeRuleResponseVo();
@@ -37,31 +55,114 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
             // 执行规则
             kieSession.fireAllRules();
         } finally {
+            // 释放资源
             kieSession.dispose();
         }
+
         // 订单预计回收总金额
         response.setEstimatedTotalAmount(
                 serviceFeeRuleRequestForm.getUnitPrice()
                         .multiply(serviceFeeRuleRequestForm.getRecycleWeigh())
                         .setScale(2, RoundingMode.HALF_UP)
         );
+
         return response;
     }
 
     /**
-     * 计算回收员超时费用
+     * 计算回收员服务超时费用
+     *
      * @param overtimeRequestForm
      * @return
      */
     @Override
     public OvertimeResponseVo calculateTimeoutFree(OvertimeRequestForm overtimeRequestForm) {
-        KieSession kieSession = kieContainer.newKieSession();
+        KieHelper kieHelper = new KieHelper();
+        // 获取指定的drl文件
+        Resource resource = ResourceFactory.newClassPathResource("rules/RecyclerOvertimeFeeRule.drl", "UTF-8");
+        kieHelper.addResource(resource, ResourceType.DRL);
+        KieBase kieBase = kieHelper.build();
+        KieSession kieSession = kieBase.newKieSession();
         OvertimeResponseVo overtimeResponseVo = new OvertimeResponseVo();
-
         try {
             kieSession.insert(overtimeRequestForm);
             kieSession.insert(overtimeResponseVo);
-            kieSession.fireAllRules(2);
+            kieSession.fireAllRules();
+        } finally {
+            kieSession.dispose();
+        }
+
+        return overtimeResponseVo;
+    }
+
+    /**
+     * 计算回收员服务超时取消（当前时间大于预约上门时间）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @Override
+    public OvertimeResponseVo calculateTimeoutCancelFree(OvertimeRequestForm overtimeRequestForm) {
+        KieHelper kieHelper = new KieHelper();
+        // 获取指定的drl文件
+        Resource resource = ResourceFactory.newClassPathResource("rules/RecyclerOvertimeCancelFeeRule.drl", "UTF-8");
+        kieHelper.addResource(resource, ResourceType.DRL);
+        KieBase kieBase = kieHelper.build();
+        KieSession kieSession = kieBase.newKieSession();
+        OvertimeResponseVo overtimeResponseVo = new OvertimeResponseVo();
+        try {
+            kieSession.insert(overtimeRequestForm);
+            kieSession.insert(overtimeResponseVo);
+            kieSession.fireAllRules();
+        } finally {
+            kieSession.dispose();
+        }
+
+        return overtimeResponseVo;
+    }
+
+    /**
+     * 计算顾客超时取消（当前时间超过回收员接单时间五分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @Override
+    public OvertimeResponseVo customerLateCancellationFee(OvertimeRequestForm overtimeRequestForm) {
+        KieHelper kieHelper = new KieHelper();
+        // 获取指定的drl文件
+        Resource resource = ResourceFactory.newClassPathResource("rules/CustomerLateCancellationFeeRule.drl", "UTF-8");
+        kieHelper.addResource(resource, ResourceType.DRL);
+        KieBase kieBase = kieHelper.build();
+        KieSession kieSession = kieBase.newKieSession();
+        OvertimeResponseVo overtimeResponseVo = new OvertimeResponseVo();
+        try {
+            kieSession.insert(overtimeRequestForm);
+            kieSession.insert(overtimeResponseVo);
+            kieSession.fireAllRules();
+        } finally {
+            kieSession.dispose();
+        }
+
+        return overtimeResponseVo;
+    }
+
+    /**
+     * 计算回收员超时取消（当前时间距离预约时间不足60分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @Override
+    public OvertimeResponseVo recyclerLateCancellationFee(OvertimeRequestForm overtimeRequestForm) {
+        KieHelper kieHelper = new KieHelper();
+        // 获取指定的drl文件
+        Resource resource = ResourceFactory.newClassPathResource("rules/RecyclerLateCancellationFeeRule.drl", "UTF-8");
+        kieHelper.addResource(resource, ResourceType.DRL);
+        KieBase kieBase = kieHelper.build();
+        KieSession kieSession = kieBase.newKieSession();
+        OvertimeResponseVo overtimeResponseVo = new OvertimeResponseVo();
+        try {
+            kieSession.insert(overtimeRequestForm);
+            kieSession.insert(overtimeResponseVo);
+            kieSession.fireAllRules();
         } finally {
             kieSession.dispose();
         }

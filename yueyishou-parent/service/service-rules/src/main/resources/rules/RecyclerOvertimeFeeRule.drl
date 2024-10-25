@@ -5,7 +5,7 @@ import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
 import java.math.BigDecimal;
 
 /**
- * Drools规则文件：计算超时费用
+ * Drools规则文件：计算服务超时（到达时间大于上门预约回收时间）费用
  * 每超10分钟收费5元，不足10分钟按10分钟计算。
  */
 
@@ -22,5 +22,7 @@ then
 
     // 设置响应的超时费用
     $response.setOvertimeFee(overtimeFee);
+
+    System.out.println(3);
 
 end

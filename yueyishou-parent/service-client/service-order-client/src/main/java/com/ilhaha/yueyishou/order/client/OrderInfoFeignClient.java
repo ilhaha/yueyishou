@@ -18,6 +18,14 @@ import java.util.List;
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
 
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    @PostMapping("/orderInfo/cancelOrderAfterTaking")
+    Result<CancelOrderVo> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm);
+
     /**
      * 结算订单
      * @param settlementForm

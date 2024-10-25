@@ -34,4 +34,28 @@ public interface ServiceFeeRuleFeignClient {
     Result<OvertimeResponseVo> calculateTimeoutFree(@RequestBody OvertimeRequestForm overtimeRequestForm);
 
 
+
+    /**
+     * 计算回收员服务超时取消（当前时间大于预约上门时间）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/service/fee/calculateTimeoutCancelFree")
+    Result<OvertimeResponseVo> calculateTimeoutCancelFree(@RequestBody OvertimeRequestForm overtimeRequestForm);
+
+    /**
+     * 计算顾客超时取消（当前时间超过回收员接单时间五分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/service/fee/customerLateCancellationFee")
+    Result<OvertimeResponseVo> customerLateCancellationFee(@RequestBody OvertimeRequestForm overtimeRequestForm);
+
+    /**
+     * 计算回收员超时取消（当前时间距离预约时间不足60分钟）订单费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/service/fee/recyclerLateCancellationFee")
+    Result<OvertimeResponseVo> recyclerLateCancellationFee(@RequestBody OvertimeRequestForm overtimeRequestForm);
 }

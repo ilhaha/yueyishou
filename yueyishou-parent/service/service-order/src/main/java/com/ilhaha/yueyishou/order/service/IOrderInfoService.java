@@ -138,4 +138,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Boolean settlement(SettlementForm settlementForm);
+
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    CancelOrderVo cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
 }

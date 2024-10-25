@@ -3,12 +3,10 @@ package com.ilhaha.yueyishou.customer.service.impl;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.customer.service.OrderService;
+import com.ilhaha.yueyishou.model.form.order.CancelOrderForm;
 import com.ilhaha.yueyishou.model.form.order.ReviewForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
-import com.ilhaha.yueyishou.model.vo.order.OrderDetailsVo;
-import com.ilhaha.yueyishou.model.vo.order.CustomerOrderListVo;
-import com.ilhaha.yueyishou.model.vo.order.PlaceOrderForm;
-import com.ilhaha.yueyishou.model.vo.order.ServiceFeeRuleResponseVo;
+import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.client.OrderCommentFeignClient;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
@@ -89,5 +87,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<Boolean> review(ReviewForm reviewForm) {
         return orderCommentFeignClient.review(reviewForm);
+    }
+
+    /***
+     * 接单后取消
+     * @param cancelOrderForm
+     * @return
+     */
+    @Override
+    public Result<CancelOrderVo> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
+        return orderInfoFeignClient.cancelOrderAfterTaking(cancelOrderForm);
     }
 }
