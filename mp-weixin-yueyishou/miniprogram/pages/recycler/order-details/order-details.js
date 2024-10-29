@@ -6,6 +6,7 @@ import {
   reqCalculateActual,
   reqValidateRecycleCode,
   reqSettlement,
+  reqCalculateCancellationFee,
   reqCancelOrderAfterTaking
 } from '../../../api/recycler/order'
 import {
@@ -39,13 +40,50 @@ Page({
       recyclerCouponAmount: 0.00,
       realCustomerPlatformAmount: 0.00,
     },
-    settlementShow: false
+    settlementShow: false,
+    customerLateCancellationFee: null,
+    overtimeMinutes: null,
+    recyclerLateCancellationFee: null,
+    serviceOvertimePenalty: null,
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
     this.setData({
       orderStatus: options.orderStatus
     })
+  },
+  // 接单后回收员取消订单
+  async recyclercancelOrder(event) {
+    if (!this.data.serviceOvertimePenalty && !this.data.customerLateCancellationFee && !this.data.recyclerLateCancellationFee) {
+      const resp = await reqRepostOrder(this.data.orderInfo.id);
+      if (resp.data) {
+        toast({
+          title: '已取消',
+          icon: 'susscess'
+        })
+        setTimeout(() => {
+          this.goBack()
+        }, 1000);
+      }
+      return;
+    };
+    const res = await reqCancelOrderAfterTaking({
+      orderId: this.data.orderInfo.id,
+      customerId: this.data.orderInfo.customerId,
+      recyclerId: this.data.orderInfo.recyclerId,
+      serviceOvertimePenalty: this.data.serviceOvertimePenalty,
+      customerLateCancellationFee: this.data.customerLateCancellationFee,
+      recyclerLateCancellationFee: this.data.recyclerLateCancellationFee
+    })
+    if (res.data) {
+      toast({
+        title: '已取消',
+        icon: 'susscess'
+      })
+      setTimeout(() => {
+        this.goBack()
+      }, 1000);
+    }
   },
 
   // 结算付款
@@ -87,8 +125,6 @@ Page({
       });
       return; // 不符合格式直接返回
     }
-
-    inputRecycleCode
     const res = await reqValidateRecycleCode({
       orderId: this.data.orderInfo.id,
       recycleCode: inputRecycleCode
@@ -257,45 +293,22 @@ Page({
     }
 
   },
-  // 接单之后回收员取消订单
-  async recyclerCanceOrder() {
+  // 查看回收员接单后，取消订单费用
+  async initCancelFee() {
     const {
       orderInfo
     } = this.data
-    const res = await reqCancelOrderAfterTaking({
-      orderId: orderInfo.id,
-      customerId: orderInfo.customerId,
-      recyclerId: orderInfo.recyclerId,
+    const res = await reqCalculateCancellationFee({
       appointmentTime: orderInfo.appointmentTime,
       acceptTime: orderInfo.acceptTime,
       cancelOperator: 'recycler'
     });
-    console.log(res);
-    // 判断当前时间是否大于预约上门时间，如果大于则需要回收员支付
-    // if (this.calculateTimeDifference(this.data.orderInfo.appointmentTime) > 0) {
-    //   toast({
-    //     title: "回收员迟到，后续处理"
-    //   })
-    //   return;
-    // }
-    // 如果当前时间距离预约上门时间还有60分钟，则免费取消
-    // const diffMin = this.calculateTimeDifference(this.data.orderInfo.appointmentTime);
-    // if (diffMin > -60) {
-    //   toast({
-    //     title: "回收员付费取消"
-    //   })
-    // } else {
-    // 取消接单，把订单查询发给符合接单的回收员
-    //   await reqRepostOrder(this.data.orderInfo.id)
-    //   toast({
-    //     title: "取消成功",
-    //     duration: 1000,
-    //     icon: 'success'
-    //   })
-    //   setTimeout(() => {
-    //     this.goBack()
-    //   }, 1000);
-    // }
+    this.setData({
+      customerLateCancellationFee: res.data.customerLateCancellationFee,
+      overtimeMinutes: res.data.overtimeMinutes,
+      recyclerLateCancellationFee: res.data.recyclerLateCancellationFee,
+      serviceOvertimePenalty: res.data.serviceOvertimePenalty,
+    })
   },
   // 返回上个页面，并且调用onShow方法
   goBack() {
@@ -331,5 +344,7 @@ Page({
       orderInfo: res.data,
       freeCancellationTime: this.calculatePastTime(res.data.appointmentTime, 60)
     })
+    // 查看回收员接单后，取消费用
+    this.initCancelFee();
   }
 })

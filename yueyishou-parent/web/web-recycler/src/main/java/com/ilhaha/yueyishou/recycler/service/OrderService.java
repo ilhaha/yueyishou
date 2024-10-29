@@ -89,9 +89,23 @@ public interface OrderService {
     Result<Boolean> settlement(SettlementForm settlementForm);
 
     /***
-     * 接单后取消
+     * 结算取消订单费用
      * @param cancelOrderForm
      * @return
      */
-    Result<CancelOrderVo> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
+    Result<CancelOrderFeeVo> calculateCancellationFee(CancelOrderFeeForm cancelOrderForm);
+
+    /**
+     * 回收员接单后，回收员、顾客取消订单
+     * @param cancelOrderForm
+     * @return
+     */
+    Result<Boolean> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
+
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    Result<Boolean> delete(OrderDeleteForm orderDeleteForm);
 }

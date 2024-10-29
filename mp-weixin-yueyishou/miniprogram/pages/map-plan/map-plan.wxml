@@ -72,12 +72,51 @@
     </view>
 
     <!-- 取消订单部分 -->
-    <view class="cancel-container">
-      <view class="cancel-text">您可在{{freeCancellationTime}}前免费<span bind:tap="switchCancelOrderShow" class="cancel">取消</span></view>
+    <view class="cancel-container" wx:if="{{operator == 'customer'}}">
+      <view class="cancel-text" wx:if="{{!overtimeMinutes}}">您可在{{freeCancellationTime}}前免费<span bind:tap="switchCancelOrderShow" class="cancel">取消</span></view>
+      <view class="cancel-text" wx:if="{{overtimeMinutes && serviceOvertimePenalty}}">
+        <text>回收员未在预约时间内到达，免费</text>
+        <span bind:tap="switchCancelOrderShow" class="cancel">取消</span>
+      </view>
+      <view class="cancel-text" wx:if="{{customerLateCancellationFee}}">
+        <text>取消已超过免费时限，需支付相关费用</text>
+        <span bind:tap="switchCancelOrderShow" class="cancel">取消</span>
+      </view>
     </view>
 
+    <view class="cancel-container" wx:else>
+      <view class="cancel-text" wx:if="{{ serviceOvertimePenalty}}">
+        <text>您未在预约时间内到达，赔偿</text>
+        <span bind:tap="switchCancelOrderShow" class="cancel">取消</span>
+      </view>
+      <view wx:else>
+        <view class="cancel-text" wx:if="{{!recyclerLateCancellationFee}}">您可在{{freeCancellationTime}}前免费<span bind:tap="switchCancelOrderShow" class="cancel">取消</span></view>
+        <view class="cancel-text" wx:else>
+          <text>取消已超过免费时限，需支付相关费用</text>
+          <span bind:tap="switchCancelOrderShow" class="cancel">取消</span>
+        </view>
+      </view>
+
+
+    </view>
   </van-action-sheet>
 </view>
-<van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否取消该订单" show-cancel-button bind:confirm="cancelOrder" />
+<van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否取消该订单" show-cancel-button bind:confirm="cancelOrder" use-slot wx:if="{{operator == 'customer'}}">
+  <view class="dialog-tip" wx:if="{{overtimeMinutes && serviceOvertimePenalty}}">
+    <text>提示: 回收员未在预约时间内到达，已超时<text style="color: red;">{{overtimeMinutes}}</text>分钟，将赔付您<text style="color: green;">{{serviceOvertimePenalty}}</text>元。</text>
+  </view>
+  <view class="dialog-tip" wx:if="{{customerLateCancellationFee}}">
+    <text>提示：已超过免费取消时间，需支付<text style="color: red;">{{customerLateCancellationFee}}</text>元作为补偿。</text>
+  </view>
+</van-dialog>
+
+<van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否取消该订单" show-cancel-button bind:confirm="cancelOrder" use-slot wx:else>
+  <view class="dialog-tip" wx:if="{{serviceOvertimePenalty}}">
+    <text>提示: 您未在预约时间内到达回收点，已超时<text style="color: red;">{{overtimeMinutes}}</text>分钟，将赔付顾客<text style="color: green;">{{serviceOvertimePenalty}}</text>元。</text>
+  </view>
+  <view class="dialog-tip" wx:if="{{recyclerLateCancellationFee}}">
+    <text>提示：距离订单预约时间不足60分钟，已超过免费取消时间，需支付<text style="color: red;">{{recyclerLateCancellationFee}}</text>元作为补偿。</text>
+  </view>
+</van-dialog>
 
 <van-dialog id="van-dialog" show="{{ isArriveShow }}" title="确认是否已到达回收点" show-cancel-button bind:confirm="handleArrive" />

@@ -9,7 +9,7 @@ public interface IRecyclerFaceRecognitionService extends IService<RecyclerFaceRe
 
 
     /**
-     * 判读回收员是否已进行了每日人脸签到
+     * 判断回收员是否已进行了每日人脸签到
      * @param recyclerId
      * @return
      */

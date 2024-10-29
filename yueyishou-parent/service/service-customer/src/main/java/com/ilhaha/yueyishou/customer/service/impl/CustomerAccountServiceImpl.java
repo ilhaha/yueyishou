@@ -55,7 +55,7 @@ public class CustomerAccountServiceImpl extends ServiceImpl<CustomerAccountMappe
         AddDetailsForm addDetailsForm = new AddDetailsForm();
         addDetailsForm.setAccountId(customerAccountDB.getId());
         addDetailsForm.setAmount(customerWithdrawForm.getAmount());
-        addDetailsForm.setTradeType(AccountDetailsConstant.CUSTOMER_RECYCLE_PAY_FEE);
+        addDetailsForm.setTradeType(AccountDetailsConstant.INCOME);
         addDetailsForm.setContent(AccountDetailsConstant.RECYCLE_PAY_FEE_CONTENT);
         customerAccountDetailService.addDetails(addDetailsForm);
 
@@ -100,8 +100,100 @@ public class CustomerAccountServiceImpl extends ServiceImpl<CustomerAccountMappe
         AddDetailsForm addDetailsForm = new AddDetailsForm();
         addDetailsForm.setAccountId(customerAccountDB.getId());
         addDetailsForm.setAmount(customerWithdrawForm.getAmount());
-        addDetailsForm.setTradeType(AccountDetailsConstant.CUSTOMER_ON_WITHDRAW);
+        addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
         addDetailsForm.setContent(AccountDetailsConstant.ON_WITHDRAW_CONTENT);
+        customerAccountDetailService.addDetails(addDetailsForm);
+
+        return this.update(customerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 超过预约时间未到达，需回收员赔偿取消
+     * @param customerWithdrawForm
+     * @return
+     */
+    @Override
+    public Boolean cancelOrderIfOverdue(CustomerWithdrawForm customerWithdrawForm) {
+        // 1. 查询顾客账户
+        CustomerAccount customerAccountDB = this.getOne(new LambdaQueryWrapper<CustomerAccount>().eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId()));
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = customerAccountDB.getTotalAmount().add(customerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<CustomerAccount> customerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        customerAccountLambdaUpdateWrapper.eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId())
+                .set(CustomerAccount::getTotalAmount, newTotalAmount)
+                .set(CustomerAccount::getUpdateTime, new Date());
+
+        // 4.增加明细
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(customerAccountDB.getId());
+        addDetailsForm.setAmount(customerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.INCOME);
+        addDetailsForm.setContent(AccountDetailsConstant.TIMEOUT_SERVICE_COMPENSATION);
+        customerAccountDetailService.addDetails(addDetailsForm);
+
+        return this.update(customerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用取消订单
+     * @param customerWithdrawForm
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean processPaidCancellation(CustomerWithdrawForm customerWithdrawForm) {
+        // 1. 查询顾客账户
+        CustomerAccount customerAccountDB = this.getOne(new LambdaQueryWrapper<CustomerAccount>().eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId()));
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = customerAccountDB.getTotalAmount().subtract(customerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<CustomerAccount> customerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        customerAccountLambdaUpdateWrapper.eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId())
+                .set(CustomerAccount::getTotalAmount, newTotalAmount)
+                .set(CustomerAccount::getUpdateTime, new Date());
+
+        // 4.添加明细数据
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(customerAccountDB.getId());
+        addDetailsForm.setAmount(customerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
+        addDetailsForm.setContent(AccountDetailsConstant.OVERDUE_CANCELLATION_COMPENSATION);
+        customerAccountDetailService.addDetails(addDetailsForm);
+
+        return this.update(customerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 回收员距离预约时间不足60分钟付费取消
+     * @param customerWithdrawForm
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean chargeCancellationIfWithinOneHour(CustomerWithdrawForm customerWithdrawForm) {
+        // 1. 查询顾客账户
+        CustomerAccount customerAccountDB = this.getOne(new LambdaQueryWrapper<CustomerAccount>().eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId()));
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = customerAccountDB.getTotalAmount().add(customerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<CustomerAccount> customerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        customerAccountLambdaUpdateWrapper.eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId())
+                .set(CustomerAccount::getTotalAmount, newTotalAmount)
+                .set(CustomerAccount::getUpdateTime, new Date());
+
+        // 4.增加明细
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(customerAccountDB.getId());
+        addDetailsForm.setAmount(customerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.INCOME);
+        addDetailsForm.setContent(AccountDetailsConstant.CUSTOMER_SHORT_NOTICE_CANCELLATION);
         customerAccountDetailService.addDetails(addDetailsForm);
 
         return this.update(customerAccountLambdaUpdateWrapper);

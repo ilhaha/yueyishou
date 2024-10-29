@@ -17,10 +17,21 @@ public class OrderConstant {
      */
     public static final String CANCEL_REMARK = "用户自行取消";
 
+
     /**
      * 预约时间超时取消订单备注
      */
     public static final String TIMEOUT_CANCEL_REMARK = "预约时间超时未接单";
+
+    /**
+     * 回收员在预约时间未到，取消订单备注
+     */
+    public static final String RECYCLER_LATE_CANCELLATION_NOTE = "未在预约时间内服务取消";
+
+    /**
+     * 回收员在预约时间未到不足60分钟取消，取消订单备注
+     */
+    public static final String SHORT_NOTICE_CANCELLATION = "预约前60分钟内取消";
 
     /**
      * 回收员到达时间与预约时间相差多少分钟不算超时

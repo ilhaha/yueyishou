@@ -18,13 +18,29 @@ import java.util.List;
 @FeignClient("service-order")
 public interface OrderInfoFeignClient {
 
-    /***
-     * 接单后取消
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    @PostMapping("/orderInfo/delete")
+    Result<Boolean> delete(@RequestBody OrderDeleteForm orderDeleteForm);
+
+    /**
+     * 回收员接单后，回收员、顾客取消订单
      * @param cancelOrderForm
      * @return
      */
     @PostMapping("/orderInfo/cancelOrderAfterTaking")
-    Result<CancelOrderVo> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm);
+    Result<Boolean> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm);
+
+    /***
+     * 结算取消订单费用
+     * @param cancelOrderForm
+     * @return
+     */
+    @PostMapping("/orderInfo/calculateCancellationFee")
+    Result<CancelOrderFeeVo> calculateCancellationFee(@RequestBody CancelOrderFeeForm cancelOrderForm);
 
     /**
      * 结算订单

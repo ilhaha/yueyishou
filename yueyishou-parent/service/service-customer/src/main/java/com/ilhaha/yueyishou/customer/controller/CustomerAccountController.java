@@ -31,6 +31,37 @@ public class CustomerAccountController  {
 	private ICustomerAccountService customerAccountService;
 
 	/**
+	 * 回收员距离预约时间不足60分钟付费取消
+	 * @param customerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/chargeCancellation")
+	public Result<Boolean> chargeCancellationIfWithinOneHour(@RequestBody CustomerWithdrawForm customerWithdrawForm){
+		return Result.ok(customerAccountService.chargeCancellationIfWithinOneHour((customerWithdrawForm)));
+	}
+
+
+	/**
+	 * 顾客取消已超过免费时限，需支付相关费用取消订单
+	 * @param customerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/processPaidCancellation")
+	public Result<Boolean> processPaidCancellation(@RequestBody CustomerWithdrawForm customerWithdrawForm){
+		return Result.ok(customerAccountService.processPaidCancellation(customerWithdrawForm));
+	}
+
+	/**
+	 * 超过预约时间未到达，需回收员赔偿取消
+	 * @param customerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/cancelOrderIfOverdue")
+	public Result<Boolean> cancelOrderIfOverdue(@RequestBody CustomerWithdrawForm customerWithdrawForm){
+		return Result.ok(customerAccountService.cancelOrderIfOverdue(customerWithdrawForm));
+	}
+
+	/**
 	 * 顾客提现到微信零钱
 	 * @param customerWithdrawForm
 	 * @return

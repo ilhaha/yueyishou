@@ -28,4 +28,25 @@ public interface ICustomerAccountService extends IService<CustomerAccount> {
      * @return
      */
     Boolean onWithdraw(CustomerWithdrawForm customerWithdrawForm);
+
+    /**
+     * 超过预约时间未到达，需回收员赔偿取消
+     * @param customerWithdrawForm
+     * @return
+     */
+    Boolean cancelOrderIfOverdue(CustomerWithdrawForm customerWithdrawForm);
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用取消订单
+     * @param customerWithdrawForm
+     * @return
+     */
+    Boolean processPaidCancellation(CustomerWithdrawForm customerWithdrawForm);
+
+    /**
+     * 回收员距离预约时间不足60分钟付费取消
+     * @param customerWithdrawForm
+     * @return
+     */
+    Boolean chargeCancellationIfWithinOneHour(CustomerWithdrawForm customerWithdrawForm);
 }

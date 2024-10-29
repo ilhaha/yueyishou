@@ -28,14 +28,9 @@ public class OrderMgrQueryForm {
     private String recyclerName;
 
     /**
-     * 预约结束时间
+     * 预约时间
      */
-    private String appointmentEndTime;
-
-    /**
-     * 订单编号
-     */
-    private String orderNo;
+    private String appointmentTime;
 
     /**
      * 订单状态

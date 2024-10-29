@@ -139,12 +139,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /***
-     * 接单后取消
+     * 结算取消订单费用
      * @param cancelOrderForm
      * @return
      */
     @Override
-    public Result<CancelOrderVo> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
+    public Result<CancelOrderFeeVo> calculateCancellationFee(CancelOrderFeeForm cancelOrderForm) {
+        return orderInfoFeignClient.calculateCancellationFee(cancelOrderForm);
+    }
+
+    @Override
+    public Result<Boolean> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
         return orderInfoFeignClient.cancelOrderAfterTaking(cancelOrderForm);
+    }
+
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> delete(OrderDeleteForm orderDeleteForm) {
+        orderDeleteForm.setRecyclerId(AuthContextHolder.getRecyclerId());
+        return orderInfoFeignClient.delete(orderDeleteForm);
     }
 }

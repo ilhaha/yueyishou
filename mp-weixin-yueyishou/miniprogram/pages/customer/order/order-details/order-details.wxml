@@ -65,7 +65,7 @@
 <!-- 待服务 -->
 <view wx:if="{{orderStatus == 2}}">
   <view wx:if="{{orderInfo}}">
-    <map-plan orderInfo="{{orderInfo}}" freeCancellationTime="{{freeCancellationTime}}" operator="customer" bind:canceOrder="customerCanceOrder" />
+    <map-plan orderInfo="{{orderInfo}}" freeCancellationTime="{{freeCancellationTime}}" operator="customer" bind:cancelOrder="customercancelOrder" overtimeMinutes="{{overtimeMinutes}}" serviceOvertimePenalty="{{serviceOvertimePenalty}}" customerLateCancellationFee="{{customerLateCancellationFee}}" />
   </view>
 </view>
 
@@ -311,9 +311,13 @@
     <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
   </view>
   <view class="order-details">
-    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" num="{{orderInfo.recycleWeigh}}" price="{{orderInfo.estimatedTotalAmount - orderInfo.expectCustomerPlatformAmount}}" origin-price="{{orderInfo.estimatedTotalAmount}}" tag="待接单">
+    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" tag="已取消">
       <view slot="desc" class="custom-desc">
-        <view>{{orderInfo.updateTime}} 已取消</view>
+        <view>{{orderInfo.appointmentTime}} 前上门</view>
+        <view>{{orderInfo.cancelTime}} 已取消</view>
+        <view style="color: red;" wx:if="{{orderInfo.customerLateCancellationFee}}">取消扣费 ¥{{orderInfo.customerLateCancellationFee}}</view>
+        <view style="color: green;" wx:if="{{orderInfo.serviceOvertimePenalty}}">超时未服务补偿 ¥{{orderInfo.serviceOvertimePenalty}}</view>
+        <view style="color: green;" wx:if="{{orderInfo.recyclerLateCancellationFee}}">短时取消补偿 ¥{{orderInfo.recyclerLateCancellationFee}}</view>
       </view>
     </van-card>
     <view class="order-meta">
@@ -322,20 +326,8 @@
         <text class="value">{{orderInfo.sonCategoryName}}</text>
       </view>
       <view class="meta-item">
-        <text class="label">回收重量(公斤)</text>
-        <text class="value">{{orderInfo.recycleWeigh}}</text>
-      </view>
-      <view class="meta-item">
         <text class="label">品类单价</text>
         <text class="value">¥{{orderInfo.unitPrice}}</text>
-      </view>
-      <view class="meta-item">
-        <text class="label">预收入回收款</text>
-        <text class="value">¥{{orderInfo.estimatedTotalAmount}}</text>
-      </view>
-      <view class="meta-item">
-        <text class="label">预缴纳手续费</text>
-        <text class="value">¥{{orderInfo.expectCustomerPlatformAmount}}</text>
       </view>
       <view class="meta-item">
         <text class="label">订单编号</text>
@@ -348,6 +340,10 @@
       <view class="meta-item">
         <text class="label">预约时间</text>
         <text class="value">{{orderInfo.appointmentTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">取消时间</text>
+        <text class="value">{{orderInfo.cancelTime}}</text>
       </view>
       <view class="meta-item">
         <text class="label">取消备注</text>

@@ -2,6 +2,7 @@ import {
   reqOrderDetails,
   reqCancelOrder,
   reqReview,
+  reqCalculateCancellationFee,
   reqCancelOrderAfterTaking
 } from '../../../../api/customer/order'
 import {
@@ -39,6 +40,10 @@ Page({
     reviewContent: "", // 用户的评价内容
     rating: 0, // 用户评分
     beforeClose: {},
+    customerLateCancellationFee: null,
+    overtimeMinutes: null,
+    recyclerLateCancellationFee: null,
+    serviceOvertimePenalty: null,
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
@@ -50,6 +55,24 @@ Page({
           resolve(false);
         }, 0);
       })
+    })
+  },
+
+  // 查看回收员接单后，取消订单费用
+  async initCancelFee() {
+    const {
+      orderInfo
+    } = this.data
+    const res = await reqCalculateCancellationFee({
+      appointmentTime: orderInfo.appointmentTime,
+      acceptTime: orderInfo.acceptTime,
+      cancelOperator: 'customer'
+    });
+    this.setData({
+      customerLateCancellationFee: res.data.customerLateCancellationFee,
+      overtimeMinutes: res.data.overtimeMinutes,
+      recyclerLateCancellationFee: res.data.recyclerLateCancellationFee,
+      serviceOvertimePenalty: res.data.serviceOvertimePenalty,
     })
   },
 
@@ -132,7 +155,6 @@ Page({
   showRecycleCode() {
     this.setData({
       recycleCodeShow: !this.data.recycleCodeShow,
-
     })
   },
   // 顾客确认回收
@@ -245,35 +267,42 @@ Page({
   },
 
   // 回收员接单后，用户取消订单
-  async customerCanceOrder(event) {
-    const {
-      orderInfo
-    } = this.data
+  async customercancelOrder(event) {
+    if (!this.data.serviceOvertimePenalty && !this.data.customerLateCancellationFee && !this.data.recyclerLateCancellationFee) {
+      this.cancelOrder();
+      return;
+    }
     const res = await reqCancelOrderAfterTaking({
-      orderId: orderInfo.id,
-      customerId: orderInfo.customerId,
-      recyclerId: orderInfo.recyclerId,
-      appointmentTime: orderInfo.appointmentTime,
-      acceptTime: orderInfo.acceptTime,
-      cancelOperator: 'customer'
+      orderId: this.data.orderInfo.id,
+      customerId: this.data.orderInfo.customerId,
+      recyclerId: this.data.orderInfo.recyclerId,
+      serviceOvertimePenalty: this.data.serviceOvertimePenalty,
+      customerLateCancellationFee: this.data.customerLateCancellationFee,
+      recyclerLateCancellationFee: this.data.recyclerLateCancellationFee
+    })
+    if (res.data) {
+      toast({
+        title: '已取消',
+        icon: "success"
+      })
+      setTimeout(() => {
+        this.goBack()
+      }, 1000);
+    }
+  },
+  // 返回上个页面
+  goBack() {
+    wx.navigateBack({
+      delta: 1, // 返回到上一个页面
+      success: function () {
+        const pages = getCurrentPages(); // 获取当前页面栈
+        const prevPage = pages[pages.length - 2]; // 上一个页面
+        if (prevPage) {
+          // 可以手动调用 prevPage 的方法，或重新设置数据
+          prevPage.onShow(); // 手动调用上一个页面的 onShow 方法
+        }
+      }
     });
-    console.log(res);
-    // 判断当前时间是否大于预约上门时间，如果大于则需要回收员支付
-    // if (this.calculateTimeDifference(this.data.orderInfo.appointmentTime) > 0) {
-    //   toast({
-    //     title: "回收员迟到，后续处理"
-    //   })
-    //   return;
-    // }
-    // const diffMin = this.calculateTimeDifference(this.data.orderInfo.acceptTime);
-    // if (diffMin > 5) {
-    //   toast({
-    //     title: "大于五分钟，付费取消"
-    //   })
-    // } else {
-    //   // 取消订单
-    //   this.cancelOrder();
-    // }
   },
 
   // 取消订单
@@ -294,7 +323,10 @@ Page({
     }].concat(res.data.availableCouponVoList);
     this.setData({
       updateBillForm: {
-        ...this.data.updateBillForm,
+        couponId: null,
+        realCustomerRecycleAmount: res.data.realOrderRecycleAmount - res.data.realCustomerPlatformAmount + (res.data.recyclerOvertimeCharges || 0),
+        realCustomerPlatformAmount: res.data.realCustomerPlatformAmount,
+        customerCouponAmount: 0.00,
         orderId: res.data.id
       },
       recycleCode: res.data.recycleCode,
@@ -307,6 +339,8 @@ Page({
       this.setData({
         freeCancellationTime: this.calculateFutureTime(res.data.acceptTime, 5)
       })
+      // 查看回收员接单后，取消费用
+      this.initCancelFee();
     }
 
   },

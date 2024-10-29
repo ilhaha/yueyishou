@@ -1,5 +1,6 @@
 package com.ilhaha.yueyishou.rules.service.impl;
 
+import com.ilhaha.yueyishou.model.constant.RulesConstant;
 import com.ilhaha.yueyishou.model.form.order.OvertimeRequestForm;
 import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
 import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
@@ -8,7 +9,6 @@ import com.ilhaha.yueyishou.rules.service.ServiceFeeRuleService;
 import org.kie.api.KieBase;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
@@ -31,13 +31,12 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
         KieHelper kieHelper = new KieHelper();
 
         // 加载第一个 DRL 文件
-        Resource resource1 = ResourceFactory.newClassPathResource(
-                "rules/CustomerServiceFeeRule.drl", "UTF-8");
+        Resource resource1 = ResourceFactory.newClassPathResource(RulesConstant.CUSTOMER_SERVICE_FEE_RULE,RulesConstant.ENCODING);
         kieHelper.addResource(resource1, ResourceType.DRL);
 
         // 加载第二个 DRL 文件
         Resource resource2 = ResourceFactory.newClassPathResource(
-                "rules/RecyclerServiceFeeRule.drl", "UTF-8");
+                RulesConstant.RECYCLER_SERVICE_FEE_RULE, RulesConstant.ENCODING);
         kieHelper.addResource(resource2, ResourceType.DRL);
 
         // 构建 KieBase 并创建 KieSession
@@ -79,7 +78,7 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
     public OvertimeResponseVo calculateTimeoutFree(OvertimeRequestForm overtimeRequestForm) {
         KieHelper kieHelper = new KieHelper();
         // 获取指定的drl文件
-        Resource resource = ResourceFactory.newClassPathResource("rules/RecyclerOvertimeFeeRule.drl", "UTF-8");
+        Resource resource = ResourceFactory.newClassPathResource(RulesConstant.RECYCLER_OVERTIME_FEE_RULE, RulesConstant.ENCODING);
         kieHelper.addResource(resource, ResourceType.DRL);
         KieBase kieBase = kieHelper.build();
         KieSession kieSession = kieBase.newKieSession();
@@ -104,7 +103,7 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
     public OvertimeResponseVo calculateTimeoutCancelFree(OvertimeRequestForm overtimeRequestForm) {
         KieHelper kieHelper = new KieHelper();
         // 获取指定的drl文件
-        Resource resource = ResourceFactory.newClassPathResource("rules/RecyclerOvertimeCancelFeeRule.drl", "UTF-8");
+        Resource resource = ResourceFactory.newClassPathResource(RulesConstant.RECYCLER_OVERTIME_CANCEL_FEE_RULE, RulesConstant.ENCODING);
         kieHelper.addResource(resource, ResourceType.DRL);
         KieBase kieBase = kieHelper.build();
         KieSession kieSession = kieBase.newKieSession();
@@ -129,7 +128,7 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
     public OvertimeResponseVo customerLateCancellationFee(OvertimeRequestForm overtimeRequestForm) {
         KieHelper kieHelper = new KieHelper();
         // 获取指定的drl文件
-        Resource resource = ResourceFactory.newClassPathResource("rules/CustomerLateCancellationFeeRule.drl", "UTF-8");
+        Resource resource = ResourceFactory.newClassPathResource(RulesConstant.CUSTOMER_LATE_CANCELLATION_FEE_RULE, RulesConstant.ENCODING);
         kieHelper.addResource(resource, ResourceType.DRL);
         KieBase kieBase = kieHelper.build();
         KieSession kieSession = kieBase.newKieSession();
@@ -154,7 +153,7 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
     public OvertimeResponseVo recyclerLateCancellationFee(OvertimeRequestForm overtimeRequestForm) {
         KieHelper kieHelper = new KieHelper();
         // 获取指定的drl文件
-        Resource resource = ResourceFactory.newClassPathResource("rules/RecyclerLateCancellationFeeRule.drl", "UTF-8");
+        Resource resource = ResourceFactory.newClassPathResource(RulesConstant.RECYCLER_LATE_CANCELLATION_FEE_RULE, RulesConstant.ENCODING);
         kieHelper.addResource(resource, ResourceType.DRL);
         KieBase kieBase = kieHelper.build();
         KieSession kieSession = kieBase.newKieSession();

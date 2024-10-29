@@ -23,14 +23,37 @@ public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
 
-    /***
-     * 接单后取消
+
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    @PostMapping("/delete")
+    public Result<Boolean> delete(@RequestBody OrderDeleteForm orderDeleteForm){
+        return Result.ok(orderInfoService.delete(orderDeleteForm));
+    }
+
+
+    /**
+     * 回收员接单后，回收员、顾客取消订单
      * @param cancelOrderForm
      * @return
      */
     @PostMapping("/cancelOrderAfterTaking")
-    public Result<CancelOrderVo> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm){
+    public Result<Boolean> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm){
         return Result.ok(orderInfoService.cancelOrderAfterTaking(cancelOrderForm));
+    }
+
+
+    /***
+     * 结算取消订单费用
+     * @param cancelOrderForm
+     * @return
+     */
+    @PostMapping("/calculateCancellationFee")
+    public Result<CancelOrderFeeVo> calculateCancellationFee(@RequestBody CancelOrderFeeForm cancelOrderForm){
+        return Result.ok(orderInfoService.calculateCancellationFee(cancelOrderForm));
     }
 
 
@@ -233,18 +256,6 @@ public class OrderInfoController {
     public Result<String> edit(@RequestBody OrderInfo orderInfo) {
         orderInfoService.updateById(orderInfo);
         return Result.ok("编辑成功!");
-    }
-
-    /**
-     * 通过id删除
-     *
-     * @param id
-     * @return
-     */
-    @DeleteMapping(value = "/delete")
-    public Result<String> delete(@RequestParam(name = "id", required = true) String id) {
-        orderInfoService.removeById(id);
-        return Result.ok("删除成功!");
     }
 
     /**

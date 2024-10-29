@@ -19,7 +19,7 @@ public class RecyclerAccountDetail extends BaseEntity {
     private Long recyclerAccountId;
 	/**交易内容*/
     private String content;
-	/**交易类型：1回收支付费用 2提现 3充值*/
+	/**交易类型： 1-支出 2-收入*/
     private String tradeType;
 	/**金额*/
     private BigDecimal amount;

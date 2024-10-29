@@ -1,9 +1,7 @@
 package com.ilhaha.yueyishou.customer.service;
 
 import com.ilhaha.yueyishou.common.result.Result;
-import com.ilhaha.yueyishou.model.form.order.CancelOrderForm;
-import com.ilhaha.yueyishou.model.form.order.ReviewForm;
-import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.order.*;
 
 import java.util.List;
@@ -54,9 +52,23 @@ public interface OrderService {
     Result<Boolean> review(ReviewForm reviewForm);
 
     /***
-     * 接单后取消
+     * 结算取消订单费用
      * @param cancelOrderForm
      * @return
      */
-    Result<CancelOrderVo> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
+    Result<CancelOrderFeeVo> calculateCancellationFee(CancelOrderFeeForm cancelOrderForm);
+
+    /**
+     * 回收员接单后，回收员、顾客取消订单
+     * @param cancelOrderForm
+     * @return
+     */
+    Result<Boolean> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
+
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    Result<Boolean> delete(OrderDeleteForm orderDeleteForm);
 }

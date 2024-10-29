@@ -1,5 +1,6 @@
 import {
-  reqOrderListByStaus
+  reqOrderListByStaus,
+  reqDeleteOrder
 } from '../../../api/recycler/order'
 Page({
   data: {
@@ -27,9 +28,35 @@ Page({
     }],
     active: 0,
     orderList: [],
+    isDeleteOrderShow: false,
+    deleteOrderId: null
   },
   onShow() {
     this.getOrderList(this.data.tabList[this.data.active].status);
+  },
+  // 切换是否确认删除订单确认框
+  switchDeleteShow(event) {
+    this.setData({
+      isDeleteOrderShow: !this.data.isDeleteOrderShow,
+    })
+    if (this.data.isDeleteOrderShow) {
+      this.setData({
+        deleteOrderId: event.currentTarget.dataset.orderid
+      })
+    }
+  },
+  // 删除订单
+  async deleteOrder(event) {
+    const res = await reqDeleteOrder({
+      orderId: this.data.deleteOrderId
+    })
+    if (res.data) {
+      this.getOrderList(this.data.tabList[this.data.active].status);
+      toast({
+        title: "删除成功",
+        icon: 'success'
+      })
+    }
   },
   // 查看订单详情
   showDetails(event) {

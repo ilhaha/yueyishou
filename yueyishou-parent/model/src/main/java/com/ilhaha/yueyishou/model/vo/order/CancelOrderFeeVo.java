@@ -3,17 +3,16 @@ package com.ilhaha.yueyishou.model.vo.order;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @Author ilhaha
  * @Create 2024/10/24 21:33
  * @Version 1.0
  * <p>
- * 取消订单Vo
+ * 计算付费取消Vo
  */
 @Data
-public class CancelOrderVo {
+public class CancelOrderFeeVo {
 
     /**
      * 接单后，回收员在预约时间未到达取消订单赔偿

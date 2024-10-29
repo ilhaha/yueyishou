@@ -97,7 +97,7 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
         AddDetailsForm addDetailsForm = new AddDetailsForm();
         addDetailsForm.setAccountId(account.getId());
         addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
-        addDetailsForm.setTradeType(AccountDetailsConstant.ON_RECHARGE);
+        addDetailsForm.setTradeType(AccountDetailsConstant.INCOME);
         addDetailsForm.setContent(AccountDetailsConstant.ON_RECHARGE_CONTENT);
         recyclerAccountDetailService.addDetails(addDetailsForm);
 
@@ -109,6 +109,7 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
      * @param recyclerWithdrawForm
      * @return
      */
+    @Transactional
     @Override
     public Boolean onWithdraw(RecyclerWithdrawForm recyclerWithdrawForm) {
         // 1. 查询当前账户余额
@@ -127,7 +128,7 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
         AddDetailsForm addDetailsForm = new AddDetailsForm();
         addDetailsForm.setAccountId(account.getId());
         addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
-        addDetailsForm.setTradeType(AccountDetailsConstant.ON_WITHDRAW);
+        addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
         addDetailsForm.setContent(AccountDetailsConstant.ON_WITHDRAW_CONTENT);
         recyclerAccountDetailService.addDetails(addDetailsForm);
         return this.update(recyclerAccountLambdaUpdateWrapper);
@@ -138,6 +139,7 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
      * @param recyclerWithdrawForm
      * @return
      */
+    @Transactional
     @Override
     public Boolean settlement(RecyclerWithdrawForm recyclerWithdrawForm) {
         // 1. 查询当前账户余额
@@ -158,13 +160,104 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
         AddDetailsForm addDetailsForm = new AddDetailsForm();
         addDetailsForm.setAccountId(account.getId());
         addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
-        addDetailsForm.setTradeType(AccountDetailsConstant.RECYCLE_PAY_FEE);
+        addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
         addDetailsForm.setContent(AccountDetailsConstant.RECYCLE_PAY_FEE_CONTENT);
         recyclerAccountDetailService.addDetails(addDetailsForm);
 
         // 5.增加回收员单量
         recyclerInfoService.updateOrderCount(recyclerWithdrawForm.getRecyclerId());
 
+        return this.update(recyclerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 超过预约时间未到达，需回收员赔偿取消
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean cancelOrderIfOverdue(RecyclerWithdrawForm recyclerWithdrawForm) {
+        // 1. 查询当前账户余额
+        RecyclerAccount account = this.getOneByRecyclerId(recyclerWithdrawForm.getRecyclerId());
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = account.getTotalAmount().subtract(recyclerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<RecyclerAccount> recyclerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerAccountLambdaUpdateWrapper.eq(RecyclerAccount::getRecyclerId, recyclerWithdrawForm.getRecyclerId())
+                .set(RecyclerAccount::getTotalAmount, newTotalAmount)
+                .set(RecyclerAccount::getUpdateTime, new Date());
+
+        // 4.添加明细数据
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(account.getId());
+        addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
+        addDetailsForm.setContent(AccountDetailsConstant.UNDELIVERED_SERVICE_COMPENSATION);
+        recyclerAccountDetailService.addDetails(addDetailsForm);
+        return this.update(recyclerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用取消订单
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean processPaidCancellation(RecyclerWithdrawForm recyclerWithdrawForm) {
+        // 1. 查询当前账户余额
+        RecyclerAccount account = this.getOneByRecyclerId(recyclerWithdrawForm.getRecyclerId());
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = account.getTotalAmount().add(recyclerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<RecyclerAccount> recyclerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerAccountLambdaUpdateWrapper.eq(RecyclerAccount::getRecyclerId, recyclerWithdrawForm.getRecyclerId())
+                .set(RecyclerAccount::getTotalAmount, newTotalAmount)
+                .set(RecyclerAccount::getUpdateTime, new Date());
+
+        // 4.添加明细数据
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(account.getId());
+        addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.INCOME);
+        addDetailsForm.setContent(AccountDetailsConstant.TIMEOUT_CANCELLATION_COMPENSATION);
+        recyclerAccountDetailService.addDetails(addDetailsForm);
+
+        return this.update(recyclerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 回收员距离预约时间不足60分钟付费取消
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean chargeCancellationIfWithinOneHour(RecyclerWithdrawForm recyclerWithdrawForm) {
+        // 1. 查询当前账户余额
+        RecyclerAccount account = this.getOneByRecyclerId(recyclerWithdrawForm.getRecyclerId());
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = account.getTotalAmount().subtract(recyclerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<RecyclerAccount> recyclerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerAccountLambdaUpdateWrapper.eq(RecyclerAccount::getRecyclerId, recyclerWithdrawForm.getRecyclerId())
+                .set(RecyclerAccount::getTotalAmount, newTotalAmount)
+                .set(RecyclerAccount::getUpdateTime, new Date());
+
+        // 4.添加明细数据
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(account.getId());
+        addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
+        addDetailsForm.setContent(AccountDetailsConstant.RECYCLER_SHORT_NOTICE_CANCELLATION);
+        recyclerAccountDetailService.addDetails(addDetailsForm);
         return this.update(recyclerAccountLambdaUpdateWrapper);
     }
 }

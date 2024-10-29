@@ -46,8 +46,22 @@ export const reqReview = (data) => {
 }
 
 /**
+ * 计算接单后取消订单费用
+ */
+export const reqCalculateCancellationFee = (data) => {
+  return http.post(urlPrefix + `/order/calculateCancellationFee`,data)
+}
+
+/**
  * 接单后取消订单
  */
 export const reqCancelOrderAfterTaking = (data) => {
   return http.post(urlPrefix + `/order/cancelOrderAfterTaking`,data)
+}
+
+/**
+ * 删除订单
+ */
+export const reqDeleteOrder = (data) => {
+  return http.post(urlPrefix + `/order/delete`,data)
 }

@@ -22,15 +22,37 @@ public class OrderController {
     @Resource
     private OrderService orderService;
 
-    /***
-     * 接单后取消
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/delete")
+    public Result<Boolean> delete(@RequestBody OrderDeleteForm orderDeleteForm){
+        return orderService.delete(orderDeleteForm);
+    }
+
+    /**
+     * 回收员接单后，回收员、顾客取消订单
      * @param cancelOrderForm
      * @return
      */
     @LoginVerification
     @PostMapping("/cancelOrderAfterTaking")
-    public Result<CancelOrderVo> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm){
+    public Result<Boolean> cancelOrderAfterTaking(@RequestBody CancelOrderForm cancelOrderForm){
         return orderService.cancelOrderAfterTaking(cancelOrderForm);
+    }
+
+    /***
+     * 结算取消订单费用
+     * @param cancelOrderForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/calculateCancellationFee")
+    public Result<CancelOrderFeeVo> calculateCancellationFee(@RequestBody CancelOrderFeeForm cancelOrderForm){
+        return orderService.calculateCancellationFee(cancelOrderForm);
     }
 
     /**

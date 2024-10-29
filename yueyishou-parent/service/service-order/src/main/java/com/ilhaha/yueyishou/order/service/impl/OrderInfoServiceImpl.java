@@ -36,7 +36,6 @@ import com.ilhaha.yueyishou.recycler.client.RecyclerAccountFeignClient;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.geo.Point;
@@ -97,7 +96,24 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public Page<OrderMgrQueryVo> queryPageList(OrderMgrQueryForm orderMgrQueryForm, Page<OrderMgrQueryVo> page) {
-        return orderInfoMapper.queryPageList(page, orderMgrQueryForm);
+        Page<OrderMgrQueryVo> orderMgrQueryVoPage = orderInfoMapper.queryPageList(page, orderMgrQueryForm);
+        // 待回收确认、待顾客确认临时计算回收员超时信息
+        if (OrderStatus.RECYCLER_CONFIRM_ORDER.getStatus().compareTo(orderMgrQueryForm.getStatus()) <= 0
+                && !OrderStatus.CANCELED_ORDER.getStatus().equals(orderMgrQueryForm.getStatus())) {
+            orderMgrQueryVoPage.setRecords(orderMgrQueryVoPage.getRecords().stream().map(order -> {
+                Integer timeOutMin = calculateTimeoutMinutes(order.getAppointmentTime(), order.getArriveTime());
+                order.setArriveTimoutMin(timeOutMin);
+                // 超时计算超时费用
+                if (timeOutMin > 0 && OrderStatus.RECYCLER_CONFIRM_ORDER.getStatus().equals(orderMgrQueryForm.getStatus())) {
+                    OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
+                    overtimeRequestForm.setOvertimeMinutes(timeOutMin);
+                    OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.calculateTimeoutFree(overtimeRequestForm).getData();
+                    order.setRecyclerOvertimeCharges(overtimeResponseVo.getOvertimeFee());
+                }
+                return order;
+            }).collect(Collectors.toList()));
+        }
+        return orderMgrQueryVoPage;
     }
 
     /**
@@ -115,7 +131,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         boolean flag = this.save(orderInfo);
         // 将新订单存储到redis中
         if (flag) {
-            redisTemplate.opsForValue().set(RedisConstant.WAITING_ORDER + orderInfo.getId(),orderInfo);
+            redisTemplate.opsForValue().set(RedisConstant.WAITING_ORDER + orderInfo.getId(), orderInfo);
         }
         return flag;
     }
@@ -130,49 +146,51 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public List<CustomerOrderListVo> orderList(Integer status, Long customerId) {
         LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         orderInfoLambdaQueryWrapper.eq(OrderInfo::getStatus, status)
-                .eq(OrderInfo::getCustomerId, customerId);
+                .eq(OrderInfo::getCustomerId, customerId)
+                .eq(OrderInfo::getCustomerIsDeleted, PublicConstant.NOT_DELETED);
         List<OrderInfo> listDB = this.list(orderInfoLambdaQueryWrapper);
 
         return listDB
                 .stream()
                 .sorted(Comparator.comparing(OrderInfo::getCreateTime).reversed())
                 .map(item -> {
-            CustomerOrderListVo customerOrderListVo = new CustomerOrderListVo();
-            BeanUtils.copyProperties(item, customerOrderListVo);
-            customerOrderListVo.setActualPhoto(item.getActualPhotos().split(",")[0]);
-            // 查看订单账单信息
-            OrderBill orderBillDB = orderBillService.getBillInfoByOrderId(item.getId());
-            if (!ObjectUtils.isEmpty(orderBillDB)) {
-                customerOrderListVo.setRealOrderRecycleAmount(orderBillDB.getRealOrderRecycleAmount());
-                customerOrderListVo.setRealCustomerPlatformAmount(orderBillDB.getRealCustomerPlatformAmount());
-                customerOrderListVo.setRecyclerOvertimeCharges(orderBillDB.getRecyclerOvertimeCharges());
-                customerOrderListVo.setRealCustomerRecycleAmount(orderBillDB.getRealCustomerRecycleAmount());
-                customerOrderListVo.setPayTime(orderBillDB.getPayTime());
-            }
-            // 查询回收员超时信息
-            if (!ObjectUtils.isEmpty(item.getArriveTime())) {
-                Integer timeOutMin = calculateTimeoutMinutes(item.getAppointmentTime(),item.getArriveTime());
-                customerOrderListVo.setArriveTimoutMin(timeOutMin);
-                // 超时计算超时费用
-                if (timeOutMin > 0) {
-                    OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
-                    overtimeRequestForm.setOvertimeMinutes(timeOutMin);
-                    OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.calculateTimeoutFree(overtimeRequestForm).getData();
-                    customerOrderListVo.setRecyclerOvertimeCharges(overtimeResponseVo.getOvertimeFee());
-                }
-            }
-            // 查询订单列表评论信息
-            OrderCommentVo orderCommentVo = orderCommentService.getOrderComment(item.getId());
-            if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
-                customerOrderListVo.setReviewContent(orderCommentVo.getReviewContent());
-                customerOrderListVo.setReviewTime(orderCommentVo.getReviewTime());
-            }
-            return customerOrderListVo;
-        }).collect(Collectors.toList());
+                    CustomerOrderListVo customerOrderListVo = new CustomerOrderListVo();
+                    BeanUtils.copyProperties(item, customerOrderListVo);
+                    customerOrderListVo.setActualPhoto(item.getActualPhotos().split(",")[0]);
+                    // 查看订单账单信息
+                    OrderBill orderBillDB = orderBillService.getBillInfoByOrderId(item.getId());
+                    if (!ObjectUtils.isEmpty(orderBillDB)) {
+                        customerOrderListVo.setRealOrderRecycleAmount(orderBillDB.getRealOrderRecycleAmount());
+                        customerOrderListVo.setRealCustomerPlatformAmount(orderBillDB.getRealCustomerPlatformAmount());
+                        customerOrderListVo.setRecyclerOvertimeCharges(orderBillDB.getRecyclerOvertimeCharges());
+                        customerOrderListVo.setRealCustomerRecycleAmount(orderBillDB.getRealCustomerRecycleAmount());
+                        customerOrderListVo.setPayTime(orderBillDB.getPayTime());
+                    }
+                    // 查询回收员超时信息
+                    if (!ObjectUtils.isEmpty(item.getArriveTime())) {
+                        Integer timeOutMin = calculateTimeoutMinutes(item.getAppointmentTime(), item.getArriveTime());
+                        customerOrderListVo.setArriveTimoutMin(timeOutMin);
+                        // 超时计算超时费用
+                        if (timeOutMin > 0) {
+                            OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
+                            overtimeRequestForm.setOvertimeMinutes(timeOutMin);
+                            OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.calculateTimeoutFree(overtimeRequestForm).getData();
+                            customerOrderListVo.setRecyclerOvertimeCharges(overtimeResponseVo.getOvertimeFee());
+                        }
+                    }
+                    // 查询订单列表评论信息
+                    OrderCommentVo orderCommentVo = orderCommentService.getOrderComment(item.getId());
+                    if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
+                        customerOrderListVo.setReviewContent(orderCommentVo.getReviewContent());
+                        customerOrderListVo.setReviewTime(orderCommentVo.getReviewTime());
+                    }
+                    return customerOrderListVo;
+                }).collect(Collectors.toList());
     }
 
     /**
      * 顾客根据订单ID获取订单详情
+     *
      * @param orderId
      * @return
      */
@@ -188,7 +206,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         if (!ObjectUtils.isEmpty(customerOrderDetailsVo.getArriveTime())) {
             // 计算回收员是否超时，并计算超时多少分钟
-            Integer timoutMin = calculateTimeoutMinutes(customerOrderDetailsVo.getAppointmentTime(),customerOrderDetailsVo.getArriveTime());
+            Integer timoutMin = calculateTimeoutMinutes(customerOrderDetailsVo.getAppointmentTime(), customerOrderDetailsVo.getArriveTime());
             customerOrderDetailsVo.setArriveTimoutMin(timoutMin);
             // 超时计算超时费用
             if (timoutMin > 0) {
@@ -239,8 +257,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         orderInfoLambdaUpdateWrapper.set(OrderInfo::getStatus, OrderStatus.CANCELED_ORDER)
                 .set(OrderInfo::getCancelMessage, OrderConstant.CANCEL_REMARK)
-                .set(OrderInfo::getCancelTime,new Date())
-                .set(OrderInfo::getUpdateTime,new Date())
+                .set(OrderInfo::getCancelTime, new Date())
+                .set(OrderInfo::getUpdateTime, new Date())
                 .eq(OrderInfo::getId, orderId);
         // 删除redis中的订单
         redisTemplate.delete(RedisConstant.WAITING_ORDER + orderId);
@@ -282,6 +300,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 回收员抢单
+     *
      * @param recyclerId
      * @param orderId
      * @return
@@ -307,6 +326,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 回收员根据订单ID获取订单详情
+     *
      * @param recyclerId
      * @param orderId
      * @return
@@ -338,7 +358,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         if (!ObjectUtils.isEmpty(orderDetailsVo.getArriveTime())) {
             // 计算回收员是否超时，并计算超时多少分钟
-            Integer timoutMin = calculateTimeoutMinutes(orderDetailsVo.getAppointmentTime(),orderDetailsVo.getArriveTime());
+            Integer timoutMin = calculateTimeoutMinutes(orderDetailsVo.getAppointmentTime(), orderDetailsVo.getArriveTime());
             orderDetailsVo.setArriveTimoutMin(timoutMin);
             if (timoutMin > 0) {
                 OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
@@ -369,19 +389,22 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 取消预约时间超时的订单
+     *
      * @return
      */
     @Override
     public Boolean processTimeoutOrders(List<Long> timeoutOrderIds) {
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateChainWrapper = new LambdaUpdateWrapper<>();
-        orderInfoLambdaUpdateChainWrapper.set(OrderInfo::getStatus,OrderStatus.CANCELED_ORDER)
-                .set(OrderInfo::getCancelMessage,OrderConstant.TIMEOUT_CANCEL_REMARK)
-                .in(OrderInfo::getId,timeoutOrderIds);
+        orderInfoLambdaUpdateChainWrapper.set(OrderInfo::getStatus, OrderStatus.CANCELED_ORDER)
+                .set(OrderInfo::getCancelMessage, OrderConstant.TIMEOUT_CANCEL_REMARK)
+                .set(OrderInfo::getCancelTime, new Date())
+                .in(OrderInfo::getId, timeoutOrderIds);
         return this.update(orderInfoLambdaUpdateChainWrapper);
     }
 
     /**
      * 根据状态获取回收员订单列表
+     *
      * @param recyclerId
      * @param status
      * @return
@@ -390,8 +413,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public List<RecyclerOrderVo> getRecyclerOrderListByStatus(Long recyclerId, Integer status) {
         List<RecyclerOrderVo> result = new ArrayList<>();
         LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        orderInfoLambdaQueryWrapper.eq(OrderInfo::getRecyclerId,recyclerId)
-                .eq(OrderInfo::getStatus,status);
+        orderInfoLambdaQueryWrapper.eq(OrderInfo::getRecyclerId, recyclerId)
+                .eq(OrderInfo::getStatus, status)
+                .eq(OrderInfo::getRecyclerIsDeleted, PublicConstant.NOT_DELETED);
         List<OrderInfo> orderInfoListDB = this.list(orderInfoLambdaQueryWrapper);
         if (ObjectUtils.isEmpty(orderInfoListDB)) {
             return result;
@@ -399,7 +423,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Point recyclerLocationFromRedis = getRecyclerLocationFromRedis(recyclerId);
         result = orderInfoListDB.stream().map(order -> {
             RecyclerOrderVo recyclerOrderVo = new RecyclerOrderVo();
-            BeanUtils.copyProperties(order,recyclerOrderVo);
+            BeanUtils.copyProperties(order, recyclerOrderVo);
             recyclerOrderVo.setActualPhoto(order.getActualPhotos().split(",")[0]);
             if (OrderStatus.RECYCLER_ACCEPTED.getStatus().equals(status) && !ObjectUtils.isEmpty(recyclerLocationFromRedis)) {
                 // 计算回收员距离订单多远
@@ -412,7 +436,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             if (!ObjectUtils.isEmpty(recyclerOrderVo.getArriveTime())) {
                 // 计算回收员是否超时，并计算超时多少分钟
-                Integer timoutMin = calculateTimeoutMinutes(recyclerOrderVo.getAppointmentTime(),recyclerOrderVo.getArriveTime());
+                Integer timoutMin = calculateTimeoutMinutes(recyclerOrderVo.getAppointmentTime(), recyclerOrderVo.getArriveTime());
                 recyclerOrderVo.setArriveTimoutMin(timoutMin);
                 if (timoutMin > 0) {
                     OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
@@ -446,8 +470,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 计算回收员是否超时，并返回超时分钟数
+     *
      * @param appointmentTime 预约时间，格式为 yyyy-MM-dd HH:mm:ss
-     * @param arriveTime 到达时间，格式为 yyyy-MM-dd HH:mm:ss
+     * @param arriveTime      到达时间，格式为 yyyy-MM-dd HH:mm:ss
      * @return 超时的分钟数，未超时返回 0
      */
     private static int calculateTimeoutMinutes(Date appointmentTime, Date arriveTime) {
@@ -470,6 +495,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+     *
      * @param orderId
      * @return
      */
@@ -477,22 +503,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public Boolean repost(Long orderId) {
         // 更新订单信息
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        orderInfoLambdaUpdateWrapper.set(OrderInfo::getRecyclerId,null)
-                .set(OrderInfo::getStatus,OrderStatus.WAITING_ACCEPT)
-                .set(OrderInfo::getAcceptTime,null)
-                .eq(OrderInfo::getId,orderId);
+        orderInfoLambdaUpdateWrapper.set(OrderInfo::getRecyclerId, null)
+                .set(OrderInfo::getStatus, OrderStatus.WAITING_ACCEPT)
+                .set(OrderInfo::getAcceptTime, null)
+                .eq(OrderInfo::getId, orderId);
         Boolean flag = this.update(orderInfoLambdaUpdateWrapper);
         if (flag) {
             // 重新查出订单信息
             OrderInfo orderInfoDB = this.getById(orderId);
             // 重新存入redis
-            redisTemplate.opsForValue().set(RedisConstant.WAITING_ORDER + orderId,orderInfoDB);
+            redisTemplate.opsForValue().set(RedisConstant.WAITING_ORDER + orderId, orderInfoDB);
         }
         return flag;
     }
 
     /**
      * 回收员到达回收点
+     *
      * @param orderId
      * @return
      */
@@ -500,27 +527,29 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public Boolean arrive(Long orderId) {
         //TODO 之后要完善不能超过100米就点击已到达
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        orderInfoLambdaUpdateWrapper.set(OrderInfo::getStatus,OrderStatus.RECYCLER_CONFIRM_ORDER)
-                .set(OrderInfo::getArriveTime,new Date())
-                .eq(OrderInfo::getId,orderId);
+        orderInfoLambdaUpdateWrapper.set(OrderInfo::getStatus, OrderStatus.RECYCLER_CONFIRM_ORDER)
+                .set(OrderInfo::getArriveTime, new Date())
+                .eq(OrderInfo::getId, orderId);
         return this.update(orderInfoLambdaUpdateWrapper);
     }
 
     /**
      * 更新订单信息
+     *
      * @param updateOrderFrom
      * @return
      */
     @Override
     public Boolean updateOrder(UpdateOrderFrom updateOrderFrom) {
         OrderInfo orderInfo = new OrderInfo();
-        BeanUtils.copyProperties(updateOrderFrom,orderInfo);
+        BeanUtils.copyProperties(updateOrderFrom, orderInfo);
         orderInfo.setUpdateTime(new Date());
         return this.updateById(orderInfo);
     }
 
     /**
      * 计算实际的订单信息
+     *
      * @param orderId
      * @return
      */
@@ -537,7 +566,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         ServiceFeeRuleRequestForm serviceFeeRuleRequestForm = new ServiceFeeRuleRequestForm();
         serviceFeeRuleRequestForm.setRecycleWeigh(orderInfoDB.getRecycleWeigh());
         serviceFeeRuleRequestForm.setUnitPrice(orderInfoDB.getUnitPrice());
-        calculateOrderAndFees(calculateActualOrderVo,serviceFeeRuleRequestForm);
+        calculateOrderAndFees(calculateActualOrderVo, serviceFeeRuleRequestForm);
         totalAmount = totalAmount.add(calculateActualOrderVo.getRealRecyclerAmount()).add(calculateActualOrderVo.getRealRecyclerPlatformAmount());
 
         // 判断回收员是否超时
@@ -545,7 +574,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 已超时
         if (OrderConstant.NOT_TIMED_OUT_MIN < timeOutMin) {
             // 计算回收员需要付的超时费用
-            calculateTimeoutFree(calculateActualOrderVo,timeOutMin);
+            calculateTimeoutFree(calculateActualOrderVo, timeOutMin);
             calculateActualOrderVo.setTimeOutMin(timeOutMin);
             totalAmount = totalAmount.add(calculateActualOrderVo.getRecyclerOvertimeCharges());
         }
@@ -553,7 +582,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         AvailableCouponForm availableCouponForm = new AvailableCouponForm();
         availableCouponForm.setRealRecyclerAmount(calculateActualOrderVo.getRealRecyclerAmount());
         availableCouponForm.setRecyclerId(orderInfoDB.getRecyclerId());
-        getAvailableRecyclerServiceCoupons(calculateActualOrderVo,availableCouponForm);
+        getAvailableRecyclerServiceCoupons(calculateActualOrderVo, availableCouponForm);
 
         calculateActualOrderVo.setTotalAmount(totalAmount);
 
@@ -562,6 +591,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 根据订单id和订单状态修改订单状态
+     *
      * @param orderId
      * @param status
      * @return
@@ -569,15 +599,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public Boolean updateOrderStatus(Long orderId, Integer status) {
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId,orderId)
-                .set(OrderInfo::getStatus,status)
-                .set(OrderInfo::getUpdateTime,new Date());
+        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId, orderId)
+                .set(OrderInfo::getStatus, status)
+                .set(OrderInfo::getUpdateTime, new Date());
         return this.update(orderInfoLambdaUpdateWrapper);
     }
 
 
     /**
      * 回收员校验回收码
+     *
      * @param validateRecycleCodeForm
      * @return
      */
@@ -598,6 +629,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 结算订单
+     *
      * @param settlementForm
      * @return
      */
@@ -634,20 +666,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderBillService.updateBill(updateBillForm);
         // 更新订单信息
         LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId,settlementForm.getOrderId())
-                .set(OrderInfo::getStatus,OrderStatus.COMPLETED_ORDER)
-                .set(OrderInfo::getUpdateTime,new Date());
+        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId, settlementForm.getOrderId())
+                .set(OrderInfo::getStatus, OrderStatus.COMPLETED_ORDER)
+                .set(OrderInfo::getUpdateTime, new Date());
         return this.update(orderInfoLambdaUpdateWrapper);
     }
 
     /***
-     * 接单后取消
+     * 结算取消订单费用
      * @param cancelOrderForm
      * @return
      */
     @Override
-    public CancelOrderVo cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
-        CancelOrderVo cancelOrderVo = new CancelOrderVo();
+    public CancelOrderFeeVo calculateCancellationFee(CancelOrderFeeForm cancelOrderForm) {
+        CancelOrderFeeVo cancelOrderVo = new CancelOrderFeeVo();
         // 当前时间是否大于预约上门时间，如果大于则需要回收员支付取消
         OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
         long serviceOvertimeMin = calculateMinutesDifference(new Date(), cancelOrderForm.getAppointmentTime());
@@ -688,11 +720,103 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 回收员接单后，回收员、顾客取消订单
+     *
+     * @param cancelOrderForm
+     * @return
+     */
+    @GlobalTransactional
+    @Override
+    public Boolean cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId, cancelOrderForm.getOrderId())
+                .set(OrderInfo::getCancelTime, new Date())
+                .set(OrderInfo::getUpdateTime, new Date())
+                .set(OrderInfo::getStatus, OrderStatus.CANCELED_ORDER);
+        // 超过预约时间，回收员支付取消
+        if (!ObjectUtils.isEmpty(cancelOrderForm.getServiceOvertimePenalty())) {
+            orderInfoLambdaUpdateWrapper.set(OrderInfo::getCancelMessage, OrderConstant.RECYCLER_LATE_CANCELLATION_NOTE)
+                    .set(OrderInfo::getServiceOvertimePenalty, cancelOrderForm.getServiceOvertimePenalty());
+
+            // 减少回收员账户余额,新增回收员的账户明细
+            RecyclerWithdrawForm recyclerWithdrawForm = new RecyclerWithdrawForm();
+            recyclerWithdrawForm.setAmount(cancelOrderForm.getServiceOvertimePenalty());
+            recyclerWithdrawForm.setRecyclerId(cancelOrderForm.getRecyclerId());
+            recyclerAccountFeignClient.cancelOrderIfOverdue(recyclerWithdrawForm);
+
+            // 增加顾客账户余额，新增顾客的账户明细
+            CustomerWithdrawForm customerWithdrawForm = new CustomerWithdrawForm();
+            customerWithdrawForm.setCustomerId(cancelOrderForm.getCustomerId());
+            customerWithdrawForm.setAmount(cancelOrderForm.getServiceOvertimePenalty());
+            customerAccountFeignClient.cancelOrderIfOverdue(customerWithdrawForm);
+
+            return this.update(orderInfoLambdaUpdateWrapper);
+        }
+        // 顾客在回收员接单超五分钟之后付费取消
+        if (!ObjectUtils.isEmpty(cancelOrderForm.getCustomerLateCancellationFee())) {
+            orderInfoLambdaUpdateWrapper.set(OrderInfo::getCancelMessage, OrderConstant.CANCEL_REMARK)
+                    .set(OrderInfo::getCustomerLateCancellationFee, cancelOrderForm.getCustomerLateCancellationFee());
+
+            // 增加回收员账户余额,新增回收员的账户明细
+            RecyclerWithdrawForm recyclerWithdrawForm = new RecyclerWithdrawForm();
+            recyclerWithdrawForm.setAmount(cancelOrderForm.getCustomerLateCancellationFee());
+            recyclerWithdrawForm.setRecyclerId(cancelOrderForm.getRecyclerId());
+            recyclerAccountFeignClient.processPaidCancellation(recyclerWithdrawForm);
+
+            // 减少顾客账户余额，新增顾客的账户明细
+            CustomerWithdrawForm customerWithdrawForm = new CustomerWithdrawForm();
+            customerWithdrawForm.setCustomerId(cancelOrderForm.getCustomerId());
+            customerWithdrawForm.setAmount(cancelOrderForm.getCustomerLateCancellationFee());
+            customerAccountFeignClient.processPaidCancellation(customerWithdrawForm);
+
+            return this.update(orderInfoLambdaUpdateWrapper);
+        }
+        // 回收员在预约时间与当前时间不足60分钟付费取消
+        if (!ObjectUtils.isEmpty(cancelOrderForm.getRecyclerLateCancellationFee())) {
+            orderInfoLambdaUpdateWrapper.set(OrderInfo::getCancelMessage, OrderConstant.SHORT_NOTICE_CANCELLATION)
+                    .set(OrderInfo::getRecyclerLateCancellationFee, cancelOrderForm.getRecyclerLateCancellationFee());
+
+            // 减少回收员账户余额,新增回收员的账户明细
+            RecyclerWithdrawForm recyclerWithdrawForm = new RecyclerWithdrawForm();
+            recyclerWithdrawForm.setAmount(cancelOrderForm.getRecyclerLateCancellationFee());
+            recyclerWithdrawForm.setRecyclerId(cancelOrderForm.getRecyclerId());
+            recyclerAccountFeignClient.chargeCancellationIfWithinOneHour(recyclerWithdrawForm);
+
+            // 增加顾客账户余额，新增顾客的账户明细
+            CustomerWithdrawForm customerWithdrawForm = new CustomerWithdrawForm();
+            customerWithdrawForm.setCustomerId(cancelOrderForm.getCustomerId());
+            customerWithdrawForm.setAmount(cancelOrderForm.getRecyclerLateCancellationFee());
+            customerAccountFeignClient.chargeCancellationIfWithinOneHour(customerWithdrawForm);
+
+            return this.update(orderInfoLambdaUpdateWrapper);
+        }
+        return false;
+    }
+
+    /**
+     * 删除订单
+     *
+     * @param orderDeleteForm
+     * @return
+     */
+    @Override
+    public Boolean delete(OrderDeleteForm orderDeleteForm) {
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.eq(!ObjectUtils.isEmpty(orderDeleteForm.getCustomerId()), OrderInfo::getCustomerId, orderDeleteForm.getCustomerId())
+                .eq(!ObjectUtils.isEmpty(orderDeleteForm.getRecyclerId()), OrderInfo::getRecyclerId, orderDeleteForm.getRecyclerId())
+                .eq(OrderInfo::getId, orderDeleteForm.getOrderId())
+                .set(!ObjectUtils.isEmpty(orderDeleteForm.getCustomerId()), OrderInfo::getCustomerIsDeleted, PublicConstant.DELETED)
+                .set(!ObjectUtils.isEmpty(orderDeleteForm.getRecyclerId()), OrderInfo::getRecyclerIsDeleted, PublicConstant.DELETED)
+                .set(OrderInfo::getUpdateTime, new Date());
+        return this.update(orderInfoLambdaUpdateWrapper);
+    }
+
+    /**
      * 计算两个 Date 类型时间的分钟差
      *
      * @param startDate 开始时间
      * @param endDate   结束时间
-     * @return 两个时间之间的分钟差(开始时间 > 结束时间：返回负数)
+     * @return 两个时间之间的分钟差(开始时间 > 结束时间 ： 返回负数)
      */
     private static long calculateMinutesDifference(Date startDate, Date endDate) {
         Instant startInstant = startDate.toInstant();
@@ -702,10 +826,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 计算回收员超时费用
+     *
      * @param calculateActualOrderVo
      * @param timeOutMin
      */
-    private void calculateTimeoutFree(CalculateActualOrderVo calculateActualOrderVo,int timeOutMin){
+    private void calculateTimeoutFree(CalculateActualOrderVo calculateActualOrderVo, int timeOutMin) {
         OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
         overtimeRequestForm.setOvertimeMinutes(timeOutMin);
         OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.calculateTimeoutFree(overtimeRequestForm).getData();
@@ -714,6 +839,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 计算订单实际回收总金额、回收员实际所付款手续费、顾客实际所付款手续费
+     *
      * @param calculateActualOrderVo
      * @param serviceFeeRuleRequestForm
      */
@@ -726,11 +852,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 获取在当前订单回收员可使用的服务抵扣劵
+     *
      * @param calculateActualOrderVo
      * @param availableCouponForm
      */
     private void getAvailableRecyclerServiceCoupons(CalculateActualOrderVo calculateActualOrderVo,
-                                                                       AvailableCouponForm availableCouponForm) {
+                                                    AvailableCouponForm availableCouponForm) {
         calculateActualOrderVo.setRecyclerAvailableCouponList(recyclerCouponFeignClient.getAvailableCustomerServiceCoupons(availableCouponForm).getData());
     }
 

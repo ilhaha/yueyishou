@@ -19,7 +19,7 @@ public class CustomerAccountDetail extends BaseEntity {
     private Long customerAccountId;
 	/**交易内容*/
     private String content;
-	/**交易类型： 1-回收收入 2-提现*/
+	/**交易类型： 1-支出 2-收入*/
     private String tradeType;
 	/**金额*/
     private BigDecimal amount;

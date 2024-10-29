@@ -49,15 +49,24 @@
             <view slot="footer" class="button-group">
               <van-button size="mini" type="primary" class="action-button" catch:tap="tipPay" wx:if="{{order.status == 5}}">提醒付款</van-button>
             </view>
-          </van-card>
-
-          <!-- 已取消 -->
-          <van-card wx:if="{{order.status == 8}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.estimatedTotalAmount - order.expectCustomerPlatformAmount}}" origin-price="{{order.estimatedTotalAmount}}" tag="{{item.title}}">
-            <view slot="desc" class="custom-desc">
-              <view>{{order.updateTime}} 已取消</view>
+            <view slot="footer" class="button-group" wx:if="{{order.status == 6 || order.status == 7}}">
+              <van-button size="mini" type="danger" class="action-button" catch:tap="switchDeleteShow" data-orderid="{{order.id}}">删除订单</van-button>
             </view>
           </van-card>
 
+          <!-- 已取消 -->
+          <van-card wx:if="{{order.status == 8}}" title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" tag="{{item.title}}">
+            <view slot="desc" class="custom-desc">
+              <view>{{order.appointmentTime}} 前上门</view>
+              <view>{{order.cancelTime}} 已取消</view>
+              <view style="color: red;" wx:if="{{order.customerLateCancellationFee}}">取消扣费 ¥{{order.customerLateCancellationFee}}</view>
+              <view style="color: green;" wx:if="{{order.serviceOvertimePenalty}}">超时未服务补偿 ¥{{order.serviceOvertimePenalty}}</view>
+              <view style="color: green;" wx:if="{{order.recyclerLateCancellationFee}}">短时取消补偿 ¥{{order.recyclerLateCancellationFee}}</view>
+            </view>
+            <view slot="footer" class="button-group">
+              <van-button size="mini" type="danger" class="action-button" catch:tap="switchDeleteShow" data-orderid="{{order.id}}">删除订单</van-button>
+            </view>
+          </van-card>
         </view>
       </block>
     </block>
@@ -67,4 +76,6 @@
   </van-tab>
 </van-tabs>
 
-<van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否取消该订单" show-cancel-button bind:confirm="cancelOrder" />
+<van-dialog id="van-dialog" show="{{ isCancelOrderShow }}" title="确认是否取消该订单" show-cancel-button bind:confirm="cancelOrder" bind:close="switchCancelOrderShow" />
+
+<van-dialog id="van-dialog" show="{{ isDeleteOrderShow }}" title="确认是否删除该订单" show-cancel-button bind:confirm="deleteOrder" bind:close="switchDeleteShow" />

@@ -51,4 +51,24 @@ public interface IRecyclerAccountService extends IService<RecyclerAccount> {
      */
     Boolean settlement(RecyclerWithdrawForm recyclerWithdrawForm);
 
+    /**
+     * 超过预约时间未到达，需回收员赔偿取消
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    Boolean cancelOrderIfOverdue(RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用取消订单
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    Boolean processPaidCancellation(RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
+     * 回收员距离预约时间不足60分钟付费取消
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    Boolean chargeCancellationIfWithinOneHour(RecyclerWithdrawForm recyclerWithdrawForm);
 }

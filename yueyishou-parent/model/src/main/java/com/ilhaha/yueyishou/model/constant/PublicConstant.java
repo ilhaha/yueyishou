@@ -13,4 +13,14 @@ public class PublicConstant {
      * 地球半径
      */
     public static final Integer EARTH_RADIUS = 6371;
+
+    /**
+     * 数据未删除
+     */
+    public static final Integer NOT_DELETED = 0;
+
+    /**
+     * 数据已删除
+     */
+    public static final Integer DELETED = 1;
 }

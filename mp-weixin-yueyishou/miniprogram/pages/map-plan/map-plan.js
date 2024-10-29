@@ -43,6 +43,22 @@ ComponentWithStore({
     operator: {
       type: String,
       value: 'customer'
+    },
+    serviceOvertimePenalty: {
+      type: Number,
+      value: null
+    },
+    customerLateCancellationFee: {
+      type: Number,
+      value: null
+    },
+    recyclerLateCancellationFee: {
+      type: Number,
+      value: null
+    },
+    overtimeMinutes: {
+      type: Number,
+      value: null
     }
   },
 
@@ -106,7 +122,7 @@ ComponentWithStore({
 
     // 取消订单
     cancelOrder() {
-      this.triggerEvent('canceOrder');
+      this.triggerEvent('cancelOrder');
     },
 
     // 获取回收员到回收点的路线

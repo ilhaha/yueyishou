@@ -10,29 +10,15 @@ package com.ilhaha.yueyishou.model.constant;
 public class AccountDetailsConstant {
 
     /**
-     * 回收员账户明细交易类型：1回收支付费用
+     * 明细交易类型：1支出
      */
-    public static final String RECYCLE_PAY_FEE = "1";
+    public static final String EXPENDITURE = "1";
 
     /**
-     * 回收员账户明细交易类型： 2提现
+     * 明细交易类型： 2收入
      */
-    public static final String ON_WITHDRAW = "2";
+    public static final String INCOME = "2";
 
-    /**
-     * 回收员账户明细交易类型： 3充值
-     */
-    public static final String ON_RECHARGE = "3";
-
-    /**
-     * 顾客账户明细交易类型：1回收收入
-     */
-    public static final String CUSTOMER_RECYCLE_PAY_FEE = "1";
-
-    /**
-     * 顾客账户明细交易类型： 2提现
-     */
-    public static final String CUSTOMER_ON_WITHDRAW = "2";
 
     /**
      * 回收支付内容
@@ -48,6 +34,36 @@ public class AccountDetailsConstant {
      * 充值内容
      */
     public static final String ON_RECHARGE_CONTENT = "充值到悦易收账户";
+
+    /**
+     * 超过预约时间未服务，顾客获取补偿
+     */
+    public static final String TIMEOUT_SERVICE_COMPENSATION = "超时未服务补偿";
+
+
+    /**
+     * 超过预约时间未服务，回收员补偿
+     */
+    public static final String UNDELIVERED_SERVICE_COMPENSATION = "超时未服务赔偿";
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用，回收员得到补偿
+     */
+    public static final String TIMEOUT_CANCELLATION_COMPENSATION = "超时取消补偿";
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用，顾客支付赔偿
+     */
+    public static final String OVERDUE_CANCELLATION_COMPENSATION = "超时取消赔偿";
+
+    /**
+     * 回收员在预约时间不足60分钟取消，顾客得到补偿
+     */
+    public static final String CUSTOMER_SHORT_NOTICE_CANCELLATION = "短时取消补偿";
+    /**
+     * 回收员在预约时间不足60分钟取消，回收员支付补偿
+     */
+    public static final String RECYCLER_SHORT_NOTICE_CANCELLATION = "短时取消赔偿";
 
 
 }

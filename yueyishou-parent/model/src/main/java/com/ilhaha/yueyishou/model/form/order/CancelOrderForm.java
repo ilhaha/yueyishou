@@ -2,33 +2,46 @@ package com.ilhaha.yueyishou.model.form.order;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @Author ilhaha
  * @Create 2024/10/24 21:21
  * @Version 1.0
- *
+ * <p>
  * 接单后取消订单表单类
  */
 @Data
 public class CancelOrderForm {
 
-    /**订单Id*/
+    /**
+     * 订单Id
+     */
     private Long orderId;
 
-    /**顾客Id*/
+    /**
+     * 顾客Id
+     */
     private Long customerId;
 
-    /**回收员Id*/
+    /**
+     * 回收员Id
+     */
     private Long recyclerId;
 
-    /**预约时间*/
-    private Date appointmentTime;
+    /**
+     * 接单后，回收员在预约时间未到达取消订单赔偿
+     */
+    private BigDecimal serviceOvertimePenalty;
 
-    /**回收员接单时间*/
-    private Date acceptTime;
+    /**
+     * 接单后，顾客未在免费取消订单时间内取消赔偿
+     */
+    private BigDecimal customerLateCancellationFee;
 
-    /**取消订单操作人*/
-    private String cancelOperator;
+    /**
+     * 接单后，回收员未在免费取消订单时间内取消赔偿
+     */
+    private BigDecimal recyclerLateCancellationFee;
 }

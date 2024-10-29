@@ -18,6 +18,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface CustomerAccountFeignClient {
 
     /**
+     * 回收员距离预约时间不足60分钟付费取消
+     * @param customerWithdrawForm
+     * @return
+     */
+    @PostMapping("/customerAccount/chargeCancellation")
+    Result<Boolean> chargeCancellationIfWithinOneHour(@RequestBody CustomerWithdrawForm customerWithdrawForm);
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用取消订单
+     * @param customerWithdrawForm
+     * @return
+     */
+    @PostMapping("/customerAccount/processPaidCancellation")
+    Result<Boolean> processPaidCancellation(@RequestBody CustomerWithdrawForm customerWithdrawForm);
+
+    /**
+     * 超过预约时间未到达，需回收员赔偿取消
+     * @param customerWithdrawForm
+     * @return
+     */
+    @PostMapping("/customerAccount/cancelOrderIfOverdue")
+    Result<Boolean> cancelOrderIfOverdue(@RequestBody CustomerWithdrawForm customerWithdrawForm);
+
+
+    /**
      * 顾客提现到微信零钱
      * @param customerWithdrawForm
      * @return

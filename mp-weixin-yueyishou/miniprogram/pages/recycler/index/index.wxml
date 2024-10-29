@@ -79,7 +79,7 @@
   <view wx:elif="{{orderListByStatus.length > 0 && activeTab == 4}}">
     <block wx:for="{{orderListByStatus}}" wx:key="orderNo" wx:for-item="order">
       <view class="card-container" data-orderid="{{order.id}}" data-orderstatus="{{order.status}}" bind:tap="showDetails">
-        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.realRecyclerAmount}}" origin-price="{{order.realOrderRecycleAmount}}" tag="待确认">
+        <van-card title="{{order.parentCategoryName}} {{order.sonCategoryName}} ¥{{order.unitPrice}}" thumb="{{ order.actualPhoto }}" num="{{order.recycleWeigh}}" price="{{order.realRecyclerAmount}}" origin-price="{{order.realOrderRecycleAmount}}" tag="待付款">
           <view slot="desc" class="custom-desc">
             <view wx:if="{{order.arriveTime}}">{{order.arriveTime}} 到达</view>
             <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>

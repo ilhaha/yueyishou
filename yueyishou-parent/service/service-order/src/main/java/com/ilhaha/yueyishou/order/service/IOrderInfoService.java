@@ -2,7 +2,6 @@ package com.ilhaha.yueyishou.order.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.order.*;
@@ -140,9 +139,24 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     Boolean settlement(SettlementForm settlementForm);
 
     /***
-     * 接单后取消
+     * 结算取消订单费用
      * @param cancelOrderForm
      * @return
      */
-    CancelOrderVo cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
+    CancelOrderFeeVo calculateCancellationFee(CancelOrderFeeForm cancelOrderForm);
+
+    /**
+     * 回收员接单后，回收员、顾客取消订单
+     * @param cancelOrderForm
+     * @return
+     */
+    Boolean cancelOrderAfterTaking(CancelOrderForm cancelOrderForm);
+
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    Boolean delete(OrderDeleteForm orderDeleteForm);
+
 }

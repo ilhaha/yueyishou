@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerAccount;
+import com.ilhaha.yueyishou.model.form.customer.CustomerWithdrawForm;
 import com.ilhaha.yueyishou.model.form.order.SettlementForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAccountForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerWithdrawForm;
@@ -26,6 +27,36 @@ import java.util.Arrays;
 public class RecyclerAccountController {
 	@Resource
 	private IRecyclerAccountService recyclerAccountService;
+
+	/**
+	 * 回收员距离预约时间不足60分钟付费取消
+	 * @param recyclerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/chargeCancellation")
+	public Result<Boolean> chargeCancellationIfWithinOneHour(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm){
+		return Result.ok(recyclerAccountService.chargeCancellationIfWithinOneHour((recyclerWithdrawForm)));
+	}
+
+	/**
+	 * 顾客取消已超过免费时限，需支付相关费用取消订单
+	 * @param recyclerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/processPaidCancellation")
+	public Result<Boolean> processPaidCancellation(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm){
+		return Result.ok(recyclerAccountService.processPaidCancellation(recyclerWithdrawForm));
+	}
+
+	/**
+	 * 超过预约时间未到达，需回收员赔偿取消
+	 * @param recyclerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/cancelOrderIfOverdue")
+	public Result<Boolean> cancelOrderIfOverdue(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm){
+		return Result.ok(recyclerAccountService.cancelOrderIfOverdue(recyclerWithdrawForm));
+	}
 
 	/**
 	 * 结算订单

@@ -32,8 +32,8 @@
             <text class="transaction-desc">{{item.content}}</text>
             <text class="transaction-date">{{item.createTime}}</text>
           </view>
-          <text class="transaction-amount" style="color: {{item.tradeType == 1 ? '#52c41a':'#ff4d4f'}};">
-            {{item.tradeType == 1 ? '+' : '-'}}{{item.amount}} 元
+          <text class="transaction-amount" style="color: {{item.tradeType == 1 ? '#ff4d4f':'#52c41a'}};">
+            {{item.tradeType == 1 ? '-' : '+'}}{{item.amount}} 元
           </text>
         </view>
       </block>

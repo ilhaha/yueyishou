@@ -18,6 +18,31 @@ import org.springframework.web.bind.annotation.*;
 public interface RecyclerAccountFeignClient {
 
     /**
+     * 回收员距离预约时间不足60分钟付费取消
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @PostMapping("/recyclerAccount/chargeCancellation")
+    Result<Boolean> chargeCancellationIfWithinOneHour(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
+     * 顾客取消已超过免费时限，需支付相关费用取消订单
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @PostMapping("/recyclerAccount/processPaidCancellation")
+    Result<Boolean> processPaidCancellation(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm);
+
+
+    /**
+     * 超过预约时间未到达，需回收员赔偿取消
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @PostMapping("/recyclerAccount/cancelOrderIfOverdue")
+    Result<Boolean> cancelOrderIfOverdue(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
      * 结算订单
      * @param recyclerWithdrawForm
      * @return

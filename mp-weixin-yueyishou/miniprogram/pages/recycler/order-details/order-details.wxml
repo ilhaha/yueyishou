@@ -65,7 +65,7 @@
 <!-- 待服务 -->
 <view wx:if="{{orderStatus == 2}}">
   <view wx:if="{{orderInfo}}">
-    <map-plan orderInfo="{{orderInfo}}" operator="recycler" bind:canceOrder="recyclerCanceOrder" bind:arriveOrder="recyclerArriveOrder" freeCancellationTime="{{freeCancellationTime}}" />
+    <map-plan orderInfo="{{orderInfo}}" operator="recycler" bind:cancelOrder="recyclercancelOrder" bind:arriveOrder="recyclerArriveOrder" freeCancellationTime="{{freeCancellationTime}}" overtimeMinutes="{{overtimeMinutes}}" serviceOvertimePenalty="{{serviceOvertimePenalty}}" recyclerLateCancellationFee="{{recyclerLateCancellationFee}}" />
   </view>
 </view>
 
@@ -321,6 +321,66 @@
   </van-dialog>
 </view>
 
+<!-- 已取消 -->
+<view class="container container-padding-bottom" wx:if="{{orderStatus == 8}}">
+  <view class="shipping-info">
+    <text>{{orderInfo.customerLocation}}</text>
+    <text>{{orderInfo.orderContactPerson}} {{orderInfo.orderContactPhone}}</text>
+  </view>
+  <view class="order-details">
+    <van-card title="{{orderInfo.parentCategoryName}} {{orderInfo.sonCategoryName}} ¥{{orderInfo.unitPrice}}" thumb="{{ orderInfo.actualPhoto }}" tag="已取消">
+      <view slot="desc" class="custom-desc">
+        <view>{{orderInfo.appointmentTime}} 前上门</view>
+        <view>{{orderInfo.cancelTime}} 已取消</view>
+        <view style="color: green;" wx:if="{{orderInfo.customerLateCancellationFee}}">取消补偿 ¥{{orderInfo.customerLateCancellationFee}}</view>
+        <view style="color: red;" wx:if="{{orderInfo.serviceOvertimePenalty}}">超时未服务扣费 ¥{{orderInfo.serviceOvertimePenalty}}</view>
+        <view style="color: red;" wx:if="{{orderInfo.recyclerLateCancellationFee}}">短时取消扣费 ¥{{orderInfo.recyclerLateCancellationFee}}</view>
+      </view>
+    </van-card>
+    <view class="order-meta">
+      <view class="meta-item">
+        <text class="label">回收品类</text>
+        <text class="value">{{orderInfo.sonCategoryName}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">品类单价</text>
+        <text class="value">¥{{orderInfo.unitPrice}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">订单编号</text>
+        <text class="value">{{orderInfo.orderNo}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">创建时间</text>
+        <text class="value">{{orderInfo.createTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">预约时间</text>
+        <text class="value">{{orderInfo.appointmentTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">取消时间</text>
+        <text class="value">{{orderInfo.cancelTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="label">取消备注</text>
+        <text class="value">{{orderInfo.cancelMessage}}</text>
+      </view>
+      <view class="meta-item" wx:if="{{orderInfo.remark}}">
+        <text class="label">备注</text>
+        <text class="value">{{orderInfo.remark}}</text>
+      </view>
+      <view class="meta-img">
+        <text class="label">实物照片</text>
+        <view class="photo-grid">
+          <image wx:for="{{orderInfo.actualPhotoList}}" src="{{item}}" wx:key="index" mode="aspectFill" class="img" alt="实物照片"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+
 
 <van-dialog use-slot title="核对订单信息" show="{{ dialogShow }}" show-cancel-button bind:close="switchDialogStatus" bind:confirm="confirmRecycling">
   <view class="dialog-content">
@@ -353,7 +413,7 @@
       <text class="dialog-value">{{ actualOrderInfo.recyclerOvertimeCharges }}元</text>
     </view>
 
-    <view class="dialog-item" wx:if="{{ initServiceFee == 0 }}">
+    <view class="dialog-item" wx:if="{{ initServiceFee == 0}}">
       <picker mode="selector" range="{{ couponListWithNone }}" range-key="name" bindchange="onCouponChange" disabled="{{true}}">
         <van-field label="服务抵扣劵" readonly clickable value="无需服务抵扣劵" placeholder="无需服务抵扣劵" />
       </picker>

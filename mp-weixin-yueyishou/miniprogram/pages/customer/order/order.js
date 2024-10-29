@@ -1,6 +1,7 @@
 import {
   reqOrderList,
-  reqCancelOrder
+  reqCancelOrder,
+  reqDeleteOrder
 } from '../../../api/customer/order'
 import {
   toast
@@ -36,12 +37,38 @@ Page({
     }],
     orderList: [],
     isCancelOrderShow: false,
-    needCancelOrderId: null
+    needCancelOrderId: null,
+    isDeleteOrderShow: false,
+    deleteOrderId: null
   },
 
   // 初始化数据
   onShow() {
     this.getOrderList(this.data.tabList[this.data.active].status);
+  },
+  // 切换是否确认删除订单确认框
+  switchDeleteShow(event) {
+    this.setData({
+      isDeleteOrderShow: !this.data.isDeleteOrderShow,
+    })
+    if (this.data.isDeleteOrderShow) {
+      this.setData({
+        deleteOrderId: event.currentTarget.dataset.orderid
+      })
+    }
+  },
+  // 删除订单
+  async deleteOrder(event) {
+    const res = await reqDeleteOrder({
+      orderId: this.data.deleteOrderId
+    })
+    if (res.data) {
+      this.getOrderList(this.data.tabList[this.data.active].status);
+      toast({
+        title: "删除成功",
+        icon: 'success'
+      })
+    }
   },
   // 提醒付款
   tipPay() {

@@ -3,9 +3,7 @@ package com.ilhaha.yueyishou.customer.service.impl;
 import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.customer.service.OrderService;
-import com.ilhaha.yueyishou.model.form.order.CancelOrderForm;
-import com.ilhaha.yueyishou.model.form.order.ReviewForm;
-import com.ilhaha.yueyishou.model.form.order.ServiceFeeRuleRequestForm;
+import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.client.OrderCommentFeignClient;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
@@ -90,12 +88,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /***
-     * 接单后取消
+     * 结算取消订单费用
      * @param cancelOrderForm
      * @return
      */
     @Override
-    public Result<CancelOrderVo> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
+    public Result<CancelOrderFeeVo> calculateCancellationFee(CancelOrderFeeForm cancelOrderForm) {
+        return orderInfoFeignClient.calculateCancellationFee(cancelOrderForm);
+    }
+
+    /**
+     * 回收员接单后，回收员、顾客取消订单
+     * @param cancelOrderForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> cancelOrderAfterTaking(CancelOrderForm cancelOrderForm) {
         return orderInfoFeignClient.cancelOrderAfterTaking(cancelOrderForm);
+    }
+
+    /**
+     * 删除订单
+     * @param orderDeleteForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> delete(OrderDeleteForm orderDeleteForm) {
+        orderDeleteForm.setCustomerId(AuthContextHolder.getCustomerId());
+        return orderInfoFeignClient.delete(orderDeleteForm);
     }
 }
