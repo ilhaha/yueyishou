@@ -6,6 +6,7 @@ import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
+import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
 
 import java.util.List;
 
@@ -31,4 +32,11 @@ public interface ICustomerCouponService extends IService<CustomerCoupon> {
      * @return
      */
     Boolean useCoupon(UseCouponFrom useCouponFrom);
+
+    /**
+     * 获取顾客的服务抵扣劵
+     * @param customer
+     * @return
+     */
+    List<CouponNotUsedVo> getNotUsedCoupon(Long customerId);
 }

@@ -24,10 +24,15 @@ import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
+import com.ilhaha.yueyishou.model.form.customer.CustomerAccountForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerAccountVo;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
+import com.ilhaha.yueyishou.model.vo.order.OrderMyVo;
+import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.client.RecyclerPersonalizationFeignClient;
 import com.ilhaha.yueyishou.common.util.PhoneNumberUtils;
@@ -77,6 +82,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Resource
     private CustomerCouponFeignClient customerCouponFeignClient;
+
+    @Resource
+    private OrderInfoFeignClient orderInfoFeignClient;
 
 
     /**
@@ -270,6 +278,26 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
                 .set(CustomerInfo::getNickname,updateCustomerBaseInfoForm.getNickname())
                 .set(CustomerInfo::getAvatarUrl,updateCustomerBaseInfoForm.getAvatarUrl());
         return this.update(customerInfoLambdaUpdateWrapper);
+    }
+
+    /**
+     * 获取顾客我的页面初始信息
+     * @param customerId
+     * @return
+     */
+    @Override
+    public CustomerMyVo getMy(Long customerId) {
+        CustomerMyVo customerMyVo = new CustomerMyVo();
+        // 获取参与回收次数和投递量
+        OrderMyVo orderMyVo = orderInfoFeignClient.getMy(customerId).getData();
+        customerMyVo.setRecyclerCount(orderMyVo.getRecyclerCount());
+        customerMyVo.setDeliveryVolume(orderMyVo.getDeliveryVolume());
+        // 获取账户余额
+        CustomerAccountForm customerAccountForm = new CustomerAccountForm();
+        customerAccountForm.setCustomerId(customerId);
+        CustomerAccountVo customerAccountInfo = customerAccountService.getCustomerAccountInfo(customerAccountForm);
+        customerMyVo.setAccountBalance(customerAccountInfo.getTotalAmount());
+        return customerMyVo;
     }
 
 }

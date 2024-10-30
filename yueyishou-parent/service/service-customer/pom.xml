@@ -15,6 +15,11 @@
     <dependencies>
         <dependency>
             <groupId>com.ilhaha.yueyishou</groupId>
+            <artifactId>service-order-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ilhaha.yueyishou</groupId>
             <artifactId>service-coupon-client</artifactId>
             <version>1.0</version>
         </dependency>

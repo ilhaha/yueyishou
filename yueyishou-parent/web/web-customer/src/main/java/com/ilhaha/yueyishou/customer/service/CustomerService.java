@@ -4,6 +4,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 
 /**
@@ -54,4 +55,11 @@ public interface CustomerService {
      * @return
      */
     Result<Boolean> replenishInfo(String token);
+
+    /**
+     * 获取顾客我的页面初始信息
+     * @return
+     */
+    Result<CustomerMyVo> getMy();
+
 }

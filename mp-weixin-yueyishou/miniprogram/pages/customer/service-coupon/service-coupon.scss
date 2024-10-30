@@ -1,0 +1,66 @@
+.container {
+  padding: 10px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 优惠券卡片样式 */
+.coupon-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 左侧金额与条件信息 */
+.left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.amount {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.condition {
+  font-size: 16px;
+}
+
+.expiry {
+  font-size: 12px;
+}
+
+/* 右侧领取按钮部分 */
+.right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.type {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.btn-receive {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-receive:hover {
+  background-color: rgba(255, 255, 255, 1);
+}

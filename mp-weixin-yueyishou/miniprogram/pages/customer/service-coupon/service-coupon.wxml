@@ -1,0 +1,22 @@
+<view class="container">
+  <block wx:for="{{coupons}}" wx:key="couponId" wx:if="{{coupons}}">
+    <view class="coupon-item" style="background-color: {{item.couponType == 1 ? '#99c794' : '#f67280'}};">
+      <view class="left-section">
+        <text class="amount" wx:if="{{item.conditionAmount}}">满¥{{item.conditionAmount}}可用</text>
+        <text class="amount" wx:else>无门槛</text>
+        <text class="condition">{{item.description}}</text>
+        <text class="expiry" wx:if="{{expireTime}}">{{item.expiry}} 过期</text>
+        <text class="expiry" wx:else>无期限</text>
+      </view>
+      <view class="right-section">
+        <text class="type">{{item.couponType == 1 ? '折扣劵' : '免单劵'}}</text>
+        <button class="btn-receive" bindtap="useCoupon" data-id="{{item.id}}">
+          立即使用
+        </button>
+      </view>
+    </view>
+  </block>
+  <block wx:if="{{coupons.length == 0}}">
+    <van-empty description="暂无服务抵扣劵" />
+  </block>
+</view>

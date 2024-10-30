@@ -45,15 +45,10 @@ Page({
         url: '/pages/recycler/my-wallet/my-wallet'
       },
       {
-        text: '我的评价',
-        icon: '/assets/images/common/evaluate.png',
-        url: 'goToReviews'
+        text: '服务抵扣劵',
+        icon: '/assets/images/common/service_coupon.png',
+        url: '/pages/recycler/service-coupon/service-coupon'
       },
-      {
-        text: '关于我们',
-        icon: '/assets/images/common/about_us.png',
-        url: 'goToReviews'
-      }
     ],
     orderList: [],
     orderStatus: 1,
@@ -71,6 +66,19 @@ Page({
   // 初始化数据
   onShow() {
     this.getRecyclerOrderListByStatus(this.data.orderStatus);
+  },
+
+  // 退出回收段
+  exit() {
+    toast({
+      title: '已退出',
+      icon: 'success'
+    })
+    setTimeout(() => {
+      wx.reLaunch({
+        url: '/pages/index/index',
+      })
+    }, 1000);
   },
 
   // 获取回收员订单

@@ -812,6 +812,29 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 获取顾客我的页面的订单初始化信息
+     * @param customerId
+     * @return
+     */
+    @Override
+    public OrderMyVo getMy(Long customerId) {
+        OrderMyVo orderMyVo = new OrderMyVo();
+        orderMyVo.setDeliveryVolume(new BigDecimal(BigInteger.ZERO));
+        orderMyVo.setRecyclerCount(Integer.MIN_VALUE);
+        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        orderInfoLambdaQueryWrapper.eq(OrderInfo::getCustomerId,customerId)
+                .in(OrderInfo::getStatus,Arrays.asList(OrderStatus.COMPLETED_ORDER.getStatus(),OrderStatus.AWAITING_EVALUATION.getStatus()));
+        List<OrderInfo> list = this.list(orderInfoLambdaQueryWrapper);
+        if (!ObjectUtils.isEmpty(list)) {
+            orderMyVo.setRecyclerCount(list.size());
+            for (OrderInfo orderInfo : list) {
+                orderMyVo.setDeliveryVolume(orderInfo.getRecycleWeigh().add(orderMyVo.getDeliveryVolume()));
+            }
+        }
+        return orderMyVo;
+    }
+
+    /**
      * 计算两个 Date 类型时间的分钟差
      *
      * @param startDate 开始时间

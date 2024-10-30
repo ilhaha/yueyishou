@@ -7,6 +7,7 @@ import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import jakarta.annotation.Resource;
@@ -91,5 +92,14 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Result<Boolean> replenishInfo(String token) {
         return recyclerInfoFeignClient.replenishInfo(AuthContextHolder.getCustomerId(),token);
+    }
+
+    /**
+     * 获取顾客我的页面初始信息
+     * @return
+     */
+    @Override
+    public Result<CustomerMyVo> getMy() {
+        return customerInfoFeignClient.getMy(AuthContextHolder.getCustomerId());
     }
 }

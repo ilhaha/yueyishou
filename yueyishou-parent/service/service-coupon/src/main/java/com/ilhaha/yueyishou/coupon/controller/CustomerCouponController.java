@@ -12,6 +12,7 @@ import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
+import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
 import com.ilhaha.yueyishou.model.vo.order.CalculateActualOrderVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,16 @@ import java.util.List;
 public class CustomerCouponController  {
 	@Resource
 	private ICustomerCouponService customerCouponService;
+
+	/**
+	 * 获取顾客的服务抵扣劵
+	 * @param customerId
+	 * @return
+	 */
+	@GetMapping("/not/used/{customerId}")
+	public Result<List<CouponNotUsedVo>> getNotUsedCoupon(@PathVariable("customerId") Long customerId){
+		return Result.ok(customerCouponService.getNotUsedCoupon(customerId));
+	}
 
 	/**
 	 * 顾客使用服务抵扣劵

@@ -9,6 +9,20 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/customer/service-coupon/service-coupon",
+          "pathName": "pages/customer/service-coupon/service-coupon",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/customer/my/my",
+          "pathName": "pages/customer/my/my",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/customer/order/order",
           "pathName": "pages/customer/order/order",
           "query": "",

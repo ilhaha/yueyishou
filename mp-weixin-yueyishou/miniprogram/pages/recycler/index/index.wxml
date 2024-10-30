@@ -112,6 +112,10 @@
       <text>是否接单</text>
       <van-switch class="switch-control" checked="{{ recyclerInfo.serviceStatus == 1 }}" catch:change="switchServiceStatus" size="20px" />
     </view>
+    <view class="menu-item" bind:tap="exit">
+      <image src="/assets/images/common/exit.png" class="menu-icon"></image>
+      <text>退出回收端</text>
+    </view>
   </view>
 </van-popup>
 

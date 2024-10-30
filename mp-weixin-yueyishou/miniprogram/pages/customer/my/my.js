@@ -4,34 +4,23 @@ import {
 import {
   ComponentWithStore
 } from 'mobx-miniprogram-bindings'
+import {
+  reqMyInfo
+} from '../../../api/customer/customer'
+import {
+  toast
+} from '../../../utils/extendApi';
+import {
+  clearStorage
+} from '../../../utils/storage'
 
 ComponentWithStore({
   storeBindings: {
     store: customerStore,
-    fields: ['token', 'customerInfo']
+    fields: ['token', 'customerInfo'],
+    actions: ['setToken']
   },
   data: {
-    initpanel: [{
-        url: '/pages/customer/order/order?status=1',
-        title: '待接单',
-        iconfont: 'icon-daijiedan'
-      },
-      {
-        url: '/pages/customer/order/order?status=2',
-        title: '待服务',
-        iconfont: 'icon-daifuwu'
-      },
-      {
-        url: '/pages/customer/order/order?status=5',
-        title: '待确认',
-        iconfont: 'icon-dengdaiqueren'
-      },
-      {
-        url: '/pages/customer/order/order?status=8',
-        title: '待评价',
-        iconfont: 'icon-pingjiadaiqueren'
-      }
-    ],
     initCommonlyPanel: [{
         url: '/pages/customer/setting/setting',
         title: '个人设置',
@@ -48,18 +37,53 @@ ComponentWithStore({
         iconfont: 'icon-lianxidizhi'
       },
       {
-        url: '',
+        url: '/pages/customer/service-coupon/service-coupon',
         title: '抵扣劵',
         iconfont: 'icon-shouyeicom-09'
       },
-      {
-        url: '',
-        title: '退出',
-        iconfont: 'icon-exit'
-      },
     ],
+    accountBalance: 0,
+    deliveryVolume: 0,
+    recyclerCount: 0,
+    isExitShow: false
+  },
+  pageLifetimes: {
+    show() {
+      this.init();
+    }
   },
   methods: {
+    // 切换退出确认框状态
+    switchIsExitShow() {
+      this.setData({
+        isExitShow: !this.data.isExitShow
+      })
+    },
+    // 退出
+    exit() {
+      this.setToken('');
+      clearStorage();
+      toast({
+        title: '已退出',
+        icon: 'success'
+      })
+      setTimeout(() => {
+        wx.reLaunch({
+          url: '/pages/index/index',
+        })
+      }, 1000);
+    },
+    async init() {
+      if (!this.data.token) {
+        return;
+      }
+      const res = await reqMyInfo();
+      this.setData({
+        accountBalance: res.data.accountBalance.toFixed(2),
+        deliveryVolume: res.data.deliveryVolume.toFixed(2),
+        recyclerCount: res.data.recyclerCount,
+      })
+    },
     goLogin() {
       wx.navigateTo({
         url: '/pages/login/login',

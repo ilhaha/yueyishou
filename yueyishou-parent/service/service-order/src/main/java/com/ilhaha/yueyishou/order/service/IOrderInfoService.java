@@ -159,4 +159,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     Boolean delete(OrderDeleteForm orderDeleteForm);
 
+    /**
+     * 获取顾客我的页面的订单初始化信息
+     * @param customerId
+     * @return
+     */
+    OrderMyVo getMy(Long customerId);
 }

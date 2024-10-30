@@ -21,7 +21,9 @@
     "pages/recycler/wallet-options/wallet-options",
     "pages/recycler/order-list/order-list",
     "pages/customer/my-wallet/my-wallet",
-    "pages/customer/wallet-options/wallet-options"
+    "pages/customer/wallet-options/wallet-options",
+    "pages/customer/service-coupon/service-coupon",
+    "pages/recycler/service-coupon/service-coupon"
   ],
   "window": {
     "backgroundTextStyle": "light",

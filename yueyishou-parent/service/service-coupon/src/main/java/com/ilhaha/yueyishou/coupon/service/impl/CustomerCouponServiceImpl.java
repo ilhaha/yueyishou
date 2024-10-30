@@ -15,6 +15,7 @@ import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
+import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
 import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
 import org.checkerframework.checker.units.qual.C;
@@ -25,9 +26,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,10 +84,6 @@ public class CustomerCouponServiceImpl extends ServiceImpl<CustomerCouponMapper,
 
             // 筛选服务抵扣劵
             result = couponInfoService.getAvailableCoupon(couponInfoListDB, availableCouponForm.getRealRecyclerAmount());
-
-        }
-        for (AvailableCouponVo availableCouponVo : result) {
-            System.out.println("availableCouponVo:" + availableCouponVo);
         }
         return result;
     }
@@ -110,5 +105,32 @@ public class CustomerCouponServiceImpl extends ServiceImpl<CustomerCouponMapper,
         // 修改服务抵扣劵的使用数量
         couponInfoService.updateUseCount(useCouponFrom.getCouponId());
         return this.update(customerCouponLambdaUpdateWrapper);
+    }
+
+    /**
+     * 获取顾客的服务抵扣劵
+     * @param customerId
+     * @return
+     */
+    @Override
+    public List<CouponNotUsedVo> getNotUsedCoupon(Long customerId) {
+        LambdaQueryWrapper<CustomerCoupon> customerCouponLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        customerCouponLambdaQueryWrapper.eq(CustomerCoupon::getCustomerId,customerId)
+                .eq(CustomerCoupon::getStatus,CouponConstant.UNUSED_STATUS);
+        List<CustomerCoupon> customerCouponListDB = this.list(customerCouponLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(customerCouponListDB)) {
+            return Collections.emptyList();
+        }
+        return customerCouponListDB.stream().map(item -> {
+            CouponInfo couponInfoDB = couponInfoService.getById(item.getCouponId());
+            if (ObjectUtils.isEmpty(couponInfoDB)) {
+                return null;
+            }
+            CouponNotUsedVo couponNotUsedVo = new CouponNotUsedVo();
+            BeanUtils.copyProperties(couponInfoDB,couponNotUsedVo);
+            couponNotUsedVo.setCouponId(couponInfoDB.getId());
+            couponNotUsedVo.setExpireTime(item.getExpireTime());
+            return couponNotUsedVo;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

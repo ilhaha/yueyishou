@@ -12,6 +12,7 @@ import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
+import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,16 @@ import java.util.List;
 public class RecyclerCouponController  {
 	@Resource
 	private IRecyclerCouponService recyclerCouponService;
+
+	/**
+	 * 获取回收员的服务抵扣劵
+	 * @param recyclerId
+	 * @return
+	 */
+	@GetMapping("/not/used/{recyclerId}")
+	public Result<List<CouponNotUsedVo>> getNotUsedCoupon(@PathVariable("recyclerId") Long recyclerId){
+		return Result.ok(recyclerCouponService.getNotUsedCoupon(recyclerId));
+	}
 
 
 	/**

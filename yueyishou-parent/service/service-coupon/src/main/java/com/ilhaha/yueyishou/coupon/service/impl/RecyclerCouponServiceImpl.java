@@ -15,6 +15,7 @@ import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
+import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,5 +103,32 @@ public class RecyclerCouponServiceImpl extends ServiceImpl<RecyclerCouponMapper,
         // 修改服务抵扣劵的使用数量
         couponInfoService.updateUseCount(useCouponFrom.getCouponId());
         return this.update(recyclerCouponLambdaUpdateWrapper);
+    }
+
+    /**
+     * 获取回收员的服务抵扣劵
+     * @param recyclerId
+     * @return
+     */
+    @Override
+    public List<CouponNotUsedVo> getNotUsedCoupon(Long recyclerId) {
+        LambdaQueryWrapper<RecyclerCoupon> recyclerCouponLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        recyclerCouponLambdaQueryWrapper.eq(RecyclerCoupon::getRecyclerId,recyclerId)
+                .eq(RecyclerCoupon::getStatus,CouponConstant.UNUSED_STATUS);
+        List<RecyclerCoupon> recyclerCouponListDB = this.list(recyclerCouponLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(recyclerCouponListDB)) {
+            return Collections.emptyList();
+        }
+        return recyclerCouponListDB.stream().map(item -> {
+            CouponInfo couponInfoDB = couponInfoService.getById(item.getCouponId());
+            if (ObjectUtils.isEmpty(couponInfoDB)) {
+                return null;
+            }
+            CouponNotUsedVo couponNotUsedVo = new CouponNotUsedVo();
+            BeanUtils.copyProperties(couponInfoDB,couponNotUsedVo);
+            couponNotUsedVo.setCouponId(couponInfoDB.getId());
+            couponNotUsedVo.setExpireTime(item.getExpireTime());
+            return couponNotUsedVo;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

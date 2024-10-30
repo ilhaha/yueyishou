@@ -46,3 +46,10 @@ export const reqUpdateBaseInfo = (params) => {
 export const reqReplenishInfo = () => {
   return http.post(urlPrefix + `/customer/replenish/info`)
 }
+
+/**
+ * 获取我的页面初始化信息
+ */
+export const reqMyInfo = () => {
+  return http.get(urlPrefix + `/customer/my`)
+}

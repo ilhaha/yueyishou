@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.*;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.model.vo.order.RecyclerOrderVo;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
@@ -22,6 +23,16 @@ import java.util.List;
 public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
+
+    /**
+     * 获取顾客我的页面的订单初始化信息
+     * @param customerId
+     * @return
+     */
+    @GetMapping("/my/{customerId}")
+    public Result<OrderMyVo> getMy(@PathVariable Long customerId){
+        return Result.ok(orderInfoService.getMy(customerId));
+    }
 
 
     /**

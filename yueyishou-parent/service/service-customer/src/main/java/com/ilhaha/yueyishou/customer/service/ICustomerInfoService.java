@@ -7,6 +7,7 @@ import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
 
 public interface ICustomerInfoService extends IService<CustomerInfo> {
 
@@ -53,4 +54,10 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     Boolean updateBaseInfo(UpdateCustomerBaseInfoForm updateCustomerBaseInfoForm);
 
+    /**
+     * 获取顾客我的页面初始信息
+     * @param customerId
+     * @return
+     */
+    CustomerMyVo getMy(Long customerId);
 }

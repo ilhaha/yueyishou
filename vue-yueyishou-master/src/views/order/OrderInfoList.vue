@@ -59,7 +59,7 @@
         size="middle"
         :scroll="{ x: true }"
         bordered
-        rowKey="id"
+        rowKey="orderId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -662,7 +662,7 @@ export default {
               customRender: function (t, r, index) {
                 return '待顾客确定'
               },
-            }
+            },
           ]
         } else if (newVal == 5) {
           this.columns = [
@@ -757,6 +757,7 @@ export default {
                 return t == 0 || t == null ? '无赔偿' : t
               },
             },
+
             {
               title: '回收员实支付平台订单金额(元)',
               align: 'center',
@@ -766,6 +767,16 @@ export default {
               title: '顾客实支付平台订单金额(元)',
               align: 'center',
               dataIndex: 'realCustomerPlatformAmount',
+            },
+            {
+              title: '回收员服务抵扣劵抵扣金额(元)',
+              align: 'center',
+              dataIndex: 'recyclerCouponAmount',
+            },
+            {
+              title: '顾客服务抵扣劵抵扣金额(元)',
+              align: 'center',
+              dataIndex: 'customerCouponAmount',
             },
 
             {
@@ -780,7 +791,7 @@ export default {
               customRender: function (t, r, index) {
                 return '待付款'
               },
-            }
+            },
           ]
         } else if (newVal == 6) {
           this.columns = [
@@ -890,7 +901,16 @@ export default {
               align: 'center',
               dataIndex: 'realCustomerPlatformAmount',
             },
-
+            {
+              title: '回收员服务抵扣劵抵扣金额(元)',
+              align: 'center',
+              dataIndex: 'recyclerCouponAmount',
+            },
+            {
+              title: '顾客服务抵扣劵抵扣金额(元)',
+              align: 'center',
+              dataIndex: 'customerCouponAmount',
+            },
             {
               title: '订单备注信息',
               align: 'center',
@@ -903,7 +923,7 @@ export default {
               customRender: function (t, r, index) {
                 return '待评价'
               },
-            }
+            },
           ]
         } else if (newVal == 7) {
           this.columns = [
@@ -1028,7 +1048,16 @@ export default {
               align: 'center',
               dataIndex: 'realCustomerPlatformAmount',
             },
-
+            {
+              title: '回收员服务抵扣劵抵扣金额(元)',
+              align: 'center',
+              dataIndex: 'recyclerCouponAmount',
+            },
+            {
+              title: '顾客服务抵扣劵抵扣金额(元)',
+              align: 'center',
+              dataIndex: 'customerCouponAmount',
+            },
             {
               title: '订单备注信息',
               align: 'center',
@@ -1041,7 +1070,7 @@ export default {
               customRender: function (t, r, index) {
                 return '已完成'
               },
-            }
+            },
           ]
         } else if (newVal == 8) {
           this.columns = [
@@ -1137,7 +1166,7 @@ export default {
               customRender: function (t, r, index) {
                 return '已取消'
               },
-            }
+            },
           ]
         }
       },

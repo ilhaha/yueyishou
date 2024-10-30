@@ -11,6 +11,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,17 @@ import java.util.Arrays;
 public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
+
+
+	/**
+	 * 获取顾客我的页面初始信息
+	 * @param customerId
+	 * @return
+	 */
+	@GetMapping("/my/{customerId}")
+	public Result<CustomerMyVo> getMy(@PathVariable Long customerId){
+		return Result.ok(customerInfoService.getMy(customerId));
+	}
 
 
 	/**

@@ -6,6 +6,7 @@ import com.ilhaha.yueyishou.customer.service.CustomerService;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
+import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,16 @@ public class CustomerController {
 
     @Resource
     private CustomerService customerService;
+
+    /**
+     * 获取顾客我的页面初始信息
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/my")
+    public Result<CustomerMyVo> getMy(){
+        return customerService.getMy();
+    }
 
     /**
      * 以防如果用户还未退出登录就已经认证成功成为回收员出现信息不全问题

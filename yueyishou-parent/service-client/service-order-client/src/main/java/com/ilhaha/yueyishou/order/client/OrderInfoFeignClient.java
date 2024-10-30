@@ -19,6 +19,14 @@ import java.util.List;
 public interface OrderInfoFeignClient {
 
     /**
+     * 获取顾客我的页面的订单初始化信息
+     * @param customerId
+     * @return
+     */
+    @GetMapping("/orderInfo/my/{customerId}")
+    Result<OrderMyVo> getMy(@PathVariable Long customerId);
+
+    /**
      * 删除订单
      * @param orderDeleteForm
      * @return

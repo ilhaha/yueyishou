@@ -6,7 +6,9 @@ import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
+import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,14 @@ import java.util.List;
  */
 @FeignClient("service-coupon")
 public interface RecyclerCouponFeignClient {
+
+    /**
+     * 获取回收员的服务抵扣劵
+     * @param recyclerId
+     * @return
+     */
+    @GetMapping("/recyclerCoupon/not/used/{recyclerId}")
+    Result<List<CouponNotUsedVo>> getNotUsedCoupon(@PathVariable("recyclerId") Long recyclerId);
 
 
     /**
