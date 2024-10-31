@@ -46,6 +46,15 @@ Page({
   onShow() {
     this.getOrderList(this.data.tabList[this.data.active].status);
   },
+  // 下拉刷新
+  onPullDownRefresh() {
+    // 获取当前状态并重新加载订单列表
+    const currentStatus = this.data.tabList[this.data.active].status;
+    this.getOrderList(currentStatus).then(() => {
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
+  },
   // 切换是否确认删除订单确认框
   switchDeleteShow(event) {
     this.setData({

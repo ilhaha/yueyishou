@@ -68,6 +68,17 @@ Page({
     this.getRecyclerOrderListByStatus(this.data.orderStatus);
   },
 
+  // 下拉刷新
+  onPullDownRefresh() {
+    this.data.orderStatus == 1 ? this.retrieveMatchingOrders().then(() => {
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    }) : this.getRecyclerOrderListByStatus(this.data.orderStatus).then(() => {
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
+  },
+
   // 退出回收段
   exit() {
     toast({

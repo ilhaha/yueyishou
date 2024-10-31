@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class OrderBillServiceImpl extends ServiceImpl<OrderBillMapper, OrderBill> implements IOrderBillService {
@@ -108,5 +109,17 @@ public class OrderBillServiceImpl extends ServiceImpl<OrderBillMapper, OrderBill
         String recycleCode = RecycleCodeGenerator.generateUniqueSixDigitNumber();
         redisTemplate.opsForValue().set(RedisConstant.RECYCLE_CODE + updateBillForm.getOrderId(),recycleCode);
         return recycleCode;
+    }
+
+    /**
+     * 批量获取订单账单信息
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public List<OrderBill> getBillInfoByOrderIds(List<Long> orderIds) {
+        LambdaQueryWrapper<OrderBill> orderBillLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        orderBillLambdaQueryWrapper.in(OrderBill::getOrderId,orderIds);
+        return this.list(orderBillLambdaQueryWrapper);
     }
 }

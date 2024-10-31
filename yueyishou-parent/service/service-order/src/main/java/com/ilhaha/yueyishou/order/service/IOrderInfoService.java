@@ -165,4 +165,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     OrderMyVo getMy(Long customerId);
+
+    /**
+     * 后台管理系统汇总数据
+     * @return
+     */
+    CollectVo collect();
+
 }

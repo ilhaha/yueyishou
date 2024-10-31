@@ -19,6 +19,13 @@ import java.util.List;
 public interface OrderInfoFeignClient {
 
     /**
+     * 后台管理系统汇总数据
+     * @return
+     */
+    @GetMapping("/orderInfo/index/collect")
+    Result<CollectVo> collect();
+
+    /**
      * 获取顾客我的页面的订单初始化信息
      * @param customerId
      * @return

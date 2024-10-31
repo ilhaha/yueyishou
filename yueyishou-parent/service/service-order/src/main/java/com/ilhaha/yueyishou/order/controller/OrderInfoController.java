@@ -1,8 +1,10 @@
 package com.ilhaha.yueyishou.order.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.enums.OrderStatus;
 import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
 import com.ilhaha.yueyishou.model.vo.order.*;
@@ -23,6 +25,15 @@ import java.util.List;
 public class OrderInfoController {
     @Resource
     private IOrderInfoService orderInfoService;
+
+    /**
+     * 后台管理系统汇总数据
+     * @return
+     */
+    @GetMapping("/index/collect")
+    public Result<CollectVo> collect(){
+        return Result.ok(orderInfoService.collect());
+    }
 
     /**
      * 获取顾客我的页面的订单初始化信息

@@ -23,4 +23,20 @@ public class PublicConstant {
      * 数据已删除
      */
     public static final Integer DELETED = 1;
+
+    /**
+     * 后台管理系统首页订单信息柱状图x轴名称
+     */
+    public static final String INDEX_ORDER_COLLECT_X = "x";
+
+    /**
+     * 后台管理系统首页订单信息柱状图y轴名称
+     */
+    public static final String INDEX_ORDER_COLLECT_Y = "y";
+
+    /**
+     * 小时单位
+     */
+    public static final String HOUR_UNIT = "时";
+
 }

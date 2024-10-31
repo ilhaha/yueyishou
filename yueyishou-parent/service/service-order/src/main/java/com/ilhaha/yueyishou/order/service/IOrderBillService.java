@@ -5,6 +5,8 @@ import com.ilhaha.yueyishou.model.entity.order.OrderBill;
 import com.ilhaha.yueyishou.model.form.order.GenerateBillForm;
 import com.ilhaha.yueyishou.model.form.order.UpdateBillForm;
 
+import java.util.List;
+
 public interface IOrderBillService extends IService<OrderBill> {
 
     /**
@@ -27,4 +29,11 @@ public interface IOrderBillService extends IService<OrderBill> {
      * @return
      */
     String updateBill(UpdateBillForm updateBillForm);
+
+    /**
+     * 批量获取订单账单信息
+     * @param orderIds
+     * @return
+     */
+    List<OrderBill> getBillInfoByOrderIds(List<Long> orderIds);
 }

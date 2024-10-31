@@ -46,7 +46,7 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.time.Instant;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -144,7 +144,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public List<CustomerOrderListVo> orderList(Integer status, Long customerId) {
-        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<OrderInfo>();
         orderInfoLambdaQueryWrapper.eq(OrderInfo::getStatus, status)
                 .eq(OrderInfo::getCustomerId, customerId)
                 .eq(OrderInfo::getCustomerIsDeleted, PublicConstant.NOT_DELETED);
@@ -412,7 +412,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public List<RecyclerOrderVo> getRecyclerOrderListByStatus(Long recyclerId, Integer status) {
         List<RecyclerOrderVo> result = new ArrayList<>();
-        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<OrderInfo>();
         orderInfoLambdaQueryWrapper.eq(OrderInfo::getRecyclerId, recyclerId)
                 .eq(OrderInfo::getStatus, status)
                 .eq(OrderInfo::getRecyclerIsDeleted, PublicConstant.NOT_DELETED);
@@ -813,6 +813,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 获取顾客我的页面的订单初始化信息
+     *
      * @param customerId
      * @return
      */
@@ -821,9 +822,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderMyVo orderMyVo = new OrderMyVo();
         orderMyVo.setDeliveryVolume(new BigDecimal(BigInteger.ZERO));
         orderMyVo.setRecyclerCount(Integer.MIN_VALUE);
-        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        orderInfoLambdaQueryWrapper.eq(OrderInfo::getCustomerId,customerId)
-                .in(OrderInfo::getStatus,Arrays.asList(OrderStatus.COMPLETED_ORDER.getStatus(),OrderStatus.AWAITING_EVALUATION.getStatus()));
+        LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<OrderInfo>();
+        orderInfoLambdaQueryWrapper.eq(OrderInfo::getCustomerId, customerId)
+                .in(OrderInfo::getStatus, Arrays.asList(OrderStatus.COMPLETED_ORDER.getStatus(), OrderStatus.AWAITING_EVALUATION.getStatus()));
         List<OrderInfo> list = this.list(orderInfoLambdaQueryWrapper);
         if (!ObjectUtils.isEmpty(list)) {
             orderMyVo.setRecyclerCount(list.size());
@@ -832,6 +833,441 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         return orderMyVo;
+    }
+
+    /**
+     * 后台管理系统汇总数据
+     *
+     * @return
+     */
+    @Override
+    public CollectVo collect() {
+        CollectVo collectVo = new CollectVo();
+        List<OrderInfo> orderInfoListDB = this.list(null);
+        // 计算订单总量、本周订单量、每日订单量
+        calculateOrderStatistics(collectVo, orderInfoListDB);
+
+        orderInfoListDB = orderInfoListDB.stream().filter(item -> {
+            return item.getStatus().equals(OrderStatus.COMPLETED_ORDER.getStatus()) ||
+                    item.getStatus().equals(OrderStatus.AWAITING_EVALUATION.getStatus());
+        }).collect(Collectors.toList());
+
+        if (!ObjectUtils.isEmpty(orderInfoListDB)) {
+            List<Long> orderIds = orderInfoListDB.stream().map(OrderInfo::getId).collect(Collectors.toList());
+            List<OrderBill> orderBillListDB = orderBillService.getBillInfoByOrderIds(orderIds);
+
+            // 计算总佣金收入、今日佣金收入、同日比、同周比
+            calculateAdditionalMetrics(collectVo, orderBillListDB);
+
+            // 计算总支付订单数、本周每日订单支付数、支付转化率
+            calculateOrderPayStatistics(collectVo, orderBillListDB);
+
+            // 计算本年每个月的佣金收入
+            calculateMonthlyCommissionIncome(collectVo,orderBillListDB);
+
+            // 计算今日每个时辰的佣金收入
+            calculateHourlyCommissionIncome(collectVo,orderBillListDB);
+
+            // 计算本周每日的佣金收入
+            calculateWeeklyDailyCommissionIncome(collectVo,orderBillListDB);
+
+            // 计算本月每日的佣金收入
+            calculateMonthlyDailyCommissionIncome(collectVo,orderBillListDB);
+        }
+
+        return collectVo;
+    }
+
+    /**
+     * 计算本月每日的佣金收入
+     * @param collectVo
+     * @param orderBillListDB
+     */
+    private void calculateMonthlyDailyCommissionIncome(CollectVo collectVo, List<OrderBill> orderBillListDB) {
+        // 初始化 Map 来存储本月每天的收入
+        Map<String, BigDecimal> dailyIncomeMap = new LinkedHashMap<>();
+
+        // 获取本月的第一天和今天的日期
+        LocalDate today = LocalDate.now();
+        LocalDate startOfMonth = today.withDayOfMonth(1);
+
+        // 初始化本月每一天的收入为 0
+        for (LocalDate date = startOfMonth; !date.isAfter(today); date = date.plusDays(1)) {
+            dailyIncomeMap.put(date.toString(), BigDecimal.ZERO);
+        }
+
+        // 遍历订单账单，计算本月每一天的收入
+        orderBillListDB.forEach(orderBill -> {
+            LocalDate orderDate = convertToLocalDate(orderBill.getPayTime());
+
+            // 仅累加本月内的订单收入
+            if (!orderDate.isBefore(startOfMonth) && !orderDate.isAfter(today)) {
+                BigDecimal dailyIncome = dailyIncomeMap.getOrDefault(orderDate.toString(), BigDecimal.ZERO);
+                BigDecimal orderIncome = orderBill.getRealRecyclerPlatformAmount().add(orderBill.getRealCustomerPlatformAmount());
+
+                // 更新对应日期的总收入
+                dailyIncomeMap.put(orderDate.toString(), dailyIncome.add(orderIncome));
+            }
+        });
+
+        // 转换为 List<Map<String, Object>> 格式存入 CollectVo
+        List<Map<String, Object>> monthCommissionIncomeList = new ArrayList<>();
+        dailyIncomeMap.forEach((date, income) -> {
+            Map<String, Object> dailyIncomeEntry = new HashMap<>();
+            dailyIncomeEntry.put("x", date);  // "x" 为日期
+            dailyIncomeEntry.put("y", income);  // "y" 为佣金收入
+            monthCommissionIncomeList.add(dailyIncomeEntry);
+        });
+
+        collectVo.setMonthCommissionIncome(monthCommissionIncomeList);
+    }
+
+    /**
+     * 计算本周每日的佣金收入
+     * @param collectVo
+     * @param orderBillListDB
+     */
+    private void calculateWeeklyDailyCommissionIncome(CollectVo collectVo, List<OrderBill> orderBillListDB) {
+        // 初始化 Map 来存储本周每天的收入
+        Map<String, BigDecimal> dailyIncomeMap = new LinkedHashMap<>();
+
+        // 获取本周的周一日期
+        LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
+
+        // 初始化本周 7 天的收入为 0
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = startOfWeek.plusDays(i);
+            dailyIncomeMap.put(date.toString(), BigDecimal.ZERO);
+        }
+
+        // 遍历订单账单，按本周每一天累加收入
+        orderBillListDB.forEach(orderBill -> {
+            LocalDate orderDate = convertToLocalDate(orderBill.getPayTime());
+
+            // 仅累加本周内的订单收入
+            if (!orderDate.isBefore(startOfWeek) && !orderDate.isAfter(startOfWeek.plusDays(6))) {
+                BigDecimal dailyIncome = dailyIncomeMap.getOrDefault(orderDate.toString(), BigDecimal.ZERO);
+                BigDecimal orderIncome = orderBill.getRealRecyclerPlatformAmount().add(orderBill.getRealCustomerPlatformAmount());
+
+                // 更新对应日期的总收入
+                dailyIncomeMap.put(orderDate.toString(), dailyIncome.add(orderIncome));
+            }
+        });
+
+        // 转换为 List<Map<String, Object>> 格式存入 CollectVo
+        List<Map<String, Object>> dailyCommissionIncomeList = new ArrayList<>();
+        dailyIncomeMap.forEach((date, income) -> {
+            Map<String, Object> dailyIncomeEntry = new HashMap<>();
+            dailyIncomeEntry.put(PublicConstant.INDEX_ORDER_COLLECT_X, date);  // "x" 为日期
+            dailyIncomeEntry.put(PublicConstant.INDEX_ORDER_COLLECT_Y, income);  // "y" 为佣金收入
+            dailyCommissionIncomeList.add(dailyIncomeEntry);
+        });
+
+        collectVo.setWeekCommissionIncome(dailyCommissionIncomeList);
+    }
+    /**
+     *  计算今日每个时辰的佣金收入
+     * @param collectVo
+     * @param orderBillListDB
+     */
+    private void calculateHourlyCommissionIncome(CollectVo collectVo, List<OrderBill> orderBillListDB) {
+        // 初始化 Map 来存储今日每个小时的收入
+        Map<String, BigDecimal> hourlyIncomeMap = new LinkedHashMap<>();
+
+        // 获取今天的日期
+        LocalDate today = LocalDate.now();
+
+        // 初始化每个小时的收入为0
+        for (int hour = 0; hour < 24; hour++) {
+            String hourKey = String.format("%02d", hour); // 保留小时数（不带分钟）
+            hourlyIncomeMap.put(hourKey, BigDecimal.ZERO);
+        }
+
+        // 遍历订单账单，计算每小时的收入
+        orderBillListDB.forEach(orderBill -> {
+            LocalDateTime payDateTime = convertToLocalDateTime(orderBill.getPayTime());
+            LocalDate payDate = payDateTime.toLocalDate();
+
+            // 仅计算今天的订单
+            if (payDate.isEqual(today)) {
+                int hour = payDateTime.getHour();
+                String hourKey = String.format("%02d", hour); // 保留小时数
+
+                BigDecimal hourlyIncome = hourlyIncomeMap.getOrDefault(hourKey, BigDecimal.ZERO);
+                BigDecimal orderIncome = orderBill.getRealRecyclerPlatformAmount().add(orderBill.getRealCustomerPlatformAmount());
+
+                // 更新当前小时的总收入
+                hourlyIncomeMap.put(hourKey, hourlyIncome.add(orderIncome));
+            }
+        });
+
+        // 转换为 List<Map<String, Object>> 格式存入 CollectVo
+        List<Map<String, Object>> timeCommissionIncomeList = new ArrayList<>();
+        hourlyIncomeMap.forEach((hour, income) -> {
+            Map<String, Object> hourlyIncomeEntry = new HashMap<>();
+            hourlyIncomeEntry.put(PublicConstant.INDEX_ORDER_COLLECT_X, hour + PublicConstant.HOUR_UNIT);
+            hourlyIncomeEntry.put(PublicConstant.INDEX_ORDER_COLLECT_Y, income);
+            timeCommissionIncomeList.add(hourlyIncomeEntry);
+        });
+
+        collectVo.setTimeCommissionIncome(timeCommissionIncomeList);
+    }
+
+    /**
+     * 计算今年每个月的佣金收入
+     *
+     * @param collectVo
+     * @param orderBillListDB
+     */
+    private void calculateMonthlyCommissionIncome(CollectVo collectVo, List<OrderBill> orderBillListDB) {
+        // 初始化一个 Map 来存储每个月的收入
+        Map<String, BigDecimal> monthlyIncomeMap = new LinkedHashMap<>();
+
+        // 获取当前年份
+        int currentYear = LocalDate.now().getYear();
+
+        // 初始化每个月的收入为 0
+        for (int month = 1; month <= 12; month++) {
+            monthlyIncomeMap.put(String.format("%d-%02d", currentYear, month), BigDecimal.ZERO);
+        }
+
+        // 遍历订单账单，按月份累加收入
+        orderBillListDB.forEach(orderBill -> {
+            LocalDate orderDate = convertToLocalDate(orderBill.getPayTime());
+
+            // 仅计算当前年份的订单
+            if (orderDate.getYear() == currentYear) {
+                String monthKey = String.format("%d-%02d", currentYear, orderDate.getMonthValue());
+                BigDecimal monthlyIncome = monthlyIncomeMap.get(monthKey);
+                BigDecimal orderIncome = orderBill.getRealRecyclerPlatformAmount().add(orderBill.getRealCustomerPlatformAmount());
+
+                // 更新当前月份的总收入
+                monthlyIncomeMap.put(monthKey, monthlyIncome.add(orderIncome));
+            }
+        });
+
+        // 转换为 List<Map<String, Object>> 格式存入 CollectVo
+        List<Map<String, Object>> monthlyCommissionIncomeList = new ArrayList<>();
+        monthlyIncomeMap.forEach((month, income) -> {
+            Map<String, Object> monthlyIncomeEntry = new HashMap<>();
+            monthlyIncomeEntry.put(PublicConstant.INDEX_ORDER_COLLECT_X, month);
+            monthlyIncomeEntry.put(PublicConstant.INDEX_ORDER_COLLECT_Y, income);
+            monthlyCommissionIncomeList.add(monthlyIncomeEntry);
+        });
+
+        collectVo.setYearCommissionIncome(monthlyCommissionIncomeList);
+    }
+
+    /**
+     * 计算总支付订单数、本周每日订单支付数、支付转化率
+     *
+     * @param collectVo
+     * @param orderBillListDB
+     */
+    private void calculateOrderPayStatistics(CollectVo collectVo, List<OrderBill> orderBillListDB) {
+        // 订单总支付数
+        collectVo.setTotalOrderPayCount(Long.valueOf(orderBillListDB.size()));
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+
+        // 计算本周每日订单支付量
+        collectVo.setDailyOrderPayCountMap(calculateDailyOrderPayCount(orderBillListDB, startOfWeek, today));
+
+        // 本周订单支付量
+        BigDecimal currentWeekOrderPayCount = BigDecimal.valueOf(calculateOrderPayCountForRange(orderBillListDB, startOfWeek, today));
+        // 计算支付转换率
+        collectVo.setConversionRate(
+                currentWeekOrderPayCount
+                        .divide(BigDecimal.valueOf(collectVo.getCurrentWeekOrderCount()), 4, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100)));
+    }
+
+    /**
+     * 计算订单总量、本周订单量、每日订单量
+     *
+     * @param collectVo
+     * @param orderInfoListDB
+     */
+    private void calculateOrderStatistics(CollectVo collectVo, List<OrderInfo> orderInfoListDB) {
+        // 订单总量
+        collectVo.setTotalOrderCount(Long.valueOf(orderInfoListDB.size()));
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+
+        // 计算本周订单量
+        collectVo.setCurrentWeekOrderCount(calculateOrderCountForRange(orderInfoListDB, startOfWeek, today));
+        // 计算本周每日订单量
+        collectVo.setDailyOrderCountMap(calculateDailyOrderCount(orderInfoListDB, startOfWeek, today));
+    }
+
+    /**
+     * 计算这周每日的订单量
+     *
+     * @param orderInfoListDB
+     * @param startOfWeek
+     * @param today
+     * @return
+     */
+    private List<Map<String, Object>> calculateDailyOrderCount(List<OrderInfo> orderInfoListDB, LocalDate startOfWeek, LocalDate today) {
+        ArrayList<Map<String, Object>> result = new ArrayList<>();
+        // 循环遍历从 startOfWeek 到 today 的每一天
+        while (!startOfWeek.isAfter(today)) {
+            Map<String, Object> dailyOrderCountMap = new HashMap<>();
+            // 将当前的 startOfWeek 保存到一个局部变量中，以便在 lambda 表达式中使用
+            LocalDate currentDate = startOfWeek;
+            dailyOrderCountMap.put(PublicConstant.INDEX_ORDER_COLLECT_X, currentDate);
+
+            // 计算该日期的订单数量
+            long count = orderInfoListDB.stream()
+                    .filter(order -> convertToLocalDate(order.getCreateTime()).isEqual(currentDate))
+                    .count();
+
+            // 将日期和订单数量存入 Map 中
+            dailyOrderCountMap.put(PublicConstant.INDEX_ORDER_COLLECT_Y, count);
+            // 日期加一天，进入下一天的统计
+            startOfWeek = startOfWeek.plusDays(1);
+            result.add(dailyOrderCountMap);
+        }
+        return result;
+    }
+
+    /**
+     * 计算本周每日的订单支付量
+     *
+     * @param orderBillListDB
+     * @param startOfWeek
+     * @param today
+     * @return
+     */
+    private List<Map<String, Object>> calculateDailyOrderPayCount(List<OrderBill> orderBillListDB, LocalDate startOfWeek, LocalDate today) {
+        ArrayList<Map<String, Object>> result = new ArrayList<>();
+        // 循环遍历从 startOfWeek 到 today 的每一天
+        while (!startOfWeek.isAfter(today)) {
+            Map<String, Object> dailyOrderCountMap = new HashMap<>();
+            // 将当前的 startOfWeek 保存到一个局部变量中，以便在 lambda 表达式中使用
+            LocalDate currentDate = startOfWeek;
+            dailyOrderCountMap.put(PublicConstant.INDEX_ORDER_COLLECT_X, currentDate);
+
+            // 计算该日期的订单数量
+            long count = orderBillListDB.stream()
+                    .filter(order -> convertToLocalDate(order.getPayTime()).isEqual(currentDate))
+                    .count();
+
+            // 将日期和订单数量存入 Map 中
+            dailyOrderCountMap.put(PublicConstant.INDEX_ORDER_COLLECT_Y, count);
+            // 日期加一天，进入下一天的统计
+            startOfWeek = startOfWeek.plusDays(1);
+            result.add(dailyOrderCountMap);
+        }
+        return result;
+    }
+
+    /**
+     * 计算总佣金收入、今日佣金收入、同日比和同周比
+     */
+    private void calculateAdditionalMetrics(CollectVo collectVo, List<OrderBill> orderBillListDB) {
+        // 总佣金收入
+        BigDecimal totalCommissionIncome = orderBillListDB.stream()
+                .map(orderBill -> orderBill.getRealRecyclerPlatformAmount().add(orderBill.getRealCustomerPlatformAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        collectVo.setTotalCommissionIncome(totalCommissionIncome);
+
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate startOfLastWeek = startOfWeek.minusWeeks(1);
+
+        // 今日佣金收入
+        BigDecimal todayCommissionIncome = calculateIncomeForDate(orderBillListDB, today);
+        collectVo.setTodayCommissionIncome(todayCommissionIncome);
+
+        // 昨日佣金收入
+        BigDecimal yesterdayCommissionIncome = calculateIncomeForDate(orderBillListDB, yesterday);
+
+        // 本周佣金收入
+        BigDecimal thisWeekIncome = calculateIncomeForRange(orderBillListDB, startOfWeek, today);
+
+        // 上周佣金收入
+        BigDecimal lastWeekIncome = calculateIncomeForRange(orderBillListDB, startOfLastWeek, startOfWeek.minusDays(1));
+
+        // 计算同日比和同周比
+        collectVo.setIsodiurnalRatio(calculateGrowth(todayCommissionIncome, yesterdayCommissionIncome));
+        collectVo.setSyncyclicRatio(calculateGrowth(thisWeekIncome, lastWeekIncome));
+    }
+
+    /**
+     * 计算特定日期的佣金收入
+     */
+    private BigDecimal calculateIncomeForDate(List<OrderBill> orderBillListDB, LocalDate date) {
+        return orderBillListDB.stream()
+                .filter(bill -> convertToLocalDate(bill.getPayTime()).isEqual(date))
+                .map(bill -> bill.getRealRecyclerPlatformAmount().add(bill.getRealCustomerPlatformAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * 计算特定日期范围内的佣金收入
+     */
+    private BigDecimal calculateIncomeForRange(List<OrderBill> orderBillListDB, LocalDate start, LocalDate end) {
+        return orderBillListDB.stream()
+                .filter(bill -> {
+                    LocalDate payDate = convertToLocalDate(bill.getPayTime());
+                    return (payDate.isEqual(start) || payDate.isAfter(start)) && payDate.isBefore(end.plusDays(1));
+                })
+                .map(bill -> bill.getRealRecyclerPlatformAmount().add(bill.getRealCustomerPlatformAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * 计算特定日期范围内的订单量
+     */
+    private Long calculateOrderCountForRange(List<OrderInfo> orderBillListDB, LocalDate start, LocalDate end) {
+        return orderBillListDB.stream()
+                .filter(order -> {
+                    LocalDate date = convertToLocalDate(order.getCreateTime());
+                    return (date.isEqual(start) || date.isAfter(start)) && date.isBefore(end.plusDays(1));
+                }).count();
+    }
+
+    /**
+     * 计算特定日期范围内的订单支付量
+     */
+    private Long calculateOrderPayCountForRange(List<OrderBill> orderBillListDB, LocalDate start, LocalDate end) {
+        return orderBillListDB.stream()
+                .filter(order -> {
+                    LocalDate payDate = convertToLocalDate(order.getPayTime());
+                    return (payDate.isEqual(start) || payDate.isAfter(start)) && payDate.isBefore(end.plusDays(1));
+                }).count();
+    }
+
+    /**
+     * 将 Date 转换为 LocalDate
+     */
+    private LocalDate convertToLocalDate(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    /**
+     * 将 Date 转换为 LocalDateTime
+     */
+    private LocalDateTime convertToLocalDateTime(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
+    /**
+     * 计算增长率（如同日比或同周比）
+     */
+    private BigDecimal calculateGrowth(BigDecimal current, BigDecimal previous) {
+        if (previous.compareTo(BigDecimal.ZERO) == 0) {
+            return current.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : BigDecimal.valueOf(100);
+        }
+        return current.subtract(previous)
+                .divide(previous, 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
     }
 
     /**
