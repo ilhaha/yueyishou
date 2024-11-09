@@ -5,17 +5,17 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="姓名">
-              <a-input placeholder="请输入姓名" v-model="queryParam.name"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <a-form-item label="认证状态">
               <a-select ref="select" v-model:value="queryParam.authStatus" @change="searchQuery">
                 <a-select-option value="1">待审核</a-select-option>
                 <a-select-option value="2">已认证</a-select-option>
                 <a-select-option value="-1">认证未通过</a-select-option>
               </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="姓名">
+              <a-input placeholder="请输入姓名" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">

@@ -36,7 +36,7 @@
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}} 前上门</view>
             <view wx:if="{{order.arriveTime}}">{{order.arriveTime}} 到达</view>
-            <view>距离 {{order.apart}} 公里</view>
+            <view wx:if="{{order.apart}}">距离 {{order.apart}} 公里</view>
           </view>
         </van-card>
       </view>
@@ -51,8 +51,9 @@
           <view slot="desc" class="custom-desc">
             <view>{{order.appointmentTime}} 前上门</view>
             <view wx:if="{{order.arriveTime}}">{{order.arriveTime}} 到达</view>
-            <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
-            <view wx:if="{{order.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
+            <view wx:if="{{order.arriveTimoutMin && order.rejectStatus == 0}}" style="color: red;">超时 {{order.arriveTimoutMin}} 分钟</view>
+            <view wx:if="{{order.arriveTimoutMin == 0 && order.rejectStatus == 0}}" style="color: green;">按时到达</view>
+            <view wx:if="{{order.rejectStatus == 1 || order.rejectStatus == -1}}" style="color: green;">正在申请拒收</view>
           </view>
         </van-card>
       </view>

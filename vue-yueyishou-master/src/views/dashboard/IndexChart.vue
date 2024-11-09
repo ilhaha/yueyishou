@@ -49,7 +49,7 @@
       </a-col>
     </a-row>
 
-    <a-card :loading="loading" :bordered="false" :body-style="{ padding: '0' }">
+    <a-card :loading="loading" :bordered="false" :body-style="{ padding: '0' }" v-if="barData">
       <div class="salesCard">
         <a-tabs default-active-key="1" size="large" :tab-bar-style="{ marginBottom: '24px', paddingLeft: '16px' }">
           <div class="extra-wrapper" slot="tabBarExtraContent">
@@ -182,25 +182,30 @@ export default {
     // 初始化首页数据
     initIndexCollect() {
       getAction('/index/collect').then((res) => {
-        this.totalCommissionIncome = res.data.totalCommissionIncome.toLocaleString('en-US', {
-          minimumFractionDigits: 1,
-          maximumFractionDigits: 2,
-        })
-        this.syncyclicRatio = res.data.syncyclicRatio.toFixed(0)
-        this.isodiurnalRatio = res.data.isodiurnalRatio.toFixed(0)
-        this.todayCommissionIncome = res.data.todayCommissionIncome
-        this.totalOrderCount = res.data.totalOrderCount.toLocaleString('en-US')
-        this.currentWeekOrderCount = res.data.currentWeekOrderCount.toLocaleString('en-US')
+        this.totalCommissionIncome = res.data.totalCommissionIncome
+          ? res.data.totalCommissionIncome.toLocaleString('en-US', {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 2,
+            })
+          : '0'
+        this.syncyclicRatio = res.data.syncyclicRatio ? res.data.syncyclicRatio.toFixed(0) : '0'
+        this.isodiurnalRatio = res.data.isodiurnalRatio ? res.data.isodiurnalRatio.toFixed(0) : '0'
+        this.todayCommissionIncome = res.data.todayCommissionIncome ? res.data.todayCommissionIncome : 0
+        this.totalOrderCount = res.data.totalOrderCount ? res.data.totalOrderCount.toLocaleString('en-US') : 0
+        this.currentWeekOrderCount = res.data.currentWeekOrderCount
+          ? res.data.currentWeekOrderCount.toLocaleString('en-US')
+          : '0'
         this.dailyOrderCountMap = res.data.dailyOrderCountMap
-        this.totalOrderPayCount = res.data.totalOrderPayCount.toString()
+        this.totalOrderPayCount = res.data.totalOrderPayCount ? res.data.totalOrderPayCount.toString() : '0'
         this.dailyOrderPayCountMap = res.data.dailyOrderPayCountMap
-        this.conversionRate = res.data.conversionRate.toFixed(0)
+        this.conversionRate = res.data.conversionRate ? res.data.conversionRate.toFixed(0) : 0
         this.yearCommissionIncome = res.data.yearCommissionIncome
         this.timeCommissionIncome = res.data.timeCommissionIncome
         this.weekCommissionIncome = res.data.weekCommissionIncome
         this.monthCommissionIncome = res.data.monthCommissionIncome
         this.barData = res.data.yearCommissionIncome
       })
+      console.log(this.todayCommissionIncome)
     },
     initLogInfo() {
       getLoginfo(null).then((res) => {

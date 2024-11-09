@@ -6,11 +6,32 @@ import lombok.Data;
  * @Author ilhaha
  * @Create 2024/10/9 22:14
  * @Version 1.0
- *
+ * <p>
  * 订单常量
  */
 @Data
 public class OrderConstant {
+
+
+    /**
+     * 不拒收订单状态
+     */
+    public static final Integer NO_REJECTION_STATUS = 0;
+
+    /**
+     * 拒收订单状态
+     */
+    public static final Integer DENIED_STATUS = 1;
+
+    /**
+     * 拒收申请通过状态
+     */
+    public static final Integer REJECT_APPLICATION_STATUS = 2;
+
+    /**
+     * 拒收申请未通过
+     */
+    public static final Integer REJECTION_APPLICATION_FAILED = -1;
 
     /**
      * 顾客取消订单备注
@@ -35,7 +56,7 @@ public class OrderConstant {
 
     /**
      * 回收员到达时间与预约时间相差多少分钟不算超时
-     * */
+     */
     public static final Integer NOT_TIMED_OUT_MIN = 0;
 
     /**

@@ -100,3 +100,24 @@ export const reqCancelOrderAfterTaking = (data) => {
 export const reqDeleteOrder = (data) => {
   return http.post(urlPrefix + `/order/delete`, data)
 }
+
+/**
+ * 拒收订单
+ */
+export const reqRejectOrder = (data) => {
+  return http.post(urlPrefix + `/order/reject`, data)
+}
+
+/**
+ * 获取拒收订单信息
+ */
+export const reqGetRejectInfo = (data) => {
+  return http.get(urlPrefix + `/order/reject/info/${data}`)
+}
+
+/**
+ * 取消申请拒收订单
+ */
+export const reqCancelRejectOrder = (data) => {
+  return http.post(urlPrefix + `/order/cancel/reject/${data}`)
+}

@@ -2,9 +2,12 @@ package org.jeecg.modules.mgr.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.vo.order.RejectOrderListVo;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.OrderService;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +45,26 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderInfo queryById(String id) {
         return orderInfoFeignClient.queryById(id).getData();
+    }
+
+    /**
+     * 获取申请拒收订单列表
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public Page<RejectOrderListVo> getRejectOrderList(Integer pageNo, Integer pageSize) {
+        return orderInfoFeignClient.getRejectOrderList(pageNo,pageSize).getData();
+    }
+
+    /**
+     * 审批拒收申请
+     * @param approvalRejectOrderForm
+     * @return
+     */
+    @Override
+    public Boolean approvalReject(ApprovalRejectOrderForm approvalRejectOrderForm) {
+        return orderInfoFeignClient.approvalReject(approvalRejectOrderForm).getData();
     }
 }

@@ -13,6 +13,7 @@ import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
+import com.ilhaha.yueyishou.model.vo.coupon.ExistingCouponVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,16 @@ import java.util.List;
 public class RecyclerCouponController  {
 	@Resource
 	private IRecyclerCouponService recyclerCouponService;
+
+	/**
+	 * 获取回收员已有的服务抵扣劵
+	 * @param recyclerIds
+	 * @return
+	 */
+	@PostMapping("/existing")
+	public Result<List<ExistingCouponVo>> getExistingCoupons(@RequestBody List<Long> recyclerIds){
+		return Result.ok(recyclerCouponService.getExistingCoupons(recyclerIds));
+	}
 
 	/**
 	 * 获取回收员的服务抵扣劵

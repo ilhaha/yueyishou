@@ -108,4 +108,25 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> delete(OrderDeleteForm orderDeleteForm);
+
+    /**
+     * 回收员拒收订单
+     * @param rejectOrderForm
+     * @return
+     */
+    Result<Boolean> reject(RejectOrderForm rejectOrderForm);
+
+    /**
+     * 获取拒收订单信息
+     * @param orderId
+     * @return
+     */
+    Result<RejectOrderVo> getRejectInfo(Long orderId);
+
+    /**
+     * 取消申请订单拒收
+     * @param orderId
+     * @return
+     */
+    Result<Boolean> cancelReject(Long orderId);
 }

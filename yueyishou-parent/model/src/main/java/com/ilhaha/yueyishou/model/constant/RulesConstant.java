@@ -43,4 +43,9 @@ public class RulesConstant {
      * 回收员已接单情况下，离预约时间不足60分钟赔偿规则文件
      */
     public static final String RECYCLER_LATE_CANCELLATION_FEE_RULE = "rules/RecyclerLateCancellationFeeRule.drl";
+
+    /**
+     * 回收员拒收订单得到补偿规则文件
+     */
+    public static final String RECYCLER_REJECT_ORDER_FEE_RULE = "rules/RecyclerRejectOrderFeeRule.drl";
 }

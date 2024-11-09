@@ -96,7 +96,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public Page<OrderMgrQueryVo> queryPageList(OrderMgrQueryForm orderMgrQueryForm, Page<OrderMgrQueryVo> page) {
-        Page<OrderMgrQueryVo> orderMgrQueryVoPage = orderInfoMapper.queryPageList(page, orderMgrQueryForm);
+        Page<OrderMgrQueryVo> orderMgrQueryVoPage = orderInfoMapper.queryPageList(page,
+                orderMgrQueryForm, OrderStatus.RECYCLER_CONFIRM_ORDER.getStatus(),
+                Arrays.asList(OrderConstant.NO_REJECTION_STATUS,
+                        OrderConstant.REJECTION_APPLICATION_FAILED));
         // 待回收确认、待顾客确认临时计算回收员超时信息
         if (OrderStatus.RECYCLER_CONFIRM_ORDER.getStatus().compareTo(orderMgrQueryForm.getStatus()) <= 0
                 && !OrderStatus.CANCELED_ORDER.getStatus().equals(orderMgrQueryForm.getStatus())) {
@@ -432,7 +435,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 calculateLineForm.setEndPointLatitude(order.getCustomerPointLatitude());
                 calculateLineForm.setEndPointLongitude(order.getCustomerPointLongitude());
                 DrivingLineVo drivingLineVo = mapFeignClient.calculateDrivingLine(calculateLineForm).getData();
-                recyclerOrderVo.setApart(drivingLineVo.getDistance());
+                recyclerOrderVo.setApart(ObjectUtils.isEmpty(drivingLineVo) ? BigDecimal.ZERO : drivingLineVo.getDistance());
             }
             if (!ObjectUtils.isEmpty(recyclerOrderVo.getArriveTime())) {
                 // 计算回收员是否超时，并计算超时多少分钟
@@ -821,7 +824,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public OrderMyVo getMy(Long customerId) {
         OrderMyVo orderMyVo = new OrderMyVo();
         orderMyVo.setDeliveryVolume(new BigDecimal(BigInteger.ZERO));
-        orderMyVo.setRecyclerCount(Integer.MIN_VALUE);
+        orderMyVo.setRecyclerCount(0);
         LambdaQueryWrapper<OrderInfo> orderInfoLambdaQueryWrapper = new LambdaQueryWrapper<OrderInfo>();
         orderInfoLambdaQueryWrapper.eq(OrderInfo::getCustomerId, customerId)
                 .in(OrderInfo::getStatus, Arrays.asList(OrderStatus.COMPLETED_ORDER.getStatus(), OrderStatus.AWAITING_EVALUATION.getStatus()));
@@ -863,23 +866,131 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             calculateOrderPayStatistics(collectVo, orderBillListDB);
 
             // 计算本年每个月的佣金收入
-            calculateMonthlyCommissionIncome(collectVo,orderBillListDB);
+            calculateMonthlyCommissionIncome(collectVo, orderBillListDB);
 
             // 计算今日每个时辰的佣金收入
-            calculateHourlyCommissionIncome(collectVo,orderBillListDB);
+            calculateHourlyCommissionIncome(collectVo, orderBillListDB);
 
             // 计算本周每日的佣金收入
-            calculateWeeklyDailyCommissionIncome(collectVo,orderBillListDB);
+            calculateWeeklyDailyCommissionIncome(collectVo, orderBillListDB);
 
             // 计算本月每日的佣金收入
-            calculateMonthlyDailyCommissionIncome(collectVo,orderBillListDB);
+            calculateMonthlyDailyCommissionIncome(collectVo, orderBillListDB);
         }
 
         return collectVo;
     }
 
+
+    /**
+     * 回收员拒收订单
+     *
+     * @param rejectOrderForm
+     * @return
+     */
+    @Override
+    public Boolean reject(RejectOrderForm rejectOrderForm) {
+        // 计算回收员已服务多久（分钟）
+        long serviceMin = calculateMinutesDifference(rejectOrderForm.getAcceptTime(), rejectOrderForm.getArriveTime());
+        // 计算拒收之后得到的补偿
+        OvertimeRequestForm overtimeRequestForm = new OvertimeRequestForm();
+        overtimeRequestForm.setOvertimeMinutes(Math.toIntExact(serviceMin));
+        OvertimeResponseVo overtimeResponseVo = serviceFeeRuleFeignClient.calculateRejectionCompensation(overtimeRequestForm).getData();
+        // 更新订单信息
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId, rejectOrderForm.getOrderId())
+                .set(OrderInfo::getRejectStatus, OrderConstant.DENIED_STATUS)
+                .set(OrderInfo::getCancelTime, new Date())
+                .set(OrderInfo::getCancelMessage, rejectOrderForm.getCancelMessage())
+                .set(OrderInfo::getRejectActualPhotos, rejectOrderForm.getRejectActualPhotos())
+                .set(OrderInfo::getUpdateTime, new Date())
+                .set(OrderInfo::getRejectCompensation, ObjectUtils.isEmpty(overtimeResponseVo.getOvertimeFee()) ? BigDecimal.ZERO : overtimeResponseVo.getOvertimeFee());
+        return this.update(orderInfoLambdaUpdateWrapper);
+    }
+
+    /**
+     * 获取拒收订单信息
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public RejectOrderVo getRejectInfo(Long orderId) {
+        RejectOrderVo rejectOrderVo = new RejectOrderVo();
+        OrderInfo orderInfo = this.getById(orderId);
+        BeanUtils.copyProperties(orderInfo, rejectOrderVo);
+        return rejectOrderVo;
+    }
+
+    /**
+     * 取消申请订单拒收
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Boolean cancelReject(Long orderId) {
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId, orderId)
+                .set(OrderInfo::getCancelMessage, null)
+                .set(OrderInfo::getCancelTime, null)
+                .set(OrderInfo::getRejectStatus, OrderConstant.NO_REJECTION_STATUS)
+                .set(OrderInfo::getRejectActualPhotos, null)
+                .set(OrderInfo::getUpdateTime, new Date());
+        return this.update(orderInfoLambdaUpdateWrapper);
+    }
+
+    /**
+     * 获取申请拒收订单列表
+     *
+     * @param page
+     * @return
+     */
+    @Override
+    public Page<RejectOrderListVo> getRejectOrderList(Page<RejectOrderListVo> page) {
+        return orderInfoMapper.getRejectOrderList(page, OrderConstant.DENIED_STATUS);
+    }
+
+    /**
+     * 审批拒收申请
+     *
+     * @param approvalRejectOrderForm
+     * @return
+     */
+    @GlobalTransactional
+    @Override
+    public Boolean approvalReject(ApprovalRejectOrderForm approvalRejectOrderForm) {
+        LambdaUpdateWrapper<OrderInfo> orderInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        // 申请通过
+        if (OrderConstant.REJECT_APPLICATION_STATUS.equals(approvalRejectOrderForm.getRejectStatus())) {
+            orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId, approvalRejectOrderForm.getOrderId())
+                    .set(OrderInfo::getRejectStatus, approvalRejectOrderForm.getRejectStatus())
+                    .set(OrderInfo::getStatus, OrderStatus.CANCELED_ORDER)
+                    .set(OrderInfo::getUpdateTime, new Date());
+            // 增加回收员账户余额、减少顾客账户余额
+            RecyclerWithdrawForm recyclerWithdrawForm = new RecyclerWithdrawForm();
+            recyclerWithdrawForm.setAmount(approvalRejectOrderForm.getRejectCompensation());
+            recyclerWithdrawForm.setRecyclerId(approvalRejectOrderForm.getRecyclerId());
+            recyclerAccountFeignClient.rejectCompensate(recyclerWithdrawForm);
+
+            CustomerWithdrawForm customerWithdrawForm = new CustomerWithdrawForm();
+            customerWithdrawForm.setAmount(approvalRejectOrderForm.getRejectCompensation());
+            customerWithdrawForm.setCustomerId(approvalRejectOrderForm.getCustomerId());
+            customerAccountFeignClient.rejectCompensate(customerWithdrawForm);
+
+
+            // 驳回申请
+        } else {
+            orderInfoLambdaUpdateWrapper.eq(OrderInfo::getId, approvalRejectOrderForm.getOrderId())
+                    .set(OrderInfo::getRejectStatus, OrderConstant.REJECTION_APPLICATION_FAILED)
+                    .set(OrderInfo::getUpdateTime, new Date());
+        }
+        return this.update(orderInfoLambdaUpdateWrapper);
+    }
+
     /**
      * 计算本月每日的佣金收入
+     *
      * @param collectVo
      * @param orderBillListDB
      */
@@ -924,6 +1035,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 计算本周每日的佣金收入
+     *
      * @param collectVo
      * @param orderBillListDB
      */
@@ -965,8 +1077,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         collectVo.setWeekCommissionIncome(dailyCommissionIncomeList);
     }
+
     /**
-     *  计算今日每个时辰的佣金收入
+     * 计算今日每个时辰的佣金收入
+     *
      * @param collectVo
      * @param orderBillListDB
      */

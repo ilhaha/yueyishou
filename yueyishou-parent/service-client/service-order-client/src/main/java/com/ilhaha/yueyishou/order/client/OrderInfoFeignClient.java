@@ -19,6 +19,46 @@ import java.util.List;
 public interface OrderInfoFeignClient {
 
     /**
+     * 审批拒收申请
+     * @param approvalRejectOrderForm
+     * @return
+     */
+    @PostMapping("/orderInfo/approval/reject")
+    Result<Boolean> approvalReject(@RequestBody ApprovalRejectOrderForm approvalRejectOrderForm);
+
+    /**
+     * 获取申请拒收订单列表
+     * @return
+     */
+    @PostMapping("/orderInfo/reject/list")
+    Result<Page<RejectOrderListVo>> getRejectOrderList( @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize);
+
+    /**
+     * 取消申请订单拒收
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/orderInfo/cancel/reject/{orderId}")
+    Result<Boolean> cancelReject(@PathVariable("orderId") Long orderId);
+
+    /**
+     * 获取拒收订单信息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/orderInfo/reject/info/{orderId}")
+    Result<RejectOrderVo> getRejectInfo(@PathVariable Long orderId);
+
+    /**
+     * 回收员拒收订单
+     * @param rejectOrderForm
+     * @return
+     */
+    @PostMapping("/orderInfo/reject")
+    Result<Boolean> reject(@RequestBody RejectOrderForm rejectOrderForm);
+
+    /**
      * 后台管理系统汇总数据
      * @return
      */

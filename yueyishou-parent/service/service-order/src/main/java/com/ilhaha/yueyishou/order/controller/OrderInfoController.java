@@ -27,6 +27,59 @@ public class OrderInfoController {
     private IOrderInfoService orderInfoService;
 
     /**
+     * 审批拒收申请
+     * @param approvalRejectOrderForm
+     * @return
+     */
+    @PostMapping("/approval/reject")
+    public Result<Boolean> approvalReject(@RequestBody ApprovalRejectOrderForm approvalRejectOrderForm){
+        return Result.ok(orderInfoService.approvalReject(approvalRejectOrderForm));
+    }
+
+    /**
+     * 获取申请拒收订单列表
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/reject/list")
+    public Result<Page<RejectOrderListVo>> getRejectOrderList( @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize){
+        Page<RejectOrderListVo> page = new Page<>(pageNo, pageSize);
+        return Result.ok(orderInfoService.getRejectOrderList(page));
+    }
+
+    /**
+     * 取消申请订单拒收
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/cancel/reject/{orderId}")
+    public Result<Boolean> cancelReject(@PathVariable("orderId") Long orderId){
+        return Result.ok(orderInfoService.cancelReject(orderId));
+    }
+
+    /**
+     * 获取拒收订单信息
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/reject/info/{orderId}")
+    public Result<RejectOrderVo> getRejectInfo(@PathVariable Long orderId){
+        return Result.ok(orderInfoService.getRejectInfo(orderId));
+    }
+
+    /**
+     * 回收员拒收订单
+     * @param rejectOrderForm
+     * @return
+     */
+    @PostMapping("/reject")
+    public Result<Boolean> reject(@RequestBody RejectOrderForm rejectOrderForm){
+        return Result.ok(orderInfoService.reject(rejectOrderForm));
+    }
+
+    /**
      * 后台管理系统汇总数据
      * @return
      */

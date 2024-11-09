@@ -46,4 +46,11 @@ public interface ServiceFeeRuleService {
      * @return
      */
     OvertimeResponseVo recyclerLateCancellationFee(OvertimeRequestForm overtimeRequestForm);
+
+    /**
+     * 计算回收员拒收得到订单补偿费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    OvertimeResponseVo calculateRejectionCompensation(OvertimeRequestForm overtimeRequestForm);
 }

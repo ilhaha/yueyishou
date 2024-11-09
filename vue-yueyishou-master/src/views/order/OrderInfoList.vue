@@ -48,11 +48,7 @@
         </a-row>
       </a-form>
     </div>
-    <!-- 查询区域-END -->
 
-    <!-- 操作按钮区域 -->
-
-    <!-- table区域-begin -->
     <div>
       <a-table
         ref="table"
@@ -73,14 +69,63 @@
         <template slot="imgSlot" slot-scope="text, record">
           <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
           <img
-            v-else
-            :src="getImgView(text)"
-            :preview="record.id"
+            v-for="(imgSrc, index) in text.split(',')"
+            :key="index"
+            :src="getImgView(imgSrc)"
+            :preview="{ visible: true }"
             height="25px"
             alt=""
-            style="max-width: 80px; font-size: 12px; font-style: italic"
+            style="max-width: 80px; font-size: 12px; font-style: italic; margin-right: 8px"
           />
         </template>
+        <template slot="fileSlot" slot-scope="text">
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
+            下载
+          </a-button>
+        </template>
+      </a-table>
+    </div>
+
+    <div style="margin-top: 20px">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px">申请拒收订单列表</div>
+    </div>
+
+    <div>
+      <a-table
+        ref="rejectOrderTable"
+        size="middle"
+        :scroll="{ x: true }"
+        bordered
+        rowKey="orderId"
+        :columns="rejectColumns"
+        :dataSource="rejectOrderList"
+        :pagination="rejectOrderIpagination"
+        :loading="loading"
+        class="j-table-force-nowrap"
+        @change="handleRejectTableChange"
+      >
+        <template slot="htmlSlot" slot-scope="text">
+          <div v-html="text"></div>
+        </template>
+        <template slot="imgSlot" slot-scope="text, record">
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img
+            v-for="(imgSrc, index) in text.split(',')"
+            :key="index"
+            :src="getImgView(imgSrc)"
+            :preview="{ visible: true }"
+            height="25px"
+            alt=""
+            style="max-width: 80px; font-size: 12px; font-style: italic; margin-right: 8px"
+          />
+        </template>
+
+        <span slot="action" slot-scope="text, record">
+          <a @click="review(2, record)">通过申请</a>
+          <a-divider type="vertical" />
+          <a @click="review(-1, record)">驳回申请</a>
+        </span>
         <template slot="fileSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
           <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
@@ -94,12 +139,13 @@
   </a-card>
 </template>
 
-      <script>
+<script>
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import OrderInfoModal from './modules/OrderInfoModal'
 import dayjs from 'dayjs'
+import { httpAction, postAction } from '../../api/manage'
 export default {
   name: 'OrderInfoList',
   mixins: [JeecgListMixin, mixinDevice],
@@ -140,6 +186,12 @@ export default {
           title: '回收重量(公斤)',
           align: 'center',
           dataIndex: 'recycleWeigh',
+        },
+        {
+          title: '回收物实物照片',
+          align: 'center',
+          dataIndex: 'actualPhotos',
+          scopedSlots: { customRender: 'imgSlot' },
         },
         {
           title: '订单联系人',
@@ -205,6 +257,94 @@ export default {
           },
         },
       ],
+      rejectColumns: [
+        {
+          title: '#',
+          dataIndex: '',
+          key: 'rowIndex',
+          width: 60,
+          align: 'center',
+          customRender: function (t, r, index) {
+            return parseInt(index) + 1
+          },
+        },
+        {
+          title: '订单回收品类',
+          align: 'center',
+          dataIndex: 'categoryName',
+        },
+        {
+          title: '回收重量(公斤)',
+          align: 'center',
+          dataIndex: 'recycleWeigh',
+        },
+        {
+          title: '订单联系人',
+          align: 'center',
+          dataIndex: 'orderContactPerson',
+        },
+        {
+          title: '订单联系人电话',
+          align: 'center',
+          dataIndex: 'orderContactPhone',
+        },
+        {
+          title: '顾客地点',
+          align: 'center',
+          dataIndex: 'customerLocation',
+        },
+        {
+          title: '回收物实物照片',
+          align: 'center',
+          dataIndex: 'actualPhotos',
+          scopedSlots: { customRender: 'imgSlot' },
+        },
+        {
+          title: '回收员名称',
+          align: 'center',
+          dataIndex: 'recyclerName',
+        },
+        {
+          title: '拒收理由',
+          align: 'center',
+          dataIndex: 'cancelMessage',
+        },
+        {
+          title: '回收员拒收回收物照片',
+          align: 'center',
+          dataIndex: 'rejectActualPhotos',
+          scopedSlots: { customRender: 'imgSlot' },
+        },
+        {
+          title: '拒收补偿(元)',
+          align: 'center',
+          dataIndex: 'rejectCompensation',
+        },
+        {
+          title: '申请拒收时间',
+          align: 'center',
+          dataIndex: 'cancelTime',
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: 'center',
+          fixed: 'right',
+          width: 147,
+          scopedSlots: { customRender: 'action' },
+        },
+      ],
+      rejectOrderIpagination: {
+        current: 1,
+        pageSize: 10,
+        pageSizeOptions: ['10', '20', '30'],
+        showTotal: (total, range) => {
+          return range[0] + '-' + range[1] + ' 共' + total + '条'
+        },
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0,
+      },
       url: {
         list: '/order/list',
         delete: '/order/delete',
@@ -214,10 +354,12 @@ export default {
       },
       dictOptions: {},
       superFieldList: [],
+      rejectOrderList: [],
     }
   },
   created() {
     this.getSuperFieldList()
+    this.initRejectOrderList()
   },
   computed: {
     importExcelUrl: function () {
@@ -253,6 +395,12 @@ export default {
               title: '回收重量(公斤)',
               align: 'center',
               dataIndex: 'recycleWeigh',
+            },
+            {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
             },
             {
               title: '订单联系人',
@@ -344,6 +492,12 @@ export default {
               title: '回收重量(公斤)',
               align: 'center',
               dataIndex: 'recycleWeigh',
+            },
+            {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
             },
             {
               title: '订单联系人',
@@ -445,6 +599,12 @@ export default {
               title: '回收重量(公斤)',
               align: 'center',
               dataIndex: 'recycleWeigh',
+            },
+            {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
             },
             {
               title: '订单联系人',
@@ -569,6 +729,12 @@ export default {
               dataIndex: 'recycleWeigh',
             },
             {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
+            },
+            {
               title: '订单联系人',
               align: 'center',
               dataIndex: 'orderContactPerson',
@@ -690,6 +856,12 @@ export default {
               title: '回收重量(公斤)',
               align: 'center',
               dataIndex: 'recycleWeigh',
+            },
+            {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
             },
             {
               title: '订单联系人',
@@ -819,6 +991,12 @@ export default {
               title: '回收重量(公斤)',
               align: 'center',
               dataIndex: 'recycleWeigh',
+            },
+            {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
             },
             {
               title: '订单联系人',
@@ -951,6 +1129,12 @@ export default {
               title: '回收重量(公斤)',
               align: 'center',
               dataIndex: 'recycleWeigh',
+            },
+            {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
             },
             {
               title: '订单联系人',
@@ -1100,6 +1284,12 @@ export default {
               dataIndex: 'recycleWeigh',
             },
             {
+              title: '回收物实物照片',
+              align: 'center',
+              dataIndex: 'actualPhotos',
+              scopedSlots: { customRender: 'imgSlot' },
+            },
+            {
               title: '订单联系人',
               align: 'center',
               dataIndex: 'orderContactPerson',
@@ -1153,6 +1343,14 @@ export default {
                 return r.serviceOvertimePenalty || '无赔偿'
               },
             },
+            {
+              title: '顾客支付被拒收订单赔偿(元)',
+              align: 'center',
+              dataIndex: 'rejectCompensation',
+              customRender: function (t, r, index) {
+                return r.rejectCompensation || '无赔偿'
+              },
+            },
 
             {
               title: '取消备注信息',
@@ -1173,6 +1371,34 @@ export default {
     },
   },
   methods: {
+    // 分页查询
+    handleRejectTableChange(pagination) {
+      this.rejectOrderIpagination.current = pagination.current
+      this.rejectOrderIpagination.pageSize = pagination.pageSize
+      this.initRejectOrderList(this.rejectOrderIpagination.current, this.rejectOrderIpagination.pageSize)
+    },
+    // 处理申请通过、不通过
+    review(rejectStatus, orderInfo) {
+      postAction('/order/approval/reject', {
+        rejectStatus: rejectStatus,
+        orderId: orderInfo.orderId,
+        customerId: orderInfo.customerId,
+        recyclerId: orderInfo.recyclerId,
+        rejectCompensation: orderInfo.rejectCompensation,
+      }).then((res) => {
+        if (res.result) {
+          this.$message.success('已审批')
+          this.initRejectOrderList()
+        }
+      })
+    },
+    // 获取申请拒收订单列表
+    initRejectOrderList(pageNo = 1, pageSize = 10) {
+      postAction(`/order/reject/list?pageNo=${pageNo}&pageSize=${pageSize}`).then((res) => {
+        this.rejectOrderList = res.result.records
+        this.rejectOrderIpagination.total = res.result.total
+      })
+    },
     formatDate(text) {
       if (!text) return ''
       const date = new Date(text)

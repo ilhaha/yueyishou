@@ -75,4 +75,14 @@ public class ServiceFeeRuleController {
         return Result.ok(serviceFeeRuleService.recyclerLateCancellationFee(overtimeRequestForm));
     }
 
+    /**
+     * 计算回收员拒收得到订单补偿费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/calculateRejectionCompensation")
+    public Result<OvertimeResponseVo> calculateRejectionCompensation(@RequestBody OvertimeRequestForm overtimeRequestForm){
+        return Result.ok(serviceFeeRuleService.calculateRejectionCompensation(overtimeRequestForm));
+    }
+
 }

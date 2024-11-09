@@ -37,4 +37,5 @@ public class OrderMgrQueryForm {
      */
     private Integer status;
 
+
 }

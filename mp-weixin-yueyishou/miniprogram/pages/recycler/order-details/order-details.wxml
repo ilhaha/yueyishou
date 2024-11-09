@@ -1,4 +1,6 @@
-<van-notice-bar class="fixed-notice" left-icon="volume-o" text="请您仔细检查回收物是否与订单信息一致，并确认无误。" wx:if="{{orderStatus == 3}}" />
+<van-notice-bar class="fixed-notice" left-icon="volume-o" text="请您仔细检查回收物是否与订单信息一致，并确认无误。" wx:if="{{orderStatus == 3 && orderInfo.rejectStatus == 0}}" />
+<van-notice-bar class="fixed-notice" left-icon="volume-o" text="已申请拒收订单，请耐心等待审核，审核成功之后可获得补偿" wx:if="{{orderStatus == 3 && orderInfo.rejectStatus == 1}}" />
+<van-notice-bar class="fixed-notice" left-icon="volume-o" text="申请拒收订单请求已被驳回，请如实填写信息" wx:if="{{orderStatus == 3 && orderInfo.rejectStatus == -1}}" />
 <van-notice-bar class="fixed-notice" left-icon="volume-o" text="请顾客确认订单信息，并提供回收码进行回收操作。" wx:if="{{orderStatus == 4}}" />
 <!-- 待抢单 -->
 <view class="container container-padding-bottom-100" wx:if="{{orderStatus == 1}}">
@@ -80,8 +82,9 @@
       <view slot="desc" class="custom-desc">
         <view>{{orderInfo.appointmentTime}} 前上门</view>
         <view>{{orderInfo.arriveTime}} 到达</view>
-        <view wx:if="{{orderInfo.arriveTimoutMin}}" style="color: red;">超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
-        <view wx:if="{{orderInfo.arriveTimoutMin == 0}}" style="color: green;">按时到达</view>
+        <view wx:if="{{orderInfo.arriveTimoutMin && orderInfo.rejectStatus == 0}}" style="color: red;">超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
+        <view wx:if="{{orderInfo.arriveTimoutMin == 0 && orderInfo.rejectStatus == 0}}" style="color: green;">按时到达</view>
+        <view wx:if="{{orderInfo.rejectStatus == 1 || orderInfo.rejectStatus == -1}}" style="color: green;">正在申请拒收</view>
       </view>
     </van-card>
     <view class="order-meta">
@@ -143,9 +146,21 @@
     </view>
   </view>
 
-  <van-submit-bar price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" bind:tap="confirmBillInfo" data-orderid="{{orderInfo.id}}">
+  <van-submit-bar price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" bind:tap="confirmBillInfo" data-orderid="{{orderInfo.id}}" wx:if="{{orderInfo.rejectStatus == 0}}">
     <view slot="tip">
-      如发现订单信息与实际不符，可<text class="update-order" catch:tap="updateOrder">申请更改</text>
+      如发现订单信息与实际不符，可<text class="update-order" catch:tap="updateOrder">申请更改</text>或<text class="update-order" catch:tap="switchDialogRejectShow">申请拒收</text>
+    </view>
+  </van-submit-bar>
+
+  <van-submit-bar price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" data-orderid="{{orderInfo.id}}" disabled wx:if="{{orderInfo.rejectStatus == 1}}">
+    <view slot="tip">
+      已提交拒收申请，请耐心等待审核。可<text class="update-order" catch:tap="switchDialogRejectInfoShow">查看申请内容</text>
+    </view>
+  </van-submit-bar>
+
+  <van-submit-bar price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" data-orderid="{{orderInfo.id}}" disabled wx:if="{{orderInfo.rejectStatus == -1}}">
+    <view slot="tip">
+      拒收申请已被驳回，可<text class="update-order" catch:tap="switchDialogRejectInfoShow">重新申请</text>
     </view>
   </van-submit-bar>
 
@@ -333,6 +348,7 @@
         <view>{{orderInfo.appointmentTime}} 前上门</view>
         <view>{{orderInfo.cancelTime}} 已取消</view>
         <view style="color: green;" wx:if="{{orderInfo.customerLateCancellationFee}}">取消补偿 ¥{{orderInfo.customerLateCancellationFee}}</view>
+        <view style="color: green;" wx:if="{{orderInfo.rejectCompensation}}">拒收补偿 ¥{{orderInfo.rejectCompensation}}</view>
         <view style="color: red;" wx:if="{{orderInfo.serviceOvertimePenalty}}">超时未服务扣费 ¥{{orderInfo.serviceOvertimePenalty}}</view>
         <view style="color: red;" wx:if="{{orderInfo.recyclerLateCancellationFee}}">短时取消扣费 ¥{{orderInfo.recyclerLateCancellationFee}}</view>
       </view>
@@ -379,8 +395,6 @@
     </view>
   </view>
 </view>
-
-
 
 <van-dialog use-slot title="核对订单信息" show="{{ dialogShow }}" show-cancel-button bind:close="switchDialogStatus" bind:confirm="confirmRecycling">
   <view class="dialog-content">
@@ -433,4 +447,60 @@
   <view class="dialog-tip">
     <text>顾客确认无误后，即可生成订单账单信息。</text>
   </view>
+</van-dialog>
+
+<van-dialog use-slot title="申请拒收订单" show="{{ dialogRejectShow }}" show-cancel-button bind:cancel="switchDialogRejectShow" bind:confirm="rejectOrder" before-close="{{beforeCloseDialogReject}}">
+  <view class="photo-section">
+    <view class="picker">
+      <text class="photo-title">请填写拒收原因</text>
+      <view class="order-grid">
+        <van-cell-group>
+          <van-field value="{{ rejectReason }}" placeholder="请输入拒收原因" border="{{ false }}" bind:change="getRejectReason" />
+        </van-cell-group>
+      </view>
+    </view>
+    <text class="photo-title">请上传回收物实物照片</text>
+    <view class="photo-grid">
+      <van-uploader file-list="{{ fileList }}" max-count="4" bind:after-read="reqCosUpload" bind:delete="onDelete" />
+    </view>
+  </view>
+  <view class="dialog-tip">
+    <text>如实填入订单信息，已便审核。</text>
+  </view>
+</van-dialog>
+
+<van-action-sheet show="{{ dialogRejectInfoShow }}" title="拒收订单信息" bind:close="switchDialogRejectInfoShow">
+  <view class="photo-section">
+    <view class="picker">
+      <text class="photo-title">拒收原因</text>
+      <view class="order-grid">
+        <van-cell-group style="width: 100%;">
+          <van-field value="{{ rejectMessage }}" placeholder="请输入拒收原因" border="{{ false }}" />
+        </van-cell-group>
+      </view>
+    </view>
+    <text class="photo-title">回收物实物照片</text>
+    <view class="meta-img">
+      <view class="photo-grid">
+        <image wx:for="{{rejectFileList}}" src="{{item}}" wx:key="index" mode="aspectFill" class="img" alt="实物照片"></image>
+      </view>
+    </view>
+  </view>
+
+  <view class="info-section-wait" wx:if="{{orderInfo.rejectStatus == 1}}">
+    <text class="info-text">耐心等待审核，如果成功将获得{{orderInfo.rejectCompensation}}元补偿。</text>
+  </view>
+
+  <view class="info-section-error" wx:if="{{orderInfo.rejectStatus == -1}}">
+    <text class="info-text">此申请未通过，您可以重新提交申请。</text>
+  </view>
+
+  <!-- 底部按钮容器 -->
+  <view class="button-section">
+    <button class="cancel-button" bindtap="switchCancelRejectShow">取消申请</button>
+    <button class="reapply-button" bindtap="restApply" wx:if="{{orderInfo.rejectStatus == -1}}">重新提交</button>
+  </view>
+</van-action-sheet>
+
+<van-dialog use-slot title="确认是否取消拒收订单申请" show="{{ cancelRejectShow }}" show-cancel-button bind:confirm="cancelApply" bind:cancel="switchCancelRejectShow">
 </van-dialog>

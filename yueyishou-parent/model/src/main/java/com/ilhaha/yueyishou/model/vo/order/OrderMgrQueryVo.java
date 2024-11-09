@@ -42,6 +42,7 @@ public class OrderMgrQueryVo extends OrderInfo {
     private BigDecimal expectCustomerPlatformAmount;
     private Date createTime;
     private Integer arriveTimoutMin;
+    private BigDecimal rejectCompensation;
 
     /**
      * Recycler 信息

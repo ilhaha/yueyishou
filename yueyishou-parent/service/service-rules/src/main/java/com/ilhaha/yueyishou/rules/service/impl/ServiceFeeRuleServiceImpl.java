@@ -168,4 +168,29 @@ public class ServiceFeeRuleServiceImpl implements ServiceFeeRuleService {
 
         return overtimeResponseVo;
     }
+
+    /**
+     * 计算回收员拒收得到订单补偿费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @Override
+    public OvertimeResponseVo calculateRejectionCompensation(OvertimeRequestForm overtimeRequestForm) {
+        KieHelper kieHelper = new KieHelper();
+        // 获取指定的drl文件
+        Resource resource = ResourceFactory.newClassPathResource(RulesConstant.RECYCLER_REJECT_ORDER_FEE_RULE, RulesConstant.ENCODING);
+        kieHelper.addResource(resource, ResourceType.DRL);
+        KieBase kieBase = kieHelper.build();
+        KieSession kieSession = kieBase.newKieSession();
+        OvertimeResponseVo overtimeResponseVo = new OvertimeResponseVo();
+        try {
+            kieSession.insert(overtimeRequestForm);
+            kieSession.insert(overtimeResponseVo);
+            kieSession.fireAllRules();
+        } finally {
+            kieSession.dispose();
+        }
+
+        return overtimeResponseVo;
+    }
 }

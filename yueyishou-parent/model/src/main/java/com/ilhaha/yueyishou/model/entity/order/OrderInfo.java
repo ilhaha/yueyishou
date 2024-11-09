@@ -151,4 +151,16 @@ public class OrderInfo implements Serializable {
      */
     private Integer recyclerIsDeleted;
 
+    /**
+     * 拒收状态，0-不拒收 1-拒收 2-已拒收 1-拒收未通过
+     */
+    private Integer rejectStatus;
+    /**
+     * 拒收上传的图片
+     */
+    private String rejectActualPhotos;
+    /**
+     * 回收员拒收得到补偿
+     */
+    private BigDecimal rejectCompensation;
 }

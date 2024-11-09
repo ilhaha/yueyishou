@@ -94,7 +94,7 @@ Component({
         'recyclerApplyForm.faceRecognitionUrl': '',
         'recyclerApplyForm.faceModelId': '',
       })
-      const res = await reqDeleteFaceModel();
+      await reqDeleteFaceModel();
     },
     // 删除正脸照
     deleteFullFace(event) {
@@ -215,8 +215,6 @@ Component({
 
       // 更新文件列表
       this.updateFileList(name, file);
-
-      console.log(data);
       // 更新表单数据
       // 显式更新 recyclerApplyForm 中的手持身份证或正脸照字段
       if (name === 'idcardHand') {

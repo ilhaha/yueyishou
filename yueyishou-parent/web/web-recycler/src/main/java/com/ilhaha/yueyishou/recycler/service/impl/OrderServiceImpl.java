@@ -163,4 +163,34 @@ public class OrderServiceImpl implements OrderService {
         orderDeleteForm.setRecyclerId(AuthContextHolder.getRecyclerId());
         return orderInfoFeignClient.delete(orderDeleteForm);
     }
+
+    /**
+     * 回收员拒收订单
+     * @param rejectOrderForm
+     * @return
+     */
+    @Override
+    public Result<Boolean> reject(RejectOrderForm rejectOrderForm) {
+        return orderInfoFeignClient.reject(rejectOrderForm);
+    }
+
+    /**
+     * 获取拒收订单信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Result<RejectOrderVo> getRejectInfo(Long orderId) {
+        return orderInfoFeignClient.getRejectInfo(orderId);
+    }
+
+    /**
+     * 取消申请订单拒收
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Result<Boolean> cancelReject(Long orderId) {
+        return orderInfoFeignClient.cancelReject(orderId);
+    }
 }

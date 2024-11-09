@@ -49,4 +49,11 @@ public interface ICustomerAccountService extends IService<CustomerAccount> {
      * @return
      */
     Boolean chargeCancellationIfWithinOneHour(CustomerWithdrawForm customerWithdrawForm);
+
+    /**
+     * 回收员拒收订单,顾客需支付赔偿
+     * @param customerWithdrawForm
+     * @return
+     */
+    Boolean rejectCompensate(CustomerWithdrawForm customerWithdrawForm);
 }

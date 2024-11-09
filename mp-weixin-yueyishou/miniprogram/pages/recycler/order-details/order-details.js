@@ -7,7 +7,10 @@ import {
   reqValidateRecycleCode,
   reqSettlement,
   reqCalculateCancellationFee,
-  reqCancelOrderAfterTaking
+  reqCancelOrderAfterTaking,
+  reqRejectOrder,
+  reqGetRejectInfo,
+  reqCancelRejectOrder
 } from '../../../api/recycler/order'
 import {
   toast
@@ -18,6 +21,9 @@ import {
 import {
   reqGenerateBill
 } from '../../../api/recycler/bill'
+import {
+  reqCosUpload
+} from '../../../api/recycler/cos'
 
 Page({
   behaviors: [timeBehavior],
@@ -45,12 +51,137 @@ Page({
     overtimeMinutes: null,
     recyclerLateCancellationFee: null,
     serviceOvertimePenalty: null,
+    dialogRejectShow: false,
+    rejectReason: '',
+    fileList: [],
+    beforeCloseDialogReject: {},
+    dialogRejectInfoShow: false,
+    rejectFileList: [],
+    rejectMessage: '',
+    cancelRejectShow: false
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
     this.setData({
-      orderStatus: options.orderStatus
+      orderStatus: options.orderStatus,
+      beforeCloseDialogReject: (action) => new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // 拦截确认操作
+          resolve(false);
+        }, 0);
+      })
     })
+  },
+  // 查询提交拒收申请
+  restApply() {
+    this.switchDialogRejectInfoShow();
+    this.switchDialogRejectShow();
+  },
+  // 取消申请拒收订单
+  async cancelApply() {
+    const res = await reqCancelRejectOrder(this.data.orderInfo.id);
+    if (res.data) {
+      this.getOrderInfo(this.data.orderInfo.id);
+      this.switchDialogRejectInfoShow();
+      toast({
+        title: "已取消",
+        icon: 'success',
+        duration: 1000
+      })
+    }
+  },
+  // 切换确定是否取消申请拒收订单弹窗状态
+  switchCancelRejectShow() {
+    this.setData({
+      cancelRejectShow: !this.data.cancelRejectShow
+    })
+  },
+  // 切换查看订单拒收信息弹窗
+  async switchDialogRejectInfoShow() {
+    this.setData({
+      dialogRejectInfoShow: !this.data.dialogRejectInfoShow
+    })
+    // 打开弹窗，发送请求获取拒收信息
+    if (this.data.dialogRejectInfoShow) {
+      const res = await reqGetRejectInfo(this.data.orderInfo.id);
+      this.setData({
+        rejectFileList: res.data.rejectActualPhotos.split(","),
+        rejectMessage: res.data.cancelMessage
+      });
+    }
+  },
+  // 获取拒收内容
+  getRejectReason(event) {
+    this.setData({
+      rejectReason: event.detail
+    });
+  },
+  // 申请拒收订单
+  async rejectOrder() {
+    const {
+      fileList,
+      rejectReason
+    } = this.data;
+
+    if (!rejectReason) {
+      wx.showToast({
+        title: '请填写拒收理由',
+        icon: 'none'
+      });
+      return true;
+    }
+    if (fileList.length === 0) {
+      wx.showToast({
+        title: '请上传至少一张回收物的照片',
+        icon: 'none'
+      });
+      return true;
+    }
+    const res = await reqRejectOrder({
+      orderId: this.data.orderInfo.id,
+      rejectActualPhotos: fileList.map(file => file.url).join(','),
+      cancelMessage: rejectReason,
+      acceptTime: this.data.orderInfo.acceptTime,
+      arriveTime: this.data.orderInfo.arriveTime
+    });
+    if (res.data) {
+      this.getOrderInfo(this.data.orderInfo.id);
+      this.switchDialogRejectShow();
+      toast({
+        title: "已申请",
+        icon: 'success',
+        duration: 1000
+      })
+    }
+  },
+  // 切换拒收订单申请框的状态
+  switchDialogRejectShow() {
+    this.setData({
+      dialogRejectShow: !this.data.dialogRejectShow
+    })
+  },
+  // 上传图片
+  async reqCosUpload(event) {
+    const res = await reqCosUpload(event, 'order');
+    // 构造新的文件对象
+    let file = {
+      url: res.data.url
+    }
+    // 使用扩展运算符生成新的 fileList 数组
+    this.setData({
+      fileList: [...this.data.fileList, file] // 扩展原数组并添加新文件
+    })
+
+  },
+  // 处理删除图片
+  onDelete(event) {
+    const index = event.detail.index; // 获取被删除的图片索引
+    const newFileList = [...this.data.fileList]; // 复制当前的 fileList
+    newFileList.splice(index, 1); // 删除对应索引的图片
+
+    this.setData({
+      fileList: newFileList // 更新 fileList
+    });
   },
   // 接单后回收员取消订单
   async recyclercancelOrder(event) {

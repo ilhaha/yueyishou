@@ -7,6 +7,7 @@ import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
+import com.ilhaha.yueyishou.model.vo.coupon.ExistingCouponVo;
 
 import java.util.List;
 
@@ -40,4 +41,11 @@ public interface IRecyclerCouponService extends IService<RecyclerCoupon> {
      * @return
      */
     List<CouponNotUsedVo> getNotUsedCoupon(Long recyclerId);
+
+    /**
+     * 获取回收员已有的服务抵扣劵
+     * @param recyclerIds
+     * @return
+     */
+    List<ExistingCouponVo> getExistingCoupons(List<Long> recyclerIds);
 }

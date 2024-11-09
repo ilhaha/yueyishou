@@ -31,6 +31,16 @@ public class CustomerAccountController  {
 	private ICustomerAccountService customerAccountService;
 
 	/**
+	 * 回收员拒收订单,顾客需支付赔偿
+	 * @param customerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/reject/compensate")
+	public Result<Boolean> rejectCompensate(@RequestBody CustomerWithdrawForm customerWithdrawForm){
+		return Result.ok(customerAccountService.rejectCompensate(customerWithdrawForm));
+	}
+
+	/**
 	 * 回收员距离预约时间不足60分钟付费取消
 	 * @param customerWithdrawForm
 	 * @return

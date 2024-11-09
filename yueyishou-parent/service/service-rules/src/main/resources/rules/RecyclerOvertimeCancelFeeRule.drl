@@ -24,5 +24,4 @@ then
     // 设置响应中的超时费用
     $response.setOvertimeFee(overtimeFee);
 
-    System.out.println(4);
 end

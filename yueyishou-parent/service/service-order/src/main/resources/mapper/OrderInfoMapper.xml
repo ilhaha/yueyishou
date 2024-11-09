@@ -4,62 +4,70 @@
 
     <!-- 订单分页查询 -->
     <select id="queryPageList" resultType="com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo">
-        SELECT `order`.id            AS order_id,
-               `order`.customer_location,
-               `order`.appointment_time,
-               `order`.actual_photos,
-               `order`.unit_price,
-               `order`.recycle_weigh,
-               `order`.accept_time,
-               `order`.arrive_time,
-               `order`.status,
-               `order`.cancel_message,
-               `order`.cancel_time,
-               `order`.service_overtime_penalty,
-               `order`.customer_late_cancellation_fee,
-               `order`.recycler_late_cancellation_fee,
-               `order`.remark,
-               `order`.order_contact_person,
-               `order`.order_contact_phone,
-               `order`.estimated_total_amount,
-               `order`.expect_recycler_platform_amount,
-               `order`.expect_customer_platform_amount,
-               `order`.create_time,
+        SELECT `order`.id AS order_id,
+        `order`.customer_location,
+        `order`.appointment_time,
+        `order`.actual_photos,
+        `order`.unit_price,
+        `order`.recycle_weigh,
+        `order`.accept_time,
+        `order`.arrive_time,
+        `order`.status,
+        `order`.cancel_message,
+        `order`.cancel_time,
+        `order`.service_overtime_penalty,
+        `order`.customer_late_cancellation_fee,
+        `order`.recycler_late_cancellation_fee,
+        `order`.remark,
+        `order`.order_contact_person,
+        `order`.order_contact_phone,
+        `order`.estimated_total_amount,
+        `order`.expect_recycler_platform_amount,
+        `order`.expect_customer_platform_amount,
+        `order`.create_time,
+        `order`.reject_compensation,
 
-               `recycler`.id         AS recycler_id,
-               `recycler`.name       AS recycler_name,
+        `recycler`.id AS recycler_id,
+        `recycler`.name AS recycler_name,
 
-               `category`.id         AS category_id,
-               `category`.category_name,
+        `category`.id AS category_id,
+        `category`.category_name,
 
-               `bill`.id             AS bill_id,
-               `bill`.real_order_recycle_amount,
-               `bill`.real_recycler_amount,
-               `bill`.real_recycler_platform_amount,
-               `bill`.recycler_overtime_charges,
-               `bill`.real_customer_recycle_amount,
-               `bill`.real_customer_platform_amount,
-               `bill`.recycler_coupon_amount,
-               `bill`.customer_coupon_amount,
-               `bill`.pay_time,
+        `bill`.id AS bill_id,
+        `bill`.real_order_recycle_amount,
+        `bill`.real_recycler_amount,
+        `bill`.real_recycler_platform_amount,
+        `bill`.recycler_overtime_charges,
+        `bill`.real_customer_recycle_amount,
+        `bill`.real_customer_platform_amount,
+        `bill`.recycler_coupon_amount,
+        `bill`.customer_coupon_amount,
+        `bill`.pay_time,
 
-               `comment`.id          AS comment_id,
-               `comment`.rate,
-               `comment`.review_content,
-               `comment`.create_time AS comment_time
+        `comment`.id AS comment_id,
+        `comment`.rate,
+        `comment`.review_content,
+        `comment`.create_time AS comment_time
 
         FROM order_info AS `order`
-                 LEFT JOIN yueyishou_recycler.recycler_info AS `recycler`
-                           ON `order`.recycler_id = `recycler`.id
-                 LEFT JOIN yueyishou_category.category_info AS `category`
-                           ON `order`.son_category_id = `category`.id
-                 LEFT JOIN order_bill AS `bill`
-                           ON `order`.id = `bill`.order_id
-                 LEFT JOIN order_comment AS `comment`
-                           ON `order`.id = `comment`.order_id
+        LEFT JOIN yueyishou_recycler.recycler_info AS `recycler`
+        ON `order`.recycler_id = `recycler`.id
+        LEFT JOIN yueyishou_category.category_info AS `category`
+        ON `order`.son_category_id = `category`.id
+        LEFT JOIN order_bill AS `bill`
+        ON `order`.id = `bill`.order_id
+        LEFT JOIN order_comment AS `comment`
+        ON `order`.id = `comment`.order_id
         <where>
             <if test="orderMgrQueryForm.status != null and orderMgrQueryForm.status != ''">
                 AND `order`.status = #{orderMgrQueryForm.status}
+            </if>
+
+            <if test="orderMgrQueryForm.status == rejectOrderStatus">
+                AND `order`.reject_status in
+                <foreach collection="rejectStatusList" item="rejectStatus" open="(" close=")" separator=",">
+                    #{rejectStatus}
+                </foreach>
             </if>
 
             <if test="orderMgrQueryForm.orderContactPerson != null and orderMgrQueryForm.orderContactPerson != ''">
@@ -74,6 +82,38 @@
                 AND `recycler`.name LIKE CONCAT('%', #{orderMgrQueryForm.recyclerName}, '%')
             </if>
         </where>
+    </select>
+
+    <select id="getRejectOrderList" resultType="com.ilhaha.yueyishou.model.vo.order.RejectOrderListVo">
+        SELECT `order`.id      AS order_id,
+               `order`.customer_location,
+               `order`.actual_photos,
+               `order`.remark,
+               `order`.order_contact_person,
+               `order`.order_contact_phone,
+               `order`.order_contact_phone,
+               `order`.reject_status,
+               `order`.reject_compensation,
+               `order`.reject_actual_photos,
+               `order`.recycle_weigh,
+               `order`.cancel_message,
+               `order`.cancel_time,
+               `order`.customer_id,
+
+
+               `recycler`.id   AS recycler_id,
+               `recycler`.name AS recycler_name,
+
+               `category`.id   AS category_id,
+               `category`.category_name
+
+
+        FROM order_info AS `order`
+                 LEFT JOIN yueyishou_recycler.recycler_info AS `recycler`
+                           ON `order`.recycler_id = `recycler`.id
+                 LEFT JOIN yueyishou_category.category_info AS `category`
+                           ON `order`.son_category_id = `category`.id
+        WHERE `order`.reject_status = #{rejectStatus}
     </select>
 
 </mapper>

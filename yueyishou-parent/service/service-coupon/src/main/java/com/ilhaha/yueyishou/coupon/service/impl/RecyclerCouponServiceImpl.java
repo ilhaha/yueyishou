@@ -16,6 +16,7 @@ import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
+import com.ilhaha.yueyishou.model.vo.coupon.ExistingCouponVo;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -130,5 +131,26 @@ public class RecyclerCouponServiceImpl extends ServiceImpl<RecyclerCouponMapper,
             couponNotUsedVo.setExpireTime(item.getExpireTime());
             return couponNotUsedVo;
         }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+
+    /**
+     * 获取回收员已有的服务抵扣劵
+     * @param recyclerIds
+     * @return
+     */
+    @Override
+    public List<ExistingCouponVo> getExistingCoupons(List<Long> recyclerIds) {
+        LambdaQueryWrapper<RecyclerCoupon> recyclerCouponLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        recyclerCouponLambdaQueryWrapper.in(RecyclerCoupon::getRecyclerId,recyclerIds);
+        List<RecyclerCoupon> recyclerCouponListDB = this.list(recyclerCouponLambdaQueryWrapper);
+        if (ObjectUtils.isEmpty(recyclerCouponListDB)) {
+            return Collections.emptyList();
+        }
+        return recyclerCouponListDB.stream().map(item -> {
+            ExistingCouponVo existingCouponVo = new ExistingCouponVo();
+            BeanUtils.copyProperties(item,existingCouponVo);
+            return existingCouponVo;
+        }).collect(Collectors.toList());
     }
 }

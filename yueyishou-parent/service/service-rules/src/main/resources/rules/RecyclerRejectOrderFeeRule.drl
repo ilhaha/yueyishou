@@ -5,11 +5,11 @@ import com.ilhaha.yueyishou.model.vo.order.OvertimeResponseVo;
 import java.math.BigDecimal;
 
 /**
- * Drools规则文件：计算服务超时（到达时间大于上门预约回收时间）费用
- * 每超10分钟收费5元，不足10分钟按10分钟计算。
+ * Drools规则文件：回收员拒收订单审核通过后，会得到补偿
+ * 到达时间与接单时间相差多少分钟，每超10分钟收费5元，不足10分钟按10分钟计算。
  */
 
-rule "Calculate Overtime Fee"
+rule "Reject Order Fee"
 when
     $request: OvertimeRequestForm($overtimeMinutes : overtimeMinutes > 0)
     $response: OvertimeResponseVo()

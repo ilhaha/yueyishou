@@ -21,6 +21,7 @@ import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerAuthForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRateForm;
 import com.ilhaha.yueyishou.model.form.recycler.UpdateRecyclerStatusForm;
+import com.ilhaha.yueyishou.model.vo.coupon.ExistingCouponVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerBaseInfoVo;
 import com.ilhaha.yueyishou.recycler.mapper.RecyclerInfoMapper;
@@ -45,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, RecyclerInfo> implements IRecyclerInfoService {
@@ -94,36 +96,55 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
                 .set(RecyclerAuthStatus.CERTIFICATION_PASSED.getStatus().equals(recyclerAuthForm.getAuthStatus()),RecyclerInfo::getStatus, StartDisabledConstant.START_STATUS)
                 .set(RecyclerAuthStatus.UNDER_REVIEW.getStatus().equals(recyclerAuthForm.getAuthStatus()),RecyclerInfo::getStatus,StartDisabledConstant.DISABLED_STATUS)
                 .in(RecyclerInfo::getId,recyclerAuthForm.getRecyclerIds());
-        // 给回收员创建账户
-        recyclerAccountService.createAccount(recyclerAuthForm.getRecyclerIds());
+        if (RecyclerAuthStatus.CERTIFICATION_PASSED.getStatus().equals(recyclerAuthForm.getAuthStatus())) {
+            // 给回收员创建账户
+            recyclerAccountService.createAccount(recyclerAuthForm.getRecyclerIds());
+        }
         // 给审核通过的回收员发放服务抵扣劵
         if (this.update(recyclerInfoLambdaUpdateWrapper)) {
             List<CouponInfo> couponInfoListDB = couponInfoFeignClient.getListByIds(CouponIssueConstant.COUPON_FREE_ISSUE_ID).getData();
             ArrayList<FreeIssueForm> freeIssueFormList = new ArrayList<>();
+
             if (!ObjectUtils.isEmpty(couponInfoListDB)) {
+                // 获取回收员ID列表
+                List<Long> recyclerIds = recyclerAuthForm.getRecyclerIds();
+
+                // 查询已有的优惠券信息，避免重复发放
+                List<Long> existingCouponIds = recyclerCouponFeignClient.getExistingCoupons(recyclerIds).getData()
+                        .stream()
+                        .map(ExistingCouponVo::getCouponId)
+                        .collect(Collectors.toList());
+
+                // 为每个回收员分配优惠券
                 for (CouponInfo item : couponInfoListDB) {
-                    for (Long recyclerId : recyclerAuthForm.getRecyclerIds()) {
+                    for (Long recyclerId : recyclerIds) {
+                        // 如果回收员已经拥有该优惠券，则跳过
+                        if (existingCouponIds.contains(item.getId())) {
+                            continue;
+                        }
+
                         FreeIssueForm freeIssueForm = new FreeIssueForm();
                         freeIssueForm.setRecyclerId(recyclerId);
                         freeIssueForm.setCouponId(item.getId());
                         freeIssueForm.setReceiveTime(new Date());
-                        BeanUtils.copyProperties(item,freeIssueForm);
+                        BeanUtils.copyProperties(item, freeIssueForm);
+
                         if (!CouponConstant.EXPIRES_DAYS_AFTER_COLLECTION.equals(item.getExpireTime())) {
-                            // 计算过期时间：当前日期 + 有效天数
+                            // 计算过期时间
                             LocalDateTime expireTime = LocalDateTime.now().plusDays(item.getExpireTime());
-
-                            // 将 LocalDateTime 转换为 Date 类型
                             Date expireDate = Date.from(expireTime.atZone(ZoneId.systemDefault()).toInstant());
-
-                            // 设置过期时间
                             freeIssueForm.setExpireTime(expireDate);
                         }
+
                         freeIssueFormList.add(freeIssueForm);
                     }
                 }
-                recyclerCouponFeignClient.freeIssue(freeIssueFormList,recyclerAuthForm.getRecyclerIds().size());
-            }
 
+                // 批量发放优惠券
+                if (!freeIssueFormList.isEmpty()) {
+                    recyclerCouponFeignClient.freeIssue(freeIssueFormList, recyclerIds.size());
+                }
+            }
         }
         return "已审核";
     }
@@ -216,7 +237,6 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
         LambdaQueryWrapper<RecyclerInfo> recyclerInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         recyclerInfoLambdaQueryWrapper.eq(RecyclerInfo::getCustomerId,customerId);
         RecyclerInfo recyclerInfoDB = this.getOne(recyclerInfoLambdaQueryWrapper);
-        System.out.println(recyclerInfoDB);
         if (ObjectUtils.isEmpty(recyclerInfoDB)) return false;
         String key = RedisConstant.RECYCLER_INFO_KEY_PREFIX + token;
         if (!redisTemplate.hasKey(key)) {
@@ -224,7 +244,7 @@ public class RecyclerInfoServiceImpl extends ServiceImpl<RecyclerInfoMapper, Rec
                     RedisConstant.USER_LOGIN_KEY_TIMEOUT, TimeUnit.SECONDS);
         }
         // 判断回收员是否被禁用
-        if (StartDisabledConstant.DISABLED_STATUS.equals(recyclerInfoDB.getStatus())) {
+        if (RecyclerAuthStatus.CERTIFICATION_PASSED.equals(recyclerInfoDB.getStatus()) && StartDisabledConstant.DISABLED_STATUS.equals(recyclerInfoDB.getStatus())) {
             throw new YueYiShouException(ResultCodeEnum.ACCOUNT_STOP);
         }
         return true;

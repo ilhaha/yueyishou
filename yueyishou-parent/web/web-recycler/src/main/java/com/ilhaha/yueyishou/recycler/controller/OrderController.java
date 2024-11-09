@@ -23,6 +23,39 @@ public class OrderController {
     private OrderService orderService;
 
     /**
+     * 取消申请订单拒收
+     * @param orderId
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/cancel/reject/{orderId}")
+    public Result<Boolean> cancelReject(@PathVariable("orderId") Long orderId){
+        return orderService.cancelReject(orderId);
+    }
+
+    /**
+     * 获取拒收订单信息
+     * @param orderId
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/reject/info/{orderId}")
+    public Result<RejectOrderVo> getRejectInfo(@PathVariable Long orderId){
+        return orderService.getRejectInfo(orderId);
+    }
+
+    /**
+     * 回收员拒收订单
+     * @param rejectOrderForm
+     * @return
+     */
+    @LoginVerification
+    @PostMapping("/reject")
+    public Result<Boolean> reject(@RequestBody RejectOrderForm rejectOrderForm){
+        return orderService.reject(rejectOrderForm);
+    }
+
+    /**
      * 删除订单
      * @param orderDeleteForm
      * @return

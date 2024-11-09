@@ -18,6 +18,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface CustomerAccountFeignClient {
 
     /**
+     * 回收员拒收订单,顾客需支付赔偿
+     * @param customerWithdrawForm
+     * @return
+     */
+    @PostMapping("/customerAccount/reject/compensate")
+    Result<Boolean> rejectCompensate(@RequestBody CustomerWithdrawForm customerWithdrawForm);
+
+    /**
      * 回收员距离预约时间不足60分钟付费取消
      * @param customerWithdrawForm
      * @return

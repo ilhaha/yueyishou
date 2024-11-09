@@ -71,4 +71,11 @@ public interface IRecyclerAccountService extends IService<RecyclerAccount> {
      * @return
      */
     Boolean chargeCancellationIfWithinOneHour(RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
+     * 回收员拒收订单得到补偿
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    Boolean rejectCompensate(RecyclerWithdrawForm recyclerWithdrawForm);
 }

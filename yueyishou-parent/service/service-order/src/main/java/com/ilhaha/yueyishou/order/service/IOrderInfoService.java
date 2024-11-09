@@ -172,4 +172,38 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     CollectVo collect();
 
+    /**
+     * 回收员拒收订单
+     * @param rejectOrderForm
+     * @return
+     */
+    Boolean reject(RejectOrderForm rejectOrderForm);
+
+    /**
+     * 获取拒收订单信息
+     * @param orderId
+     * @return
+     */
+    RejectOrderVo getRejectInfo(Long orderId);
+
+    /**
+     * 取消申请订单拒收
+     * @param orderId
+     * @return
+     */
+    Boolean cancelReject(Long orderId);
+
+    /**
+     * 获取申请拒收订单列表
+     * @param page
+     * @return
+     */
+    Page<RejectOrderListVo> getRejectOrderList(Page<RejectOrderListVo> page);
+
+    /**
+     * 审批拒收申请
+     * @param approvalRejectOrderForm
+     * @return
+     */
+    Boolean approvalReject(ApprovalRejectOrderForm approvalRejectOrderForm);
 }

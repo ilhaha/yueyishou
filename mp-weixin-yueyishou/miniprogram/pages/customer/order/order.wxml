@@ -19,8 +19,11 @@
             <view slot="desc" class="custom-desc">
               <view>{{order.appointmentTime}} 前上门</view>
               <view>{{order.arriveTime}} 到达</view>
-              <view wx:if="{{order.arriveTimoutMin}}" style="color: red;">
+              <view wx:if="{{order.arriveTimoutMin && order.rejectStatus == 0}}" style="color: red;">
                 回收员超时 {{order.arriveTimoutMin}} 分钟
+              </view>
+              <view wx:if="{{order.rejectStatus == -1 || order.rejectStatus == 1}}" style="color: red;">
+                回收员申请拒收
               </view>
             </view>
           </van-card>
@@ -60,6 +63,7 @@
               <view>{{order.appointmentTime}} 前上门</view>
               <view>{{order.cancelTime}} 已取消</view>
               <view style="color: red;" wx:if="{{order.customerLateCancellationFee}}">取消扣费 ¥{{order.customerLateCancellationFee}}</view>
+              <view style="color: red;" wx:if="{{order.rejectCompensation}}">被拒收扣费 ¥{{order.rejectCompensation}}</view>
               <view style="color: green;" wx:if="{{order.serviceOvertimePenalty}}">超时未服务补偿 ¥{{order.serviceOvertimePenalty}}</view>
               <view style="color: green;" wx:if="{{order.recyclerLateCancellationFee}}">短时取消补偿 ¥{{order.recyclerLateCancellationFee}}</view>
             </view>

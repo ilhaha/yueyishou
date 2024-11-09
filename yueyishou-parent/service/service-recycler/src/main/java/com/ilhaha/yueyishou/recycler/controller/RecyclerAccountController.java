@@ -29,6 +29,16 @@ public class RecyclerAccountController {
 	private IRecyclerAccountService recyclerAccountService;
 
 	/**
+	 * 回收员拒收订单得到补偿
+	 * @param recyclerWithdrawForm
+	 * @return
+	 */
+	@PostMapping("/reject/compensate")
+	public Result<Boolean> rejectCompensate(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm){
+		return Result.ok(recyclerAccountService.rejectCompensate(recyclerWithdrawForm));
+	}
+
+	/**
 	 * 回收员距离预约时间不足60分钟付费取消
 	 * @param recyclerWithdrawForm
 	 * @return

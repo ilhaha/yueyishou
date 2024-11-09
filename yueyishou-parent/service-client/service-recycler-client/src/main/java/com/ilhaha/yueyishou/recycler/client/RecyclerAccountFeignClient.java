@@ -18,6 +18,14 @@ import org.springframework.web.bind.annotation.*;
 public interface RecyclerAccountFeignClient {
 
     /**
+     * 回收员拒收订单得到补偿
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @PostMapping("/recyclerAccount/reject/compensate")
+    Result<Boolean> rejectCompensate(@RequestBody RecyclerWithdrawForm recyclerWithdrawForm);
+
+    /**
      * 回收员距离预约时间不足60分钟付费取消
      * @param recyclerWithdrawForm
      * @return

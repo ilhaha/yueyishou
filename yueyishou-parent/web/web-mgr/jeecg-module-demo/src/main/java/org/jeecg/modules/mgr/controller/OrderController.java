@@ -2,14 +2,13 @@ package org.jeecg.modules.mgr.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
+import com.ilhaha.yueyishou.model.vo.order.RejectOrderListVo;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.OrderService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -26,6 +25,28 @@ public class OrderController {
     private OrderService orderService;
 
     /**
+     * 审批拒收申请
+     * @param approvalRejectOrderForm
+     * @return
+     */
+    @PostMapping("/approval/reject")
+    public Result<Boolean> approvalReject(@RequestBody ApprovalRejectOrderForm approvalRejectOrderForm){
+        return Result.OK(orderService.approvalReject(approvalRejectOrderForm));
+    }
+
+    /**
+     * 获取申请拒收订单列表
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/reject/list")
+    public Result<Page<RejectOrderListVo>> getRejectOrderList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        return Result.OK(orderService.getRejectOrderList(pageNo,pageSize));
+    }
+
+    /**
      * 订单分页列表查询
      *
      * @param orderMgrQueryForm
@@ -35,9 +56,9 @@ public class OrderController {
      */
     @GetMapping(value = "/list")
     public Result<Page<OrderMgrQueryVo>> queryPageList(OrderMgrQueryForm orderMgrQueryForm,
-                                                       @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                                       @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-        return Result.OK(orderService.queryPageList(orderMgrQueryForm,pageNo,pageSize));
+                                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        return Result.OK(orderService.queryPageList(orderMgrQueryForm, pageNo, pageSize));
     }
 
 
@@ -48,7 +69,7 @@ public class OrderController {
      * @return
      */
     @GetMapping(value = "/queryById")
-    public Result<OrderInfo> queryById(@RequestParam(name="id",required=true) String id) {
+    public Result<OrderInfo> queryById(@RequestParam(name = "id", required = true) String id) {
         return Result.OK(orderService.queryById(id));
     }
 

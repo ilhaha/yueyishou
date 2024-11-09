@@ -198,4 +198,35 @@ public class CustomerAccountServiceImpl extends ServiceImpl<CustomerAccountMappe
 
         return this.update(customerAccountLambdaUpdateWrapper);
     }
+
+    /**
+     * 回收员拒收订单,顾客需支付赔偿
+     * @param customerWithdrawForm
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean rejectCompensate(CustomerWithdrawForm customerWithdrawForm) {
+        // 1. 查询顾客账户
+        CustomerAccount customerAccountDB = this.getOne(new LambdaQueryWrapper<CustomerAccount>().eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId()));
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = customerAccountDB.getTotalAmount().subtract(customerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<CustomerAccount> customerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        customerAccountLambdaUpdateWrapper.eq(CustomerAccount::getCustomerId, customerWithdrawForm.getCustomerId())
+                .set(CustomerAccount::getTotalAmount, newTotalAmount)
+                .set(CustomerAccount::getUpdateTime, new Date());
+
+        // 4.添加明细数据
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(customerAccountDB.getId());
+        addDetailsForm.setAmount(customerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
+        addDetailsForm.setContent(AccountDetailsConstant.CUSTOMER_COMPENSATION_REJECTION);
+        customerAccountDetailService.addDetails(addDetailsForm);
+
+        return this.update(customerAccountLambdaUpdateWrapper);
+    }
 }

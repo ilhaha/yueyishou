@@ -186,10 +186,110 @@
 }
 
 .dialog-tip {
-  margin-top: 16px;
   padding: 10px;
   border-left: 4px solid #ffcc00;
   /* 提示信息左侧的颜色 */
   font-size: 14px;
   color: #666;
+}
+
+.photo-section {
+  background-color: #fff;
+  padding: 25rpx;
+  border-radius: 16rpx;
+}
+
+.photo-title {
+  font-size: 28rpx;
+  color: #ff6600;
+  margin-bottom: 10rpx;
+}
+
+.picker {
+  margin-bottom: 15rpx;
+}
+
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  /* 从左到右排列 */
+  gap: 20rpx;
+  /* 设置item之间的间隙 */
+  margin-top: 20rpx;
+  margin-left: 25rpx;
+}
+
+.van-uploader__preview-image {
+  height: 60px !important;
+  width: 60px !important;
+  margin-left: 5rpx !important;
+}
+
+.van-uploader__upload {
+  height: 60px !important;
+  width: 60px !important;
+}
+
+.order-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  /* 从左到右排列 */
+  gap: 20rpx;
+  /* 设置item之间的间隙 */
+  margin-top: 20rpx;
+  margin-left: 25rpx;
+}
+
+.button-section {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+
+
+.cancel-button {
+  flex: 1;
+  margin-right: 10px;
+  background-color: #f56c6c;
+  color: white;
+}
+
+.reapply-button {
+  flex: 1;
+  margin-right: 10px;
+  background-color: #50C878;
+  color: white;
+}
+
+.close-button {
+  flex: 1;
+  background-color: #909399;
+  color: white;
+}
+
+.info-section-wait {
+  padding: 10px 20px;
+  background-color: #fef3f2;
+  border: 1px solid goldenrod;
+  color: goldenrod;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.info-section-error {
+  padding: 10px 20px;
+  background-color: #fef3f2;
+  border: 1px solid #f56c6c;
+  color: #d93025;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.info-text {
+  font-size: 14px;
+  line-height: 20px;
 }

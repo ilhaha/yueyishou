@@ -7,6 +7,7 @@ import com.ilhaha.yueyishou.model.form.coupon.FreeIssueForm;
 import com.ilhaha.yueyishou.model.form.coupon.UseCouponFrom;
 import com.ilhaha.yueyishou.model.vo.coupon.AvailableCouponVo;
 import com.ilhaha.yueyishou.model.vo.coupon.CouponNotUsedVo;
+import com.ilhaha.yueyishou.model.vo.coupon.ExistingCouponVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,14 @@ import java.util.List;
  */
 @FeignClient("service-coupon")
 public interface RecyclerCouponFeignClient {
+
+    /**
+     * 获取回收员已有的服务抵扣劵
+     * @param recyclerIds
+     * @return
+     */
+    @PostMapping("/recyclerCoupon/existing")
+    Result<List<ExistingCouponVo>> getExistingCoupons(List<Long> recyclerIds);
 
     /**
      * 获取回收员的服务抵扣劵

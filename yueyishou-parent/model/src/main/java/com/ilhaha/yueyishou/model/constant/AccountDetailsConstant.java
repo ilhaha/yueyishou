@@ -65,5 +65,15 @@ public class AccountDetailsConstant {
      */
     public static final String RECYCLER_SHORT_NOTICE_CANCELLATION = "短时取消赔偿";
 
+    /**
+     * 回收员拒收订单得到补偿
+     */
+    public static final String RECYCLER_COMPENSATION_REJECTION = "拒收订单补偿";
+
+    /**
+     * 回收员拒收订单顾客支出赔偿
+     */
+    public static final String CUSTOMER_COMPENSATION_REJECTION = "被拒收订单赔偿";
+
 
 }

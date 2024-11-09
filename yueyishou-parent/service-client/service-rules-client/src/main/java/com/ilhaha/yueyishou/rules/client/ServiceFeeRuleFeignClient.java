@@ -58,4 +58,12 @@ public interface ServiceFeeRuleFeignClient {
      */
     @PostMapping("/service/fee/recyclerLateCancellationFee")
     Result<OvertimeResponseVo> recyclerLateCancellationFee(@RequestBody OvertimeRequestForm overtimeRequestForm);
+
+    /**
+     * 计算回收员拒收得到订单补偿费用
+     * @param overtimeRequestForm
+     * @return
+     */
+    @PostMapping("/service/fee/calculateRejectionCompensation")
+    Result<OvertimeResponseVo> calculateRejectionCompensation(@RequestBody OvertimeRequestForm overtimeRequestForm);
 }

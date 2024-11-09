@@ -18,10 +18,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,11 +43,30 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
      */
     @Override
     public void createAccount(List<Long> recyclerIds) {
-       this.saveBatch( recyclerIds.stream().map(item -> {
-           RecyclerAccount recyclerAccount = new RecyclerAccount();
-           recyclerAccount.setRecyclerId(item);
-           return recyclerAccount;
-       }).collect(Collectors.toList()));
+        // 1. 查询数据库中已经存在的 recyclerId
+        LambdaQueryWrapper<RecyclerAccount> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(RecyclerAccount::getRecyclerId, recyclerIds);
+        List<RecyclerAccount> existingAccounts = this.list(queryWrapper);
+
+        // 2. 提取已存在的 recyclerId
+        Set<Long> existingRecyclerIds = existingAccounts.stream()
+                .map(RecyclerAccount::getRecyclerId)
+                .collect(Collectors.toSet());
+
+        // 3. 过滤掉已存在的 recyclerId 并创建新账户
+        List<RecyclerAccount> newAccounts = recyclerIds.stream()
+                .filter(item -> !existingRecyclerIds.contains(item))
+                .map(item -> {
+                    RecyclerAccount recyclerAccount = new RecyclerAccount();
+                    recyclerAccount.setRecyclerId(item);
+                    return recyclerAccount;
+                })
+                .collect(Collectors.toList());
+
+        // 4. 批量保存新的账户
+        if (!newAccounts.isEmpty()) {
+            this.saveBatch(newAccounts);
+        }
     }
 
     /**
@@ -257,6 +278,36 @@ public class RecyclerAccountServiceImpl extends ServiceImpl<RecyclerAccountMappe
         addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
         addDetailsForm.setTradeType(AccountDetailsConstant.EXPENDITURE);
         addDetailsForm.setContent(AccountDetailsConstant.RECYCLER_SHORT_NOTICE_CANCELLATION);
+        recyclerAccountDetailService.addDetails(addDetailsForm);
+        return this.update(recyclerAccountLambdaUpdateWrapper);
+    }
+
+    /**
+     * 回收员拒收订单得到补偿
+     * @param recyclerWithdrawForm
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean rejectCompensate(RecyclerWithdrawForm recyclerWithdrawForm) {
+        // 1. 查询当前账户余额
+        RecyclerAccount account = this.getOneByRecyclerId(recyclerWithdrawForm.getRecyclerId());
+
+        // 2. 计算新的余额
+        BigDecimal newTotalAmount = account.getTotalAmount().add(recyclerWithdrawForm.getAmount());
+
+        // 3. 更新账户余额
+        LambdaUpdateWrapper<RecyclerAccount> recyclerAccountLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        recyclerAccountLambdaUpdateWrapper.eq(RecyclerAccount::getRecyclerId, recyclerWithdrawForm.getRecyclerId())
+                .set(RecyclerAccount::getTotalAmount, newTotalAmount)
+                .set(RecyclerAccount::getUpdateTime, new Date());
+
+        // 4.添加明细数据
+        AddDetailsForm addDetailsForm = new AddDetailsForm();
+        addDetailsForm.setAccountId(account.getId());
+        addDetailsForm.setAmount(recyclerWithdrawForm.getAmount());
+        addDetailsForm.setTradeType(AccountDetailsConstant.INCOME);
+        addDetailsForm.setContent(AccountDetailsConstant.RECYCLER_COMPENSATION_REJECTION);
         recyclerAccountDetailService.addDetails(addDetailsForm);
         return this.update(recyclerAccountLambdaUpdateWrapper);
     }

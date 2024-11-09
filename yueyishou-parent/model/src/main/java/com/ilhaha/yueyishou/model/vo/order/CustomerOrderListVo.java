@@ -59,4 +59,12 @@ public class CustomerOrderListVo {
     private BigDecimal customerLateCancellationFee;
     /**接单后，回收员未在免费取消订单时间内取消赔偿*/
     private BigDecimal recyclerLateCancellationFee;
+    /**
+     * 拒收状态，0-不拒收 1-拒收 2-已拒收 1-拒收未通过
+     */
+    private Integer rejectStatus;
+    /**
+     * 回收员拒收得到补偿
+     */
+    private BigDecimal rejectCompensation;
 }
