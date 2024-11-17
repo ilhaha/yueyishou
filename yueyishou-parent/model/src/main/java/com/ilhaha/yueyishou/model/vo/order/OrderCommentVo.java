@@ -20,4 +20,9 @@ public class OrderCommentVo {
     /**评论时间*/
     private Date reviewTime;
 
+    /**
+     * 评价等级
+     */
+    private Integer rate;
+
 }

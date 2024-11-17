@@ -40,13 +40,15 @@ public class OrderInfoController {
      * 获取申请拒收订单列表
      * @param pageNo
      * @param pageSize
+     * @param rejectOrderListForm
      * @return
      */
     @PostMapping("/reject/list")
     public Result<Page<RejectOrderListVo>> getRejectOrderList( @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize){
+                                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                               @RequestBody RejectOrderListForm rejectOrderListForm){
         Page<RejectOrderListVo> page = new Page<>(pageNo, pageSize);
-        return Result.ok(orderInfoService.getRejectOrderList(page));
+        return Result.ok(orderInfoService.getRejectOrderList(page,rejectOrderListForm));
     }
 
     /**

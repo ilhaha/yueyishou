@@ -159,7 +159,7 @@ export default {
         status: '1',
       },
       dateFormat: 'YYYY-MM-DD',
-      description: 'order_info管理页面',
+      description: '订单列表',
       // 表头
       columns: [
         {

@@ -241,6 +241,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
             customerOrderDetailsVo.setReviewContent(orderCommentVo.getReviewContent());
             customerOrderDetailsVo.setReviewTime(orderCommentVo.getReviewTime());
+            customerOrderDetailsVo.setRate(orderCommentVo.getRate());
         }
 
         // 从redis中判断查询有没有该订单的回收码
@@ -385,6 +386,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (!ObjectUtils.isEmpty(orderCommentVo.getReviewContent())) {
             orderDetailsVo.setReviewContent(orderCommentVo.getReviewContent());
             orderDetailsVo.setReviewTime(orderCommentVo.getReviewTime());
+            orderDetailsVo.setRate(orderCommentVo.getRate());
         }
 
         return orderDetailsVo;
@@ -942,13 +944,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 获取申请拒收订单列表
-     *
      * @param page
+     * @param rejectOrderListForm
      * @return
      */
     @Override
-    public Page<RejectOrderListVo> getRejectOrderList(Page<RejectOrderListVo> page) {
-        return orderInfoMapper.getRejectOrderList(page, OrderConstant.DENIED_STATUS);
+    public Page<RejectOrderListVo> getRejectOrderList(Page<RejectOrderListVo> page, RejectOrderListForm rejectOrderListForm) {
+        return orderInfoMapper.getRejectOrderList(page, OrderConstant.DENIED_STATUS,rejectOrderListForm);
     }
 
     /**

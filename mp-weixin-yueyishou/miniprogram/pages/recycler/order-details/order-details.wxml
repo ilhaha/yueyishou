@@ -312,8 +312,16 @@
         <text class="label">付款时间</text>
         <text class="value">{{orderInfo.payTime}}</text>
       </view>
+      <view class="meta-item" wx:if="{{orderInfo.rate}}">
+        <text class="label">顾客评价等级</text>
+        <text class="value"> {{ orderInfo.rate == 1 ? '很差' : 
+       orderInfo.rate == 2 ? '差' : 
+       orderInfo.rate == 3 ? '一般' : 
+       orderInfo.rate == 4 ? '好' : 
+       orderInfo.rate == 5 ? '很好' : '未知' }}</text>
+      </view>
       <view class="meta-item" wx:if="{{orderInfo.reviewContent}}">
-        <text class="label">评价内容</text>
+        <text class="label">顾客评价内容</text>
         <text class="value">{{orderInfo.reviewContent}}</text>
       </view>
       <view class="meta-item" wx:if="{{orderInfo.remark}}">

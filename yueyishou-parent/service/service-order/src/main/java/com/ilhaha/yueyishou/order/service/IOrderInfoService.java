@@ -194,16 +194,18 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     Boolean cancelReject(Long orderId);
 
     /**
-     * 获取申请拒收订单列表
-     * @param page
-     * @return
-     */
-    Page<RejectOrderListVo> getRejectOrderList(Page<RejectOrderListVo> page);
-
-    /**
      * 审批拒收申请
      * @param approvalRejectOrderForm
      * @return
      */
     Boolean approvalReject(ApprovalRejectOrderForm approvalRejectOrderForm);
+
+
+    /**
+     * 获取申请拒收订单列表
+     * @param page
+     * @param rejectOrderListForm
+     * @return
+     */
+    Page<RejectOrderListVo> getRejectOrderList(Page<RejectOrderListVo> page, RejectOrderListForm rejectOrderListForm);
 }

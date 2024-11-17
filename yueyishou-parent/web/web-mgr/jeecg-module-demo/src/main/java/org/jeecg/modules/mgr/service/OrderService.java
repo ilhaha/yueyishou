@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.form.order.RejectOrderListForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
 import com.ilhaha.yueyishou.model.vo.order.RejectOrderListVo;
-import org.jeecg.common.api.vo.Result;
 
 /**
  * @Author ilhaha
@@ -33,11 +33,13 @@ public interface OrderService {
 
     /**
      * 获取申请拒收订单列表
+     *
      * @param pageNo
      * @param pageSize
+     * @param rejectOrderListForm
      * @return
      */
-    Page<RejectOrderListVo> getRejectOrderList(Integer pageNo, Integer pageSize);
+    Page<RejectOrderListVo> getRejectOrderList(Integer pageNo, Integer pageSize, RejectOrderListForm rejectOrderListForm);
 
     /**
      * 审批拒收申请

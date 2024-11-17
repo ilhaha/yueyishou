@@ -113,7 +113,15 @@
                            ON `order`.recycler_id = `recycler`.id
                  LEFT JOIN yueyishou_category.category_info AS `category`
                            ON `order`.son_category_id = `category`.id
-        WHERE `order`.reject_status = #{rejectStatus}
+        <where>
+            `order`.reject_status = #{rejectStatus}
+            <if test="rejectOrderListForm.recyclerName != null and rejectOrderListForm.recyclerName != ''">
+                AND `recycler`.name LIKE CONCAT('%',#{rejectOrderListForm.recyclerName},'%')
+            </if>
+            <if test="rejectOrderListForm.orderContactPerson != null and rejectOrderListForm.orderContactPerson != ''">
+                AND `order`.order_contact_person LIKE CONCAT('%',#{rejectOrderListForm.orderContactPerson},'%')
+            </if>
+        </where>
     </select>
 
 </mapper>

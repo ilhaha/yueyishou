@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.form.order.RejectOrderListForm;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
 import com.ilhaha.yueyishou.model.vo.order.RejectOrderListVo;
 import org.jeecg.common.api.vo.Result;
@@ -36,14 +37,16 @@ public class OrderController {
 
     /**
      * 获取申请拒收订单列表
+     * @param rejectOrderListForm
      * @param pageNo
      * @param pageSize
      * @return
      */
-    @PostMapping("/reject/list")
-    public Result<Page<RejectOrderListVo>> getRejectOrderList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+    @GetMapping("/reject/list")
+    public Result<Page<RejectOrderListVo>> getRejectOrderList(RejectOrderListForm rejectOrderListForm,
+                                                              @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        return Result.OK(orderService.getRejectOrderList(pageNo,pageSize));
+        return Result.OK(orderService.getRejectOrderList(pageNo,pageSize,rejectOrderListForm));
     }
 
     /**

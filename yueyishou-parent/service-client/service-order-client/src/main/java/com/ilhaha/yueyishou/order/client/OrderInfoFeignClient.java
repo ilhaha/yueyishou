@@ -20,6 +20,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 审批拒收申请
+     *
      * @param approvalRejectOrderForm
      * @return
      */
@@ -28,14 +29,18 @@ public interface OrderInfoFeignClient {
 
     /**
      * 获取申请拒收订单列表
+     * @param pageNo
+     * @param pageSize
+     * @param rejectOrderListForm
      * @return
      */
     @PostMapping("/orderInfo/reject/list")
     Result<Page<RejectOrderListVo>> getRejectOrderList( @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize);
-
+                                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                               @RequestBody RejectOrderListForm rejectOrderListForm);
     /**
      * 取消申请订单拒收
+     *
      * @param orderId
      * @return
      */
@@ -44,6 +49,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 获取拒收订单信息
+     *
      * @param orderId
      * @return
      */
@@ -52,6 +58,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 回收员拒收订单
+     *
      * @param rejectOrderForm
      * @return
      */
@@ -60,6 +67,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 后台管理系统汇总数据
+     *
      * @return
      */
     @GetMapping("/orderInfo/index/collect")
@@ -67,6 +75,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 获取顾客我的页面的订单初始化信息
+     *
      * @param customerId
      * @return
      */
@@ -75,6 +84,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 删除订单
+     *
      * @param orderDeleteForm
      * @return
      */
@@ -83,6 +93,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 回收员接单后，回收员、顾客取消订单
+     *
      * @param cancelOrderForm
      * @return
      */
@@ -99,6 +110,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 结算订单
+     *
      * @param settlementForm
      * @return
      */
@@ -107,6 +119,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 回收员校验回收码
+     *
      * @param validateRecycleCodeForm
      * @return
      */
@@ -115,6 +128,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 计算实际的订单信息
+     *
      * @param orderId
      * @return
      */
@@ -123,6 +137,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 更新订单信息
+     *
      * @param updateOrderFrom
      * @return
      */
@@ -131,6 +146,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 回收员到达回收点
+     *
      * @param orderId
      * @return
      */
@@ -140,6 +156,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 回收员接单后，在预约时间前一个小时取消订单时，要重新把订单给别的回收员接单
+     *
      * @param orderId
      * @return
      */
@@ -148,16 +165,18 @@ public interface OrderInfoFeignClient {
 
     /**
      * 根据状态获取回收员订单列表
+     *
      * @param recyclerId
      * @param status
      * @return
      */
     @GetMapping("/orderInfo/list/status/{recyclerId}/{status}")
     Result<List<RecyclerOrderVo>> getRecyclerOrderListByStatus(@PathVariable("recyclerId") Long recyclerId,
-                                                                      @PathVariable("status") Integer status);
+                                                               @PathVariable("status") Integer status);
 
     /**
      * 取消预约时间超时的订单
+     *
      * @return
      */
     @PostMapping("/orderInfo/processTimeoutOrders")
@@ -165,16 +184,18 @@ public interface OrderInfoFeignClient {
 
     /**
      * 回收员抢单
+     *
      * @param recyclerId
      * @param orderId
      * @return
      */
     @PostMapping("/orderInfo/grab/{recyclerId}/{orderId}")
     Result<Boolean> grabOrder(@PathVariable("recyclerId") Long recyclerId,
-                                     @PathVariable("orderId") Long orderId);
+                              @PathVariable("orderId") Long orderId);
 
     /**
      * 回收员获取符合接单的订单
+     *
      * @param matchingOrderForm
      * @return
      */
@@ -184,6 +205,7 @@ public interface OrderInfoFeignClient {
 
     /**
      * 取消订单
+     *
      * @param orderId
      * @return
      */
@@ -198,26 +220,29 @@ public interface OrderInfoFeignClient {
 
     /**
      * 回收员根据订单ID获取订单详情
+     *
      * @param recyclerId
      * @param orderId
      * @return
      */
     @GetMapping("/orderInfo/details/{recyclerId}/{orderId}")
-    Result<OrderDetailsVo> getOrderDetails(@PathVariable("recyclerId") Long recyclerId ,
-                                                  @PathVariable("orderId") Long orderId);
+    Result<OrderDetailsVo> getOrderDetails(@PathVariable("recyclerId") Long recyclerId,
+                                           @PathVariable("orderId") Long orderId);
 
     /**
      * 根据订单状态获取订单列表
+     *
      * @param status
      * @return
      */
     @GetMapping("/orderInfo/list/{status}/{customerId}")
     Result<List<CustomerOrderListVo>> orderList(@PathVariable("status") Integer status,
-                                                       @PathVariable("customerId") Long customerId);
+                                                @PathVariable("customerId") Long customerId);
 
 
     /**
      * 下单
+     *
      * @param placeOrderForm
      * @return
      */
@@ -234,8 +259,8 @@ public interface OrderInfoFeignClient {
      */
     @PostMapping(value = "/orderInfo/list")
     Result<Page<OrderMgrQueryVo>> queryPageList(@RequestBody OrderMgrQueryForm orderMgrQueryForm,
-                                                @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize);
+                                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize);
 
 
     /**
@@ -245,6 +270,6 @@ public interface OrderInfoFeignClient {
      * @return
      */
     @GetMapping(value = "/orderInfo/queryById")
-    Result<OrderInfo> queryById(@RequestParam(name="id",required=true) String id);
+    Result<OrderInfo> queryById(@RequestParam(name = "id", required = true) String id);
 
 }

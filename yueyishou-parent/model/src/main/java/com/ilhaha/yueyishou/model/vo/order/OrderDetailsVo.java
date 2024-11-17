@@ -95,6 +95,10 @@ public class OrderDetailsVo {
     private String reviewContent;
     /**评论时间*/
     private Date reviewTime;
+    /**
+     * 评价等级
+     */
+    private Integer rate;
     /**取消时间*/
     private Date cancelTime;
     /**接单后，回收员在预约时间未到达取消订单赔偿*/

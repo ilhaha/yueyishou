@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
 import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
+import com.ilhaha.yueyishou.model.form.order.RejectOrderListForm;
 import com.ilhaha.yueyishou.model.vo.order.RejectOrderListVo;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
-import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.mgr.service.OrderService;
 import org.springframework.stereotype.Service;
 
@@ -49,13 +49,15 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 获取申请拒收订单列表
+     *
      * @param pageNo
      * @param pageSize
+     * @param rejectOrderListForm
      * @return
      */
     @Override
-    public Page<RejectOrderListVo> getRejectOrderList(Integer pageNo, Integer pageSize) {
-        return orderInfoFeignClient.getRejectOrderList(pageNo,pageSize).getData();
+    public Page<RejectOrderListVo> getRejectOrderList(Integer pageNo, Integer pageSize, RejectOrderListForm rejectOrderListForm) {
+        return orderInfoFeignClient.getRejectOrderList(pageNo,pageSize,rejectOrderListForm).getData();
     }
 
     /**

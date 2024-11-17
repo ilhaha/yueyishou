@@ -73,6 +73,7 @@ public class OrderCommentServiceImpl extends ServiceImpl<OrderCommentMapper, Ord
         if (!ObjectUtils.isEmpty(orderCommentDB)) {
             orderCommentVo.setReviewContent(orderCommentDB.getReviewContent());
             orderCommentVo.setReviewTime(orderCommentDB.getCreateTime());
+            orderCommentVo.setRate(orderCommentDB.getRate());
         }
         return orderCommentVo;
     }
