@@ -2,6 +2,7 @@ package org.jeecg.modules.mgr.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.entity.order.OrderRejectionOperate;
 import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.form.order.RejectOrderListForm;
@@ -47,4 +48,12 @@ public interface OrderService {
      * @return
      */
     Boolean approvalReject(ApprovalRejectOrderForm approvalRejectOrderForm);
+
+
+    /**
+     * 添加审核订单拒收操作记录
+     * @param rejectionOperate
+     * @return
+     */
+    Boolean add(OrderRejectionOperate rejectionOperate);
 }

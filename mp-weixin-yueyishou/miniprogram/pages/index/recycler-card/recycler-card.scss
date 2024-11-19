@@ -57,3 +57,77 @@
   width: 92%;
   z-index: 1;
 }
+
+
+/* 未通过原因 */
+.reason-section {
+  margin-bottom: 16px;
+}
+
+.reason-section .label {
+  font-weight: bold;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.reason-section .value {
+  font-size: 14px;
+  color: #888;
+  line-height: 1.5;
+}
+
+/* 佐证材料 */
+.proof-section {
+  margin-top: 16px;
+}
+
+.proof-section .label {
+  font-weight: bold;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.proof-images {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.proof-item {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.proof-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 确认按钮 */
+.dialog-footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.confirm-btn {
+  background-color: #007aff;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

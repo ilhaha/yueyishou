@@ -39,4 +39,15 @@ public class PublicConstant {
      */
     public static final String HOUR_UNIT = "时";
 
+    /**
+     * 默认当前页
+     */
+    public static final Integer DEFAULT_PAGE_NO = 1;
+
+    /**
+     * 默认每页显示条数
+     */
+    public static final Integer DEFAULT_PAGE_SIZE = 10;
+
+
 }

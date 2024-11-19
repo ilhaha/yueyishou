@@ -51,9 +51,18 @@
           />
         </template>
         <span slot="action" slot-scope="text, record">
-          <a @click="review(2, record)">通过申请</a>
+          <a-popconfirm
+            title="确认是否同意回收员拒收该订单"
+            ok-text="确认"
+            cancel-text="取消"
+            @confirm="review(2, record)"
+            @cancel="cancel"
+          >
+            <a>通过申请</a>
+          </a-popconfirm>
+
           <a-divider type="vertical" />
-          <a @click="review(-1, record)">驳回申请</a>
+          <a @click="switchStatusDialogVisible(-1, record)">驳回申请</a>
         </span>
         <template slot="fileSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
@@ -63,6 +72,48 @@
         </template>
       </a-table>
     </div>
+    <a-modal
+      v-model:open="statusDialogVisible"
+      title="提交拒收订单驳回申请操作记录"
+      @ok="confirm"
+      width="60%"
+      @cancel="clearData"
+    >
+      <j-form-container>
+        <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
+          <a-row>
+            <a-col :span="24">
+              <a-form-model-item label="驳回原因" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="reason">
+                <a-textarea v-model="model.reason" placeholder="请输入驳回原因"></a-textarea>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-model-item label="佐证材料" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="proof">
+                <a-upload
+                  :key="uploadKey"
+                  v-model:file-list="fileList"
+                  name="file"
+                  :max-count="3"
+                  :remove="handleRemove"
+                  list-type="picture-card"
+                  class="avatar-uploader"
+                  :action="uploadUrl"
+                  :before-upload="beforeUpload"
+                  @change="handleChange"
+                  :headers="uploadHeaders"
+                  :data="uploadData"
+                  :multiple="true"
+                >
+                  <div v-if="fileList.length < 3">
+                    <div class="ant-upload-text">上传佐证材料</div>
+                  </div>
+                </a-upload>
+              </a-form-model-item>
+            </a-col>
+          </a-row>
+        </a-form-model>
+      </j-form-container>
+    </a-modal>
   </a-card>
 </template>
 
@@ -73,6 +124,9 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import OrderInfoModal from './modules/OrderInfoModal'
 import dayjs from 'dayjs'
 import { httpAction, postAction } from '../../api/manage'
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+
 export default {
   name: 'OrderInfoList',
   mixins: [JeecgListMixin, mixinDevice],
@@ -172,6 +226,34 @@ export default {
       dictOptions: {},
       superFieldList: [],
       rejectOrderList: [],
+      statusDialogVisible: false,
+      uploadUrl: `${process.env.VUE_APP_API_BASE_URL}/cos/upload`, // 替换为实际上传图片的API地址
+      imageUrl: '', // 用于存储上传后的图片URL
+      fileList: [], // 文件列表
+      loading: false, // 用于控制loading效果
+      uploadHeaders: {
+        'x-access-token': Vue.ls.get(ACCESS_TOKEN), // 替换为实际的认证令牌
+      },
+      uploadData: { path: 'order' },
+      uploadKey: Date.now(),
+      model: {
+        proof: '',
+        reason: '',
+      },
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+      },
+      validatorRules: {
+        proof: [{ required: true, message: '请上传佐证材料!' }],
+        reason: [{ required: true, message: '请输入操作原因!' }],
+      },
+      operateOrder: {},
+      operateStatus: '',
     }
   },
   created() {
@@ -183,6 +265,81 @@ export default {
     },
   },
   methods: {
+    switchStatusDialogVisible(rejectStatus, record) {
+      this.statusDialogVisible = !this.statusDialogVisible
+      this.operateOrder = record
+      this.operateStatus = rejectStatus
+    },
+    // 提交操作日志
+    confirm() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.model.orderId = this.operateOrder.orderId
+          postAction('/order/rejection/operate/add', this.model).then((res) => {
+            if (res.success) {
+              this.$message.success('已提交')
+              this.statusDialogVisible = false
+              this.clearData()
+              this.review(this.operateStatus, this.operateOrder)
+            } else {
+              this.$message.warning(res.message)
+            }
+          })
+        }
+      })
+    },
+    clearData() {
+      this.fileList = []
+      this.uploadKey = Date.now()
+      this.model.proof = ''
+      this.model.reason = ''
+    },
+    beforeUpload(file) {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+      if (!isJpgOrPng) {
+        this.$message.error('只能上传 JPG/PNG 格式的图片!')
+        return false
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        this.$message.error('图片大小必须小于 2MB!')
+        return false
+      }
+      if (this.fileList.length >= 3) {
+        this.$message.error('最多上传三张图片!')
+        return false
+      }
+      this.loading = true
+      return true
+    },
+    handleChange(info) {
+      const { file } = info
+      if (file.status === 'done') {
+        // 成功上传后，获取图片URL
+        const { response } = file
+        if (response && response.result) {
+          this.fileList = [...this.fileList, { ...file, url: response.result.showUrl }]
+
+          this.model.proof = this.fileList.map((f) => f.response.result.url).join(',') // 保存多个图片路径
+          this.$message.success('图片上传成功')
+        }
+        this.loading = false
+      } else if (file.status === 'error') {
+        this.$message.error('图片上传失败')
+        this.loading = false
+      }
+    },
+    handleRemove(file) {
+      // 确保过滤掉被删除的文件
+      this.fileList = this.fileList.filter((item) => item.uid !== file.uid)
+
+      // 更新 model.proof，仅包含未被删除的文件的 URL
+      this.model.proof = this.fileList
+        .map(function (f) {
+          return (f.response && f.response.result && f.response.result.url) || f.url
+        })
+        .join(',')
+    },
     // 处理申请通过、不通过
     review(rejectStatus, orderInfo) {
       postAction('/order/approval/reject', {
@@ -193,7 +350,7 @@ export default {
         rejectCompensation: orderInfo.rejectCompensation,
       }).then((res) => {
         if (res.result) {
-          this.$message.success('已审批')
+          // this.$message.success('已审批')
           this.loadData()
         }
       })

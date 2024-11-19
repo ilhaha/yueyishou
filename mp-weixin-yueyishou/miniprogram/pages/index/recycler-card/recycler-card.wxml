@@ -12,9 +12,31 @@
   <!-- 已登录，但回收员身份未认证 弹出填写认证信息窗口 -->
   <van-action-sheet show="{{ certificationShow }}" title="认证回收员" bind:close="switchCertificationShow">
     <!-- 认证为回收员 -->
-    <register-recycler wx:if="{{ certificationShow }}" bind:gotoRecyclerIndex="gotoRecyclerIndex" />
+    <register-recycler wx:if="{{ certificationShow }}" bind:gotoRecyclerIndex="gotoRecyclerIndex" bind:showReason="showReason" />
   </van-action-sheet>
   <!-- 悬浮的白色卡片 -->
   <view class="card-container">
   </view>
 </view>
+
+<van-dialog use-slot show="{{reasonModel}}" title="审核反馈" bind:confirm="confirm">
+  <view style="padding:20rpx">
+    <!-- 未通过原因 -->
+    <view class="reason-section">
+      <view class="label">未通过原因：</view>
+      <view class="value">{{reason}}</view>
+    </view>
+
+    <!-- 佐证材料 -->
+    <view class="proof-section">
+      <view class="label">佐证材料：</view>
+      <view class="proof-images">
+        <block wx:for="{{proofList}}" wx:key="index">
+          <view class="proof-item">
+            <image class="proof-image" src="{{item}}" mode="aspectFit" data-index="{{index}}" />
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+</van-dialog>

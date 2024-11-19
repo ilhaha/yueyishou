@@ -11,7 +11,8 @@ import {
   toast
 } from '../../../utils/extendApi';
 import {
-  reqReplenishInfo
+  reqReplenishInfo,
+  reqAuditFeedback
 } from '../../../api/customer/customer'
 
 
@@ -27,12 +28,31 @@ ComponentWithStore({
    */
   data: {
     certificationShow: false,
+    reasonModel: false,
+    reason: '',
+    proofList: []
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
+    confirm() {
+      this.setData({
+        certificationShow: true,
+        reasonModel: false
+      })
+    },
+    // 查看审核不通过原因
+    async showReason() {
+      const res = await reqAuditFeedback();
+      this.setData({
+        certificationShow: false,
+        reasonModel: true,
+        reason: res.data.reason,
+        proofList: res.data.proof.split(',')
+      })
+    },
     // 注册成为回收员
     async registerRecycler() {
       if (this.data.token) {

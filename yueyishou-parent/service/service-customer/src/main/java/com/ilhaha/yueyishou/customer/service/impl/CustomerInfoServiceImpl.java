@@ -20,6 +20,7 @@ import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.customer.mapper.CustomerInfoMapper;
 import com.ilhaha.yueyishou.customer.service.ICustomerInfoService;
 import com.ilhaha.yueyishou.common.execption.YueYiShouException;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerExamineOperate;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.entity.recycler.RecyclerPersonalization;
 import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
@@ -31,8 +32,10 @@ import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerAccountVo;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
+import com.ilhaha.yueyishou.model.vo.customer.ExamineInfoVo;
 import com.ilhaha.yueyishou.model.vo.order.OrderMyVo;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
+import com.ilhaha.yueyishou.recycler.client.RecyclerExamineOperateFeignClient;
 import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.recycler.client.RecyclerPersonalizationFeignClient;
 import com.ilhaha.yueyishou.common.util.PhoneNumberUtils;
@@ -85,6 +88,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Resource
     private OrderInfoFeignClient orderInfoFeignClient;
+
+    @Resource
+    private RecyclerExamineOperateFeignClient recyclerExamineOperateFeignClient;
 
 
     /**
@@ -298,6 +304,24 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         CustomerAccountVo customerAccountInfo = customerAccountService.getCustomerAccountInfo(customerAccountForm);
         customerMyVo.setAccountBalance(customerAccountInfo.getTotalAmount());
         return customerMyVo;
+    }
+
+    /**
+     * 获取顾客认证回收员的审核反馈信息
+     * @param customerId
+     * @return
+     */
+    @Override
+    public ExamineInfoVo auditFeedback(Long customerId) {
+        ExamineInfoVo examineInfoVo = new ExamineInfoVo();
+        // 获取认证信息
+        RecyclerInfo recyclerInfoDB = recyclerInfoFeignClient.getAuth(customerId).getData();
+        // 获取审核反馈
+        Page<RecyclerExamineOperate> page = recyclerExamineOperateFeignClient.getRecyclerExamineOperateList(PublicConstant.DEFAULT_PAGE_NO, PublicConstant.DEFAULT_PAGE_SIZE, recyclerInfoDB.getId()).getData();
+        // 只需要其中一条
+        RecyclerExamineOperate recyclerExamineOperate = page.getRecords().get(0);
+        BeanUtils.copyProperties(recyclerExamineOperate,examineInfoVo);
+        return examineInfoVo;
     }
 
 }

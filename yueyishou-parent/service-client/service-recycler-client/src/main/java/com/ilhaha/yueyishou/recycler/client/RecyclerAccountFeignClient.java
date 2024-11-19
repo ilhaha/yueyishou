@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
  * @Version 1.0
  */
 @FeignClient("service-recycler")
-
 public interface RecyclerAccountFeignClient {
 
     /**

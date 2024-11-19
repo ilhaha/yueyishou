@@ -5,6 +5,7 @@ import com.ilhaha.yueyishou.common.util.AuthContextHolder;
 import com.ilhaha.yueyishou.model.form.order.*;
 import com.ilhaha.yueyishou.model.vo.order.*;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
+import com.ilhaha.yueyishou.order.client.OrderRejectionOperateFeignClient;
 import com.ilhaha.yueyishou.recycler.service.OrderService;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import jakarta.annotation.Resource;
@@ -25,6 +26,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private ServiceFeeRuleFeignClient serviceFeeRuleFeignClient;
+
+    @Resource
+    private OrderRejectionOperateFeignClient orderRejectionOperateFeignClient;
 
 
     /**
@@ -192,5 +196,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Result<Boolean> cancelReject(Long orderId) {
         return orderInfoFeignClient.cancelReject(orderId);
+    }
+
+    /**
+     * 获取回收员申请拒收订单被驳回反馈信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Result<RejectInfoVo> rejectFeedback(Long orderId) {
+        return orderRejectionOperateFeignClient.rejectFeedback(orderId);
     }
 }

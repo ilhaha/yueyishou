@@ -7,6 +7,7 @@ import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
+import com.ilhaha.yueyishou.model.vo.customer.ExamineInfoVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,17 @@ public class CustomerController {
 
     @Resource
     private CustomerService customerService;
+
+
+    /**
+     * 获取顾客认证回收员的审核反馈信息
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/audit/feedback")
+    public Result<ExamineInfoVo> auditFeedback(){
+        return Result.ok(customerService.auditFeedback());
+    }
 
     /**
      * 获取顾客我的页面初始信息

@@ -23,6 +23,17 @@ public class OrderController {
     private OrderService orderService;
 
     /**
+     * 获取回收员申请拒收订单被驳回反馈信息
+     * @param orderId
+     * @return
+     */
+    @LoginVerification
+    @GetMapping("/reject/feedback/{orderId}")
+    public Result<RejectInfoVo> rejectFeedback(@PathVariable("orderId") Long orderId){
+        return orderService.rejectFeedback(orderId);
+    }
+
+    /**
      * 取消申请订单拒收
      * @param orderId
      * @return

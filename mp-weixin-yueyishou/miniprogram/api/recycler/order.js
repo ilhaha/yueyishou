@@ -121,3 +121,10 @@ export const reqGetRejectInfo = (data) => {
 export const reqCancelRejectOrder = (data) => {
   return http.post(urlPrefix + `/order/cancel/reject/${data}`)
 }
+
+/**
+ * 获取回收员申请拒收订单被驳回反馈信息
+ */
+export const reqRejectFeedback = (data) => {
+  return http.get(urlPrefix + `/order/reject/feedback/${data}`)
+}

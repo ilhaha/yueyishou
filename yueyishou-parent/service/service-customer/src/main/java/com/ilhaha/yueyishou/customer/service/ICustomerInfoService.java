@@ -8,6 +8,7 @@ import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
+import com.ilhaha.yueyishou.model.vo.customer.ExamineInfoVo;
 
 public interface ICustomerInfoService extends IService<CustomerInfo> {
 
@@ -60,4 +61,11 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @return
      */
     CustomerMyVo getMy(Long customerId);
+
+    /**
+     * 获取顾客认证回收员的审核反馈信息
+     * @param customerId
+     * @return
+     */
+    ExamineInfoVo auditFeedback(Long customerId);
 }

@@ -129,4 +129,11 @@ public interface OrderService {
      * @return
      */
     Result<Boolean> cancelReject(Long orderId);
+
+    /**
+     * 获取回收员申请拒收订单被驳回反馈信息
+     * @param orderId
+     * @return
+     */
+    Result<RejectInfoVo> rejectFeedback(Long orderId);
 }

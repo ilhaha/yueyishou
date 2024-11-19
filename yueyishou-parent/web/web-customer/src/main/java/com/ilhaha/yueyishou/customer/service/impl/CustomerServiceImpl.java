@@ -8,6 +8,7 @@ import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerBaseInfoForm;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
+import com.ilhaha.yueyishou.model.vo.customer.ExamineInfoVo;
 import com.ilhaha.yueyishou.model.vo.recycler.RecyclerAuthImagesVo;
 import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import jakarta.annotation.Resource;
@@ -101,5 +102,14 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Result<CustomerMyVo> getMy() {
         return customerInfoFeignClient.getMy(AuthContextHolder.getCustomerId());
+    }
+
+    /**
+     * 获取顾客认证回收员的审核反馈信息
+     * @return
+     */
+    @Override
+    public ExamineInfoVo auditFeedback() {
+        return customerInfoFeignClient.auditFeedback(AuthContextHolder.getCustomerId()).getData();
     }
 }

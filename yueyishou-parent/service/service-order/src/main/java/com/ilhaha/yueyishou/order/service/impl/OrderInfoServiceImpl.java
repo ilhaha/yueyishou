@@ -15,9 +15,12 @@ import com.ilhaha.yueyishou.model.constant.PublicConstant;
 import com.ilhaha.yueyishou.model.constant.RedisConstant;
 import com.ilhaha.yueyishou.common.util.OrderUtil;
 import com.ilhaha.yueyishou.model.constant.OrderConstant;
+import com.ilhaha.yueyishou.model.constant.StartDisabledConstant;
 import com.ilhaha.yueyishou.model.entity.order.OrderBill;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.entity.recycler.RecyclerInfo;
 import com.ilhaha.yueyishou.model.enums.OrderStatus;
+import com.ilhaha.yueyishou.model.enums.RecyclerAuthStatus;
 import com.ilhaha.yueyishou.model.form.coupon.AvailableCouponForm;
 import com.ilhaha.yueyishou.model.form.customer.CustomerWithdrawForm;
 import com.ilhaha.yueyishou.model.form.map.CalculateLineForm;
@@ -33,6 +36,7 @@ import com.ilhaha.yueyishou.order.service.IOrderBillService;
 import com.ilhaha.yueyishou.order.service.IOrderCommentService;
 import com.ilhaha.yueyishou.order.service.IOrderInfoService;
 import com.ilhaha.yueyishou.recycler.client.RecyclerAccountFeignClient;
+import com.ilhaha.yueyishou.recycler.client.RecyclerInfoFeignClient;
 import com.ilhaha.yueyishou.rules.client.ServiceFeeRuleFeignClient;
 import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
@@ -85,6 +89,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Resource
     @Lazy
     private IOrderCommentService orderCommentService;
+
+    @Resource
+    private RecyclerInfoFeignClient recyclerInfoFeignClient;
 
 
     /**
@@ -311,6 +318,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public Boolean grabOrder(Long recyclerId, Long orderId) {
+        // 查询回收员信息
+        RecyclerInfo recyclerInfoDB = recyclerInfoFeignClient.queryById(recyclerId).getData();
+        if (ObjectUtils.isEmpty(recyclerInfoDB)) {
+            return false;
+        }
+        if (!RecyclerAuthStatus.CERTIFICATION_PASSED.getStatus().equals(recyclerInfoDB.getAuthStatus()) &&
+                StartDisabledConstant.DISABLED_STATUS.equals(recyclerInfoDB.getStatus())) {
+            throw new YueYiShouException(ResultCodeEnum.UNCERTIFIED_RECYCLER);
+        }
+
+        if (StartDisabledConstant.DISABLED_STATUS.equals(recyclerInfoDB.getStatus())) {
+            throw new YueYiShouException(ResultCodeEnum.ACCOUNT_STOP);
+        }
+
         String waitOrderKey = RedisConstant.WAITING_ORDER + orderId;
         Boolean hasOrder = redisTemplate.hasKey(waitOrderKey);
         // 存在key证明订单还未被抢
@@ -1193,10 +1214,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 本周订单支付量
         BigDecimal currentWeekOrderPayCount = BigDecimal.valueOf(calculateOrderPayCountForRange(orderBillListDB, startOfWeek, today));
         // 计算支付转换率
-        collectVo.setConversionRate(
-                currentWeekOrderPayCount
-                        .divide(BigDecimal.valueOf(collectVo.getCurrentWeekOrderCount()), 4, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100)));
+        if (collectVo.getCurrentWeekOrderCount() != 0) {
+            collectVo.setConversionRate(
+                    currentWeekOrderPayCount
+                            .divide(BigDecimal.valueOf(collectVo.getCurrentWeekOrderCount()), 4, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100)));
+        } else {
+            // 如果分母为0，设置转换率为0或者其他默认值
+            collectVo.setConversionRate(BigDecimal.ZERO);
+        }
+
     }
 
     /**

@@ -84,7 +84,7 @@
         <view>{{orderInfo.arriveTime}} 到达</view>
         <view wx:if="{{orderInfo.arriveTimoutMin && orderInfo.rejectStatus == 0}}" style="color: red;">超时 {{orderInfo.arriveTimoutMin}} 分钟</view>
         <view wx:if="{{orderInfo.arriveTimoutMin == 0 && orderInfo.rejectStatus == 0}}" style="color: green;">按时到达</view>
-        <view wx:if="{{orderInfo.rejectStatus == 1 || orderInfo.rejectStatus == -1}}" style="color: green;">正在申请拒收</view>
+        <view wx:if="{{orderInfo.rejectStatus == 1 || orderInfo.rejectStatus == -1}}" style="color: rgb(139, 196, 139);">正在申请拒收</view>
       </view>
     </van-card>
     <view class="order-meta">
@@ -160,11 +160,33 @@
 
   <van-submit-bar price="{{ ((orderInfo.expectRecyclerPlatformAmount +  orderInfo.estimatedTotalAmount) + (orderInfo.recyclerOvertimeCharges || 0)) * 100}}" button-text="确认回收" data-orderid="{{orderInfo.id}}" disabled wx:if="{{orderInfo.rejectStatus == -1}}">
     <view slot="tip">
-      拒收申请已被驳回，可<text class="update-order" catch:tap="switchDialogRejectInfoShow">重新申请</text>
+      拒收申请已被驳回，可查看<text class="update-order" catch:tap="showReason">驳回反馈</text>或<text class="update-order" catch:tap="switchDialogRejectInfoShow">重新申请</text>
     </view>
   </van-submit-bar>
 
 </view>
+
+<van-dialog use-slot show="{{reasonModel}}" title="审核反馈" bind:confirm="confirm">
+  <view style="padding:20rpx">
+    <!-- 未通过原因 -->
+    <view class="reason-section">
+      <view class="label">驳回原因：</view>
+      <view class="value">{{reason}}</view>
+    </view>
+
+    <!-- 佐证材料 -->
+    <view class="proof-section">
+      <view class="label">佐证材料：</view>
+      <view class="proof-images">
+        <block wx:for="{{proofList}}" wx:key="index">
+          <view class="proof-item">
+            <image class="proof-image" src="{{item}}" mode="aspectFit" data-index="{{index}}" />
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+</van-dialog>
 
 <!-- 待确认 -->
 <view class="container container-padding-bottom-100 container-top container-padding-bottom-220" wx:if="{{orderStatus == 4}}">
@@ -483,7 +505,7 @@
       <text class="photo-title">拒收原因</text>
       <view class="order-grid">
         <van-cell-group style="width: 100%;">
-          <van-field value="{{ rejectMessage }}" placeholder="请输入拒收原因" border="{{ false }}" />
+          <van-field value="{{ rejectMessage }}" placeholder="请输入拒收原因" disabled="{{ true }}" border="{{ false }}" />
         </van-cell-group>
       </view>
     </view>

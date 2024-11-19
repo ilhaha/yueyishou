@@ -87,11 +87,11 @@
       </a-table>
     </div>
 
-    <div style="margin-top: 20px">
+    <!-- <div style="margin-top: 20px">
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px">申请拒收订单列表</div>
-    </div>
+    </div> -->
 
-    <div>
+    <!-- <div>
       <a-table
         ref="rejectOrderTable"
         size="middle"
@@ -133,7 +133,7 @@
           </a-button>
         </template>
       </a-table>
-    </div>
+    </div> -->
 
     <order-info-modal ref="modalForm" @ok="modalFormOk"></order-info-modal>
   </a-card>

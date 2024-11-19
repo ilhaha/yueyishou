@@ -10,7 +10,8 @@ import {
   reqCancelOrderAfterTaking,
   reqRejectOrder,
   reqGetRejectInfo,
-  reqCancelRejectOrder
+  reqCancelRejectOrder,
+  reqRejectFeedback
 } from '../../../api/recycler/order'
 import {
   toast
@@ -58,7 +59,10 @@ Page({
     dialogRejectInfoShow: false,
     rejectFileList: [],
     rejectMessage: '',
-    cancelRejectShow: false
+    cancelRejectShow: false,
+    reasonModel: false,
+    reason: '',
+    proofList: []
   },
   onLoad(options) {
     this.getOrderInfo(options.orderId);
@@ -70,6 +74,20 @@ Page({
           resolve(false);
         }, 0);
       })
+    })
+  },
+  confirm() {
+    this.setData({
+      reasonModel: false
+    })
+  },
+  // 查看审核不通过原因
+  async showReason() {
+    const res = await reqRejectFeedback(this.data.orderInfo.id);
+    this.setData({
+      reasonModel: true,
+      reason: res.data.reason,
+      proofList: res.data.proof.split(',')
     })
   },
   // 查询提交拒收申请

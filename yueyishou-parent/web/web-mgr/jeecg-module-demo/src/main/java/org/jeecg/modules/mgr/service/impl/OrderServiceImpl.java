@@ -2,12 +2,16 @@ package org.jeecg.modules.mgr.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.entity.order.OrderRejectionOperate;
 import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.form.order.RejectOrderListForm;
 import com.ilhaha.yueyishou.model.vo.order.RejectOrderListVo;
 import com.ilhaha.yueyishou.order.client.OrderInfoFeignClient;
 import com.ilhaha.yueyishou.model.vo.order.OrderMgrQueryVo;
+import com.ilhaha.yueyishou.order.client.OrderRejectionOperateFeignClient;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.mgr.service.OrderService;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OrderInfoFeignClient orderInfoFeignClient;
+
+    @Resource
+    private OrderRejectionOperateFeignClient orderRejectionOperateFeignClient;
 
     /**
      * 订单分页查询
@@ -68,5 +75,18 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Boolean approvalReject(ApprovalRejectOrderForm approvalRejectOrderForm) {
         return orderInfoFeignClient.approvalReject(approvalRejectOrderForm).getData();
+    }
+
+
+    /**
+     * 添加审核订单拒收操作记录
+     * @param rejectionOperate
+     * @return
+     */
+    @Override
+    public Boolean add(OrderRejectionOperate rejectionOperate) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rejectionOperate.setOperator(sysUser.getRealname());
+        return orderRejectionOperateFeignClient.add(rejectionOperate).getData();
     }
 }

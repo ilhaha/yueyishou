@@ -8,6 +8,7 @@ import com.ilhaha.yueyishou.common.result.Result;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
+import com.ilhaha.yueyishou.model.vo.customer.ExamineInfoVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient("service-customer")
 public interface CustomerInfoFeignClient {
+
+    /**
+     * 获取顾客认证回收员的审核反馈信息
+     * @param customerId
+     * @return
+     */
+    @GetMapping("/customerInfo/audit/feedback/{customerId}")
+    Result<ExamineInfoVo> auditFeedback(@PathVariable("customerId") Long customerId);
 
     /**
      * 获取顾客我的页面初始信息

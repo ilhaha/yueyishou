@@ -1,8 +1,12 @@
 package org.jeecg.modules.mgr.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ilhaha.yueyishou.model.entity.customer.CustomerAccountOperate;
 import com.ilhaha.yueyishou.model.entity.customer.CustomerInfo;
 import com.ilhaha.yueyishou.model.form.customer.UpdateCustomerStatusForm;
+import com.ilhaha.yueyishou.model.vo.customer.ExamineInfoVo;
+
+import java.util.List;
 
 /**
  * @Author ilhaha
@@ -28,4 +32,24 @@ public interface CustomerService {
      * @return
      */
     String switchStatus(UpdateCustomerStatusForm updateCustomerStatusForm);
+
+    /**
+     * 添加操作顾客账户记录
+     * @param customerAccountOperate
+     * @return
+     */
+    Boolean add(CustomerAccountOperate customerAccountOperate);
+
+    /**
+     * 获取顾客账号状态操作日志
+     *
+     * @param pageNo
+     * @param pageSize
+     * @param customerId
+     * @return
+     */
+    Page<CustomerAccountOperate> getOperateList(Integer pageNo, Integer pageSize, Long customerId);
+
+
+
 }

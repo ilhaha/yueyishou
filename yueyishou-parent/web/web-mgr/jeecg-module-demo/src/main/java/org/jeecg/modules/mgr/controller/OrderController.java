@@ -2,6 +2,7 @@ package org.jeecg.modules.mgr.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ilhaha.yueyishou.model.entity.order.OrderInfo;
+import com.ilhaha.yueyishou.model.entity.order.OrderRejectionOperate;
 import com.ilhaha.yueyishou.model.form.order.ApprovalRejectOrderForm;
 import com.ilhaha.yueyishou.model.form.order.OrderMgrQueryForm;
 import com.ilhaha.yueyishou.model.form.order.RejectOrderListForm;
@@ -24,6 +25,16 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    /**
+     * 添加审核订单拒收操作记录
+     * @param rejectionOperate
+     * @return
+     */
+    @PostMapping("/rejection/operate/add")
+    public Result<Boolean> add(@RequestBody OrderRejectionOperate rejectionOperate){
+        return Result.OK(orderService.add(rejectionOperate));
+    }
 
     /**
      * 审批拒收申请

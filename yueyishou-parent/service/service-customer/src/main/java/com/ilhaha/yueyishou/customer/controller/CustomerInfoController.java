@@ -12,6 +12,7 @@ import com.ilhaha.yueyishou.common.result.ResultCodeEnum;
 import com.ilhaha.yueyishou.model.form.recycler.RecyclerApplyForm;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerLoginInfoVo;
 import com.ilhaha.yueyishou.model.vo.customer.CustomerMyVo;
+import com.ilhaha.yueyishou.model.vo.customer.ExamineInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,15 @@ public class CustomerInfoController {
 	@Autowired
 	private ICustomerInfoService customerInfoService;
 
+	/**
+	 * 获取顾客认证回收员的审核反馈信息
+	 * @param customerId
+	 * @return
+	 */
+	@GetMapping("/audit/feedback/{customerId}")
+	public Result<ExamineInfoVo> auditFeedback(@PathVariable("customerId") Long customerId){
+		return Result.ok(customerInfoService.auditFeedback(customerId));
+	}
 
 	/**
 	 * 获取顾客我的页面初始信息

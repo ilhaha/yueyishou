@@ -53,3 +53,10 @@ export const reqReplenishInfo = () => {
 export const reqMyInfo = () => {
   return http.get(urlPrefix + `/customer/my`)
 }
+
+/**
+ * 获取顾客认证回收员的审核反馈信息
+ */
+export const reqAuditFeedback = () => {
+ return http.get(urlPrefix + `/customer/audit/feedback`)
+}

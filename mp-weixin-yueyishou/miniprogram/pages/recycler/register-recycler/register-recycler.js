@@ -36,7 +36,7 @@ Component({
       birthday: '',
       idcardNo: '',
       idcardAddress: '',
-      idcardExpire: ''
+      idcardExpire: '',
     }
   },
   lifetimes: {
@@ -45,6 +45,10 @@ Component({
     },
   },
   methods: {
+    // 查看审核不通过原因
+    showReason() {
+      this.triggerEvent('showReason')
+    },
     // 查询提交
     reSubmit() {
       this.deleteIdFront();

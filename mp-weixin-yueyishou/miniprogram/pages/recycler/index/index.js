@@ -103,6 +103,7 @@ Page({
   // 抢单
   async grabOrder(event) {
     const res = await reqGrabOrder(event.currentTarget.dataset.orderid);
+    console.log(res);
     toast({
       title: res.data ? '抢单成功' : '该单已被抢',
       icon: res.data ? 'success' : 'error',
